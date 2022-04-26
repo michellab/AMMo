@@ -1,0 +1,45 @@
+########################################
+###project configuration and defaults###
+########################################
+#This file contains parameters for this project in 
+#YAML format. More information for each parameter
+#is given below.
+
+python : /home/adele/anaconda3/bin/python #python executable that will be used for all MD scripts
+
+setup :                                   #durations of set up for each engine (in steps/ps), e.g.
+                                          #AMBER : 
+                                          #    minimisation : 2000
+                                          #    heating : 50
+                                          #    equilibration : 125
+
+steering :                                #steering default PLUMED files, e.g.
+                                          #closed_state : /path/to/plumed
+                                          #open_state : /path/to/different_plumed
+                                          #Note: states should be same as used in systems folders
+
+snapshot_number : 100                     #default number of snapshots to save from a steered MD 
+                                          #trajectory. Adjust as needed based on protocol
+
+snapshot_duration : 100                   #default duration of seeded MD trajectories in ns.
+                                          #Adjust as needed based on protocol
+
+cluster :                                 #HPC cluster (recommended for seeded MD), e.g.
+                                          #user@cluster
+
+cluster_path :                            #full file path to a folder for this project on the
+                                          #cluster above
+
+features :                                #default features for analysis in a dictionary format,
+                                          #e.g. my_distance :
+                                          #         type: distance
+                                          #         mask: ':1@CA :2@CA'
+                                          #         output : mydistance.txt
+                                          #         shared_mask : ':1-283'
+                                          #         rmsd_reference : None
+                                          #Note: shared_mask and rmsd_reference required for RMSD only
+
+backup :                                  #remote backup host, e.g. user@backup.host
+
+backup_path :                             #full file path to a folder for this project on the
+                                          #backup host above
