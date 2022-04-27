@@ -1,0 +1,168 @@
+#!/usr/bin/python3
+
+import os
+import subprocess
+import yaml
+from argparse import ArgumentParser
+from shutil import copyfile
+from allostery import allostery_settings
+
+
+def __configure_project(name):
+    """
+    Configure project by editing the .defaults/config file
+
+    Parameters
+    ----------
+    name : str
+        project name
+
+    Returns
+    -------
+    None
+    """
+    config_file = f'{allostery_settings["location"]}/{name}/.defaults/config'
+    subprocess.run(['vi', config_file])
+    return None
+
+
+def __create_project(name):
+    """
+    Create a project folder with all required subfolders
+
+    Parameters
+    ----------
+    name : str
+        project name
+
+    Returns
+    -------
+    None
+    """
+    print('-'*30)
+    print(f'Creating project: {name}')
+
+    full_path = f'{allostery_settings["location"]}/{name}'
+    if os.path.exists(full_path):
+        print(f'Folder {full_path} already exists. Continue anyway (y/n)?')
+        value = input()
+        while value != 'y' and value != 'n':
+            value = input()
+        if value == 'n':
+            return None
+    else:
+        os.mkdir(full_path)
+
+    folders = ['systems', 'analysis', 'inputs', '.defaults', '.misc', 'setup']
+    for folder in folders:
+        folder_path = f'{full_path}/{folder}'
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+
+    to_copy = {'data/project_default': '.defaults/config'}
+    for source, destination in to_copy.items():
+        copyfile(f'{os.environ["ALLOSTERY_HOME"]}/{source}', f'{full_path}/{destination}')
+
+    print(f'Created project {name}')
+    print('.'*30)
+    print('Configuring project...', end='')
+    __configure_project(name)
+    print('done.')
+    print('-'*30)
+
+    return None
+
+
+def __activate_project(name):
+    """
+    Set project as current
+
+    Parameters
+    ----------
+    name : str
+        project name
+
+    Returns
+    -------
+    Name
+    """
+    project_path = f'{allostery_settings["location"]}/{name}'
+    if os.path.exists(project_path):
+        config_file = f'{allostery_settings["home"]}/config'
+        with open(config_file, 'r') as file:
+            settings = yaml.load(file, Loader=yaml.FullLoader)
+        settings["project"] = name
+        with open(config_file, 'w') as file:
+            yaml.dump(settings, file)
+        print(f'Project activated: {name}')
+    else:
+        print(f'Project not found at {project_path}. Please create a project (project --create) or change project '
+              f'location')
+
+    return None
+
+
+def __show_current():
+    """
+    Display current active project
+
+    Returns
+    -------
+    None
+    """
+    project_path = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
+    if os.path.exists(project_path):
+        print(f'Current project: {allostery_settings["project"]}')
+    else:
+        print(f'!!!Warning!!! Expecting a project in {project_path}, but none found')
+    return None
+
+
+def project(create, activate, current, reconfigure):
+    """
+    Manage allostery projects
+
+    Parameters
+    ----------
+    create : str
+        project name to be created
+    activate : str
+        project name to be activated
+    current : bool
+        display current project
+    reconfigure : bool
+        reconfigure currently active project
+
+    Returns
+    -------
+
+    """
+    if create is not None:
+        __create_project(create)
+    elif activate is not None:
+        __activate_project(activate)
+    elif current:
+        __show_current()
+    elif reconfigure:
+        __configure_project(allostery_settings["project"])
+    else:
+        print('Please select an action')
+
+    return None
+
+
+def __main__():
+    parser = ArgumentParser(description='manage allostery projects')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--create', type=str, help='create a new project')
+    group.add_argument('--activate', type=str, help='set active project')
+    group.add_argument('--current', action='store_true', help='show current project')
+    group.add_argument('--reconfigure', action='store_true', help='change active project configuration')
+    args = parser.parse_args()
+
+    project(args.create, args.activate, args.current, args.reconfigure)
+    return None
+
+
+if __name__ == '__main__':
+    __main__()

@@ -7,6 +7,10 @@
 
 python : /home/adele/anaconda3/bin/python #python executable that will be used for all MD scripts
 
+states :                                  #project states, e.g. active/inactive
+    - state1
+    - state2
+
 setup :                                   #durations of set up for each engine (in steps/ps), e.g.
                                           #AMBER : 
                                           #    minimisation : 2000
