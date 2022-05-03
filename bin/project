@@ -9,36 +9,14 @@ from allostery import allostery_settings
 
 
 def __configure_project(name):
-    """
-    Configure project by editing the .defaults/config file
-
-    Parameters
-    ----------
-    name : str
-        project name
-
-    Returns
-    -------
-    None
-    """
+    """Configure project by editing the .defaults/config file"""
     config_file = f'{allostery_settings["location"]}/{name}/.defaults/config'
     subprocess.run(['vi', config_file])
     return None
 
 
 def __create_project(name):
-    """
-    Create a project folder with all required subfolders
-
-    Parameters
-    ----------
-    name : str
-        project name
-
-    Returns
-    -------
-    None
-    """
+    """Create a project folder with all required subfolders"""
     print('-'*30)
     print(f'Creating project: {name}')
 
@@ -74,18 +52,7 @@ def __create_project(name):
 
 
 def __activate_project(name):
-    """
-    Set project as current
-
-    Parameters
-    ----------
-    name : str
-        project name
-
-    Returns
-    -------
-    Name
-    """
+    """Set project as current"""
     project_path = f'{allostery_settings["location"]}/{name}'
     if os.path.exists(project_path):
         config_file = f'{allostery_settings["home"]}/config'
@@ -103,13 +70,7 @@ def __activate_project(name):
 
 
 def __show_current():
-    """
-    Display current active project
-
-    Returns
-    -------
-    None
-    """
+    """Display current active project"""
     project_path = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
     if os.path.exists(project_path):
         print(f'Current project: {allostery_settings["project"]}')
@@ -135,7 +96,7 @@ def project(create, activate, current, reconfigure):
 
     Returns
     -------
-
+    None
     """
     if create is not None:
         __create_project(create)
