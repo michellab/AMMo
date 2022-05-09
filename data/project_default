@@ -13,9 +13,9 @@ states :                                  #project states, e.g. active/inactive
 
 setup :                                   #durations of set up for each engine (in steps/ps), e.g.
                                           #AMBER : 
-                                          #    minimisation : 2000
-                                          #    heating : 50
-                                          #    equilibration : 125
+                                          #    - minimisation steps
+                                          #    - heating in ps
+                                          #    - equilibration in ps
 
 steering :                                #steering default PLUMED files, e.g.
                                           #closed_state : /path/to/plumed
