@@ -1,0 +1,122 @@
+#!/usr/bin/python3
+
+import os
+from shutil import rmtree
+from argparse import ArgumentParser
+import yaml
+from allostery import allostery_settings, settings
+from allostery._structure import system_folders
+
+
+def __write_settings(settings):
+    project = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
+    config_file = f'{project}/.defaults/config'
+    with open(config_file, 'w') as file:
+        yaml.dump(settings, file)
+    return None
+
+
+def __create(name):
+    """Create system an all associated folders"""
+    path = f'{allostery_settings["location"]}/{allostery_settings["project"]}/systems'
+    system_path = f'{path}/{name}'
+
+    # check if system already exists
+    if os.path.exists(system_path):
+        print(f'System {name} already exists')
+        return None
+    else:
+        os.mkdir(system_path)
+        for state in settings['states']:
+            os.mkdir(f'{system_path}/{state}')
+            for folder in system_folders:
+                os.mkdir(f'{system_path}/{state}/{folder}')
+        print(f'System {name} created')
+    return None
+
+
+def __add_state(state):
+    """Add a system state to project"""
+    # Check if already exists
+    if state in settings['states']:
+        print(f'State {state} already exists')
+        return None
+    else:
+        # add to settings
+        settings['states'].append(state)
+        __write_settings(settings)
+        # create everywhere
+        project = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
+        for system in os.listdir(f'{project}/systems'):
+            os.mkdir(f'{project}/systems/{system}/{state}')
+            for folder in system_folders:
+                os.mkdir(f'{project}/systems/{system}/{state}/{folder}')
+
+    return None
+
+
+def __remove_state(state):
+    """Remove a system state from project"""
+    # Check if state exists
+    if state not in settings['states']:
+        print(f'State {state} not found')
+        return None
+
+    # check if any have contents
+    not_empty = []
+    project = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
+    for system in os.listdir(f'{project}/systems'):
+        contents = [os.path.join(dp, f) for dp, dn, fn in os.walk(f'{project}/systems/{system}/{state}') for f in fn]
+        if len(contents) > 0:
+            not_empty.append(system)
+    if len(not_empty) > 0:
+        print(f'State {state} has files in the following systems: {",".join(not_empty)}. These files will be deleted. Proceed anyway? (y/n)')
+        while value != 'y' and value != 'n':
+            value = input()
+        if value == 'n':
+            return None
+
+    # remove state folders
+    for system in os.listdir(f'{project}/systems'):
+        if os.path.exists(f'{project}/systems/{system}/{state}'):
+            rmtree(f'{project}/systems/{system}/{state}')
+
+    # remove from settings
+    settings['states'].remove(state)
+    __write_settings(settings)
+
+    return None
+
+
+def allosystems(create, add_state, remove_state):
+    """
+    Manage project systems
+
+    Parameters
+    ----------
+    create : str
+        create a new system
+    add_state : str
+        add a new system state to project
+    remove_state : str
+        remove a system state from project
+
+    Returns
+    -------
+    None
+    """
+
+
+def __main__():
+    parser = ArgumentParser(description='manage systems in the currently active allostery project')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--create', type=str, help='Add a new system')
+    group.add_argument('--add_state', type=str, help='Add a new state to systems. Will also change the project '
+                                                     'configuration')
+    group.add_argument('--remove_state', type=str, help='Remove a state from systems. Will also change the project'
+                                                        'configuration')
+    return None
+
+
+if __name__ == '__main__':
+    __main__()
