@@ -1,0 +1,71 @@
+#!/home/adele/anaconda3/envs/BSS-env/bin/python
+
+import os
+import subprocess
+from argparse import ArgumentParser
+from allostery import settings, allostery_settings
+from allostery.setup import setup_system
+
+
+def __clean_args(args):
+    """Parse args to be used in function and get defaults"""
+    if args.protocol is None:
+        try:
+            args.protocol = settings['setup'][args.engine]
+        except KeyError:
+            raise KeyError(f'Engine {args.engine} has no defaults specified. Either set defaults for {args.engine} or '
+                           f'specify a protocol with --protocol')
+    else:
+        args.protocol = args.protocol.split(',')
+    if args.charges is not None:
+        args.charges = args.charges.split(',')
+    if args.parameters is not None:
+        args.parameters = args.parameters.split(',')
+
+    args.input = os.path.abspath(args.input)
+
+    if args.topology is not None:
+        args.topology = os.path.abspath(args.topology)
+
+    return args
+
+
+def __check_system(system, state):
+    """Create system if needed and change working directory"""
+    path = f'{allostery_settings["location"]}/{allostery_settings["project"]}/systems/{system}/{state}'
+
+    # create system if does not exist
+    if not os.path.exists(path):
+        print(f'System {system} not found. Creating...', end='')
+        subprocess.run(['allosystems', '--create', system])
+    # go to setup directory
+    os.chdir(f'{path}/system-setup')
+    return None
+
+
+def __main__():
+    parser = ArgumentParser(description='Set up a protein system')
+    parser.add_argument('--input', type=str, required=True, help='System PDB file')
+    parser.add_argument('--system', type=str, required=True, help='Allostery project system, e.g. "apo"')
+    parser.add_argument('--state', type=str, required=True, help='Allostery project system state, e.g. "active"')
+    parser.add_argument('--protocol', type=str, help='Comma separated list of minimisation steps, heating duration in ps, '
+                                                     'and equilibration duration in ps. Default : project defaults')
+    parser.add_argument('--engine', type=str, default='GROMACS', help='Simulation engine used for setup. Can be "AMBER" '
+                                                                      'or "GROMACS". Default : "GROMACS"')
+    parser.add_argument('--charges', type=str, help='Ligand charges in the order they appear in the input PDB, '
+                                                    'comma separated')
+    parser.add_argument('--parameters', type=str, help='any additional parameter arguments to give LeAP separated by comma')
+    parser.add_argument('--topology', type=str, help='Dry topology of system. If provided will be used instead of '
+                                                     're-parameterising')
+    args = parser.parse_args()
+    args = __clean_args(args)
+
+    __check_system(args.system, args.state)
+
+    setup_system(args.input, args.protocol, args.engine, args.charges, args.parameters, args.topology)
+
+    return None
+
+
+if __name__ == '__main__':
+    __main__()
