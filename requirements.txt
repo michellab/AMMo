@@ -1,0 +1,5 @@
+yaml~=0.2.5
+pyyaml~=5.4.1
+biosimspace~=2020.1.0
+numpy~=1.21.2
+pytraj~=2.0.5
