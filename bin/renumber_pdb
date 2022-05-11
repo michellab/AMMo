@@ -1,0 +1,70 @@
+#!/home/adele/anaconda3/envs/BSS-env/bin/python
+
+from argparse import ArgumentParser
+from pytraj import load, Trajectory
+from allostery.steering import RMSDReference
+
+
+def __load_reference(reference):
+    if isinstance(reference, Trajectory):
+        return reference
+    elif isinstance(reference, str):
+        if not reference.endswith('.pdb'):
+            raise AssertionError('If only a single file provided for reference, it must be of PDB format')
+        else:
+            reference = load(reference)
+    elif isinstance(reference, list):
+        for file in reference:
+            if file.endswith('.prm7') or file.endswith('.parm7') or file.endswith('.top'):
+                topology = file
+            else:
+                coordinates = file
+        reference = load(coordinates, top=topology)
+    else:
+        raise TypeError('Unsupported reference files')
+    return reference
+
+
+def renumber_pdb(input, reference, output, offset=0):
+    """
+
+    Parameters
+    ----------
+    input : str
+        inpuy PDB to renumber
+    reference : pytraj.Trajectory, str, [str]
+        reference system files
+    output : str
+        renumbered PDB output
+    offset : int
+        residue difference between the two systems
+
+    Returns
+    -------
+    None
+    """
+    reference = __load_reference(reference)
+    pdb = RMSDReference(input, offset)
+    pdb.renumber_atoms(reference, True)
+    pdb.write_file(output=output)
+
+    return None
+
+
+def __main__():
+    parser = ArgumentParser(description='renumber a PDB file based on another system')
+    parser.add_argument('--input', type=str, required=True, help='Input PDB to renumber')
+    parser.add_argument('--reference', type=str, required=True, help='Reference system files')
+    parser.add_argument('--output', type=str, required=True, help='Renumbered PDB output')
+    parser.add_argument('--offset', type=int, default=0, help='Residue difference between the two systems. Default : 0')
+    args = parser.parse_args()
+
+    if ',' in args.reference:
+        args.reference = args.reference.split(',')
+
+    renumber_pdb(args.input, args.reference, args.output, args.offset)
+    return None
+
+
+if __name__ == '__main__':
+    __main__()

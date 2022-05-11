@@ -199,7 +199,7 @@ class PlumedEntry:
 class RMSDReference:
     """A class for managing PLUMED RMSD references"""
 
-    def __init__(self, file):
+    def __init__(self, file, offset=0):
         self.chains = []
         self.residues = []
         self.atoms = []
@@ -216,7 +216,7 @@ class RMSDReference:
                     chain = RMSDChain(chain_id)
                     self.chains.append(chain)
                 # parse residue
-                res_idx = int(line[22:26].strip())
+                res_idx = int(line[22:26].strip())+offset
                 res_name = line[17:21]
                 if res_idx != residue.idx:
                     residue = RMSDResidue(res_idx, res_name, chain)
@@ -234,13 +234,22 @@ class RMSDReference:
                 residue.atoms.append(atom)
                 self.atoms.append(atom)
 
-    def renumber_atoms(self, system):
+    def renumber_atoms(self, system, warn_missing=False):
         """Renumber reference atoms based on system"""
         for atom in self.atoms:
             atom_mask = f':{atom.residue.idx}@{atom.name}'
-            system_idx = system.top.select(atom_mask)[0] + 1
-            atom.idx = system_idx
+            search = system.top.select(atom_mask)
+            if len(search) == 0:
+                raise KeyError(f'Atom {atom_mask} not found')
+            else:
+                system_idx = search[0] + 1
+                atom.idx = system_idx
         self.atoms.sort(key=lambda x: x.idx)
+
+        if warn_missing and system.top.n_atoms != len(self.atoms):
+            print(f'Some atoms are missing. Reference has {len(self.atoms)} atoms and system has {system.top.n_atoms} '
+                  f'atoms')
+        return None
 
     def get_initial_value(self, system, rmsd_indices, output='reference.pdb', work_dir='.'):
         """
