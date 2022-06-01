@@ -52,6 +52,8 @@ def __add_state(state):
             for folder in system_folders:
                 os.mkdir(f'{project}/systems/{system}/{state}/{folder}')
 
+    print(f'State {state} created')
+
     return None
 
 
@@ -71,9 +73,11 @@ def __remove_state(state):
             not_empty.append(system)
     if len(not_empty) > 0:
         print(f'State {state} has files in the following systems: {",".join(not_empty)}. These files will be deleted. Proceed anyway? (y/n)')
+        value = input()
         while value != 'y' and value != 'n':
             value = input()
         if value == 'n':
+            print(f'State {state} not removed')
             return None
 
     # remove state folders
@@ -84,6 +88,8 @@ def __remove_state(state):
     # remove from settings
     settings['states'].remove(state)
     __write_settings(settings)
+
+    print(f'State {state} removed')
 
     return None
 
@@ -105,6 +111,14 @@ def allosystems(create, add_state, remove_state):
     -------
     None
     """
+    if create is not None:
+        __create(create)
+    elif add_state is not None:
+        __add_state(add_state)
+    else:
+        __remove_state(remove_state)
+
+    return None
 
 
 def __main__():
@@ -115,6 +129,10 @@ def __main__():
                                                      'configuration')
     group.add_argument('--remove_state', type=str, help='Remove a state from systems. Will also change the project'
                                                         'configuration')
+    args = parser.parse_args()
+
+    allosystems(args.create, args.add_state, args.remove_state)
+
     return None
 
 
