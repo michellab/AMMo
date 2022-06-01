@@ -228,7 +228,7 @@ def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, pa
     engine : str
         simulation engine. Can be either 'AMBER' or 'GROMACS'. Default = 'GROMACS'
 
-    ligand_charges : [int]
+    ligand_charges : int, [int]
         list of ligand charges in the order they appear in the system
 
     parameters : [str]
@@ -242,6 +242,8 @@ def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, pa
     equilibrated :
         equilibrated system
     """
+    if isinstance(ligand_charges, int):
+        ligand_charges = [ligand_charges]
     if topology is None:
         system = __load_system(input_file, parameters, ligand_charges)
         print('Parameterising system...', end = '')
