@@ -11,11 +11,10 @@ states :                                  #project states, e.g. active/inactive
     - state1
     - state2
 
-setup :                                   #durations of set up for each engine (in steps/ps), e.g.
-                                          #AMBER : 
-                                          #    - minimisation steps
-                                          #    - heating in ps
-                                          #    - equilibration in ps
+setup :                                   #durations of set up for each engine (in steps/ps), comma separated,e.g.
+                                          #AMBER : minimisation_steps,heating_in_ps,equilibration_in_ps
+
+parameters :                              #any additional LeAP commands for parameterisation, comma separated
 
 steering :                                #steering default PLUMED files, e.g.
                                           #closed_state : /path/to/plumed
