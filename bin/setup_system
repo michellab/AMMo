@@ -10,11 +10,13 @@ def __clean_args(args):
     """Parse args to be used in function and get defaults"""
     try:
         args.protocol = settings['setup'][args.engine]
-    except KeyError:
+    except Exception:
         raise KeyError(f'Engine {args.engine} has no defaults specified. Either set defaults for {args.engine} or '
                        f'run the scrip manually with python {os.environ["ALLOSTERY_HOME"]}/allostery/scripts/system_setup.py')
 
     args.parameters = f'"{settings["parameters"]}"'
+    if args.parameters == '"None"':
+        args.parameters = None
 
     args.input = os.path.abspath(args.input)
 

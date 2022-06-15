@@ -175,7 +175,7 @@ def __heat(system, runtime, engine):
     #save results
     heated = process.getSystem()
     BSS.IO.saveMolecules('system_heated', heated, 'rst7')
-    with open('{heat.out', 'w') as file:
+    with open('heat.out', 'w') as file:
         file.writelines([line+'\n' for line in process.getStdout()])
 
     return heated
