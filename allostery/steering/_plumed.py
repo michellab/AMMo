@@ -3,6 +3,7 @@ import subprocess
 import numpy as np
 import pytraj as pt
 
+
 plumed_functions = (
     'COMBINE', 'CUSTOM', 'ENSEMBLE', 'FUNCPATHMSD', 'FUNCSUMHILLS', 'LOCALENSEMBLE', 'MATHEVAL', 'PIECEWISE', 'SORT',
     'STATS')
@@ -283,6 +284,7 @@ class RMSDReference:
         with open(plumed_file, 'w') as file:
             file.writelines([f'rmsd: RMSD reference={work_dir}/{output} TYPE=OPTIMAL\n',
                              f'PRINT ARG=rmsd FILE={work_dir}/OUTPUT\n'])
+
         subprocess.run(['plumed', 'driver', '--mf_pdb', trajectory, '--plumed', plumed_file])
 
         initial_value = np.loadtxt(f'{work_dir}/OUTPUT')[1]

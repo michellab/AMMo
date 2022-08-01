@@ -1,0 +1,81 @@
+#!/usr/bin/python3
+
+import os
+import subprocess
+from argparse import ArgumentParser
+from allostery import allostery_settings, settings
+
+
+def __check_system(system, state, seeded):
+    system_path = f'{allostery_settings["location"]}/{allostery_settings["project"]}/systems/{system}'
+    state_path = f'{system_path}/{state}'
+    seeded_path = f'{state_path}/{seeded}/steering'
+
+    if not os.path.exists(system_path):
+        raise OSError(f'System {system} does not exist')
+    elif not os.path.exists(state_path):
+        raise OSError(f'State {state} does not exist')
+    elif not os.path.exists(seeded_path):
+        raise OSError(f'Folder {seeded} not found for state {state} in {system}')
+
+    # go to directory
+    os.chdir(seeded_path)
+
+    return None
+
+
+def __get_steering_commands(args):
+    """Get subprocess commands for running sMD. Will write slurm input if to be run as a job"""
+    steering = settings['steering'][args.state]
+    project = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
+    reference = [f'{project}/inputs/{ref}' for ref in steering['reference'].split(',')]
+
+    script_command = [settings['python'],
+                      f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/steered_md.py',
+                      '--topology', '../../system-setup/system.prm7',
+                      '--coordinates', '../../system-setup/system_equilibrated.rst7']
+
+    other_parameters = ['masks', 'types', 'timings', 'values', 'forces']
+    for parm in other_parameters:
+        if args.slurm:
+            script_command += [f'--{parm}', f'"{steering[parm]}"']
+        else:
+            script_command += [f'--{parm}', str(steering[parm])]
+
+    script_command += ['--reference', ','.join(reference), '--engine', args.engine]
+
+    if args.slurm:
+        with open('submit.sh', 'w') as file:
+            file.writelines(['#!/bin/bash\n',
+                            f'#SBATCH --job-name={args.system}_{args.state}_sMD\n',
+                             '#SBATCH --ntasks=1\n',
+                             '#SBATCH --output=submit.out\n',
+                             '#SBATCH --gres=gpu:1\n',
+                            f'{" ".join(script_command)}\n'])
+        return ['sbatch', 'submit.sh']
+    else:
+        return script_command
+
+
+
+
+def __main__():
+    parser = ArgumentParser(description='Run a steered MD simulation')
+    parser.add_argument('--system', type=str, required=True, help='project system')
+    parser.add_argument('--state', type=str, required=True, help='system state')
+    parser.add_argument('--seeded', type=str, default='seeded-md', help='seeded MD folder where the steering folder is. Default : seeded-md')
+    parser.add_argument('--engine', type=str, default='AMBER', help='MD engine to run sMD with')
+    parser.add_argument('--slurm', action='store_true', help='Whether to run sMD as a slurm job')
+    args = parser.parse_args()
+
+    __check_system(args.system, args.state, args.seeded)
+
+    command = __get_steering_commands(args)
+    subprocess.run(command)
+
+    return None
+
+
+if __name__ == '__main__':
+    __main__()
+
