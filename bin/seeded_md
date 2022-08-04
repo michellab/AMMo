@@ -1,0 +1,146 @@
+#!/usr/bin/python3
+
+import os
+from argparse import ArgumentParser
+import subprocess
+from shutil import copyfile
+import numpy as np
+from allostery import settings, allostery_settings
+
+
+def __parse_seeds(seeds):
+    if isinstance(seeds, (list, tuple)):
+        if not all(isinstance(idx, int) for idx in seeds):
+            raise TypeError('Seed indices must all be of type int')
+        else:
+            return seeds
+    elif isinstance(seeds, str):
+        if '-' in seeds:
+            idx_range = [int(idx) for idx in seeds.split('-')]
+            return np.arange(idx_range[0], idx_range[1]+1).tolist()
+        elif ',' in seeds:
+            return [int(idx) for idx in seeds.split(',')]
+        else:
+            return [int(seeds)]
+    elif isinstance(seeds, int):
+        return [seeds]
+    else:
+        raise TypeError('Seeds must be of type str, int, list or tuple')
+
+
+def __setup_seeded(source, destination, seeds):
+    print('Copying files...', end='')
+    # create remote folder
+    subprocess.run(['ssh', settings['cluster'], 'mkdir', '-p', f'{destination}/snapshots'])
+
+    # copy topology
+    topology = '/'.join(source.split('/')[:-1]) + '/system-setup/system.prm7'
+    subprocess.run(['scp', topology, f"{settings['cluster']}:{destination}/."], stdout=subprocess.DEVNULL)
+
+    # copy snapshots
+    for seed in seeds:
+        subprocess.run(['scp', f'{source}/snapshots/snapshot_{seed}.rst7', f"{settings['cluster']}:{destination}/snapshots/."], stdout=subprocess.DEVNULL)
+    print('...done.')
+
+
+def __write_input(source, destination, seeds, backup):
+    print('Preparing job file...', end='')
+    # read input file to determine scheduler
+    input_file = f'{allostery_settings["location"]}/{allostery_settings["project"]}/.defaults/seeded-md.sh'
+    with open(input_file, 'r') as file:
+        input_contents = file.readlines()
+    submit_command = None
+    # find the submission command
+    # and add working directory
+    for line in input_contents:
+        if "#SBATCH" in line: # slurm
+            input_contents.insert(1, f'#SBATCH --chdir={destination}\n')
+            array_id = '$SLURM_ARRAY_TASK_ID'
+            submit_command = f'sbatch -a {",".join([str(idx) for idx in seeds])} {destination}/submit.sh'
+            break
+        elif "#$" in line:
+            input_contents.insert(1, f'#$ -wd {destination}\n')
+            array_id = '$SGE_TASK_ID'
+            submit_command = f'qsub -t {",".join([str(idx) for idx in seeds])} {destination}/submit.sh {destination}'
+            break
+    # if no match found, raise error
+    supported = ['slurm', 'grid engine']
+    if submit_command is None:
+        raise ValueError(f'Job submission file does not match any supported schedulers: {",".join(supported)}.')
+
+    # write a temporary submission file
+    # add backup lines if needed
+    if settings['cluster'] is not None:
+        if backup is not None:
+            input_contents += [f'rsync -a --exclude snapshot_{array_id}/production.nc snapshot_{array_id} {settings["local"]}:{source}/.\n',
+                               f'rsync -a --exclude snapshot_{array_id}/production_dry.nc snapshot_{array_id} {backup}/.\n']
+        else:
+            input_contents += [f'rsync -a snapshot_{array_id} {settings["local"]}:{source}/.\n']
+    else:
+        if backup is not None:
+            input_contents += [f'rsync -a --exclude snapshot_{array_id}/production_dry.nc snapshot_{array_id} {backup}/.\n',
+                               f'rm snapshot_{array_id}/production.nc\n']
+    with open('/tmp/seeded_submission.sh', 'w') as file:
+        file.writelines(input_contents)
+    
+    # copy job submission file
+    if settings['cluster'] is not None:
+        subprocess.run(['scp', '/tmp/seeded_submission.sh', f"{settings['cluster']}:{destination}/submit.sh"], stdout=subprocess.DEVNULL)
+    else:
+        copyfile('/tmp/seeded_submission.sh', f'{destination}/submit.sh')
+    os.remove('/tmp/seeded_submission.sh')
+    
+    print('done.')
+
+    return submit_command
+
+
+def __submit_seeded(command):
+    if settings['cluster'] is not None:
+        subprocess.run(['ssh', settings['cluster']] + command.split())
+    else:
+        subprocess.run(command.split())
+
+
+def seeded_md(system, state, folder='seeded-md', seeds=None, backup=True):
+    if seeds is None:
+        seeds = f'1-{settings["snapshot_number"]}'
+    seeds = __parse_seeds(seeds)
+    source = f'{allostery_settings["location"]}/{allostery_settings["project"]}/systems/{system}/{state}/{folder}'
+    destination = f'{settings["cluster_path"]}/{system}/{state}/{folder}'
+
+    if backup:
+        backup = f'{settings["backup"]}:{settings["backup_path"]}/{system}/{state}/{folder}'
+        subprocess.run(['ssh', settings['backup'], 'mkdir', '-p', f'{settings["backup_path"]}/{system}/{state}/{folder}'])
+    else:
+        backup = None
+
+    # setup for running seeded MD by creating
+    # required folders and copying files
+    if settings['cluster'] is not None:
+        __setup_seeded(source, destination, seeds)
+    else:
+        print('Running seeded MD locally.')
+    
+    # prepare submission file
+    submission_command = __write_input(source, destination, seeds, backup)
+
+    # submit job
+    __submit_seeded(submission_command)
+
+
+def __main__():
+    parser = ArgumentParser(description='Copy snapshots from a steered MD trajectory to a remote server and submit a job to run seeded MD simulations')
+    parser.add_argument('--system', type=str, required=True, help='project system')
+    parser.add_argument('--state', type=str, required=True, help='system state')
+    parser.add_argument('--folder', type=str, default='seeded-md', help='seeded MD folder. Default : seeded-md')
+    parser.add_argument('--seeds', type=str, help='Range for seed snapshot indices (separated by "-") or indices separated by ","')
+    parser.add_argument('--no_backup', action='store_false', help='do not backup seeded MD data')
+    args = parser.parse_args()
+
+    seeded_md(args.system, args.state, args.folder, args.seeds, args.no_backup)
+    return None
+
+
+if __name__ == '__main__':
+    __main__()
