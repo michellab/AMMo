@@ -61,7 +61,13 @@ def __write_input(source, destination, seeds, backup):
         elif "#$" in line:
             input_contents.insert(1, f'#$ -wd {destination}\n')
             array_id = '$SGE_TASK_ID'
-            submit_command = f'qsub -t {",".join([str(idx) for idx in seeds])} {destination}/submit.sh {destination}'
+            # check if consecutive seeds
+            if seeds == list(range(min(seeds), max(seeds)+1)):
+                submit_command = f'qsub -t {",".join([str(idx) for idx in seeds])} {destination}/submit.sh {destination}'
+            # if not, each has to be submitted separately
+            else:
+                submit_command = [f'qsub -t {idx} {destination}/submit.sh {destination}' for idx in seeds]
+                submit_command = ' | '.join(submit_command)
             break
     # if no match found, raise error
     supported = ['slurm', 'grid engine']
