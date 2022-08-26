@@ -1,5 +1,5 @@
 import os
-from shutil import copyfile
+from shutil import move
 from re import match
 import BioSimSpace as BSS
 from allostery.utils import get_dry_trajectory
@@ -27,7 +27,7 @@ def __get_output_location():
     
     return output
 
-def run_eq_md(duration, topology, coordinates, output=None):
+def run_eq_md(duration, topology, coordinates, output=None, report=2500, workdir=None, clean=False):
     """Run equilibrium MD script using BioSimSpace.
     Parameters
     ----------
@@ -40,6 +40,13 @@ def run_eq_md(duration, topology, coordinates, output=None):
     output : str
         output location, without extension (e.g. 'production-1'). If None, the next available name will
         be used (e.g. 'production-3' if 'production-1' and 'production-2' already exist)
+    report : int
+        report interval
+    workdir : str
+        workding directory
+    clean : bool
+        whether to remove unneeded process files
+
     Returns
     -------
     None
@@ -49,17 +56,24 @@ def run_eq_md(duration, topology, coordinates, output=None):
     if output is None:
         output = __get_output_location()
     
-    #set up process
-    protocol = BSS.Protocol.Production(runtime=duration*BSS.Units.Time.nanosecond, restart_interval=2500, report_interval=2500)
-    process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda')
+    # set up process
+    protocol = BSS.Protocol.Production(runtime=duration*BSS.Units.Time.nanosecond, restart_interval=report, report_interval=report)
+    process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda', work_dir=workdir)
 
     # run process
     process.start()
     process.wait()
     
-    #save results
-    files = ['nc', 'rst7', 'out']
-    for  ext in files:
-        copyfile(f'{process.workDir()}/amber.{ext}', f'{output}.{ext}')
-    #dry trajectory
+    # save results
+    files = {'nc': 'nc', 'crd': 'rst7', 'out': 'out'}
+    for  src, dest in files.items():
+        move(f'{process.workDir()}/amber.{src}', f'{output}.{dest}')
+
+    # dry trajectory
     get_dry_trajectory(f'{process.workDir()}/amber.prm7', f'{process.workDir()}/amber.nc', f'{output}_dry.nc')
+
+    # clean files
+    to_remove = ['amber.prm7', 'amber.rst7', 'README.txt', 'amber.err', 'amber.nrg', 'amber.cfg']
+    if clean and workdir is not None:
+        for file in to_remove:
+            os.remove(f'{process.workDir()}/{file}')
