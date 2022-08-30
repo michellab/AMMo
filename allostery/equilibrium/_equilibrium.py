@@ -63,14 +63,14 @@ def run_eq_md(duration, topology, coordinates, output=None, report=2500, workdir
     # run process
     process.start()
     process.wait()
+
+    # dry trajectory
+    get_dry_trajectory(f'{process.workDir()}/amber.prm7', f'{process.workDir()}/amber.nc', f'{output}_dry.nc')
     
     # save results
     files = {'nc': 'nc', 'crd': 'rst7', 'out': 'out'}
     for  src, dest in files.items():
         move(f'{process.workDir()}/amber.{src}', f'{output}.{dest}')
-
-    # dry trajectory
-    get_dry_trajectory(f'{process.workDir()}/amber.prm7', f'{process.workDir()}/amber.nc', f'{output}_dry.nc')
 
     # clean files
     to_remove = ['amber.prm7', 'amber.rst7', 'README.txt', 'amber.err', 'amber.nrg', 'amber.cfg']
