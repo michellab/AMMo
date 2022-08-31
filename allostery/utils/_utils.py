@@ -1,6 +1,8 @@
 """General useful functions"""
 
 import os
+from random import choice
+from string import ascii_lowercase, digits
 import subprocess
 
 
@@ -22,16 +24,18 @@ def get_dry_trajectory(topology, trajectory, output):
     ------
     None
     """
-    to_strip = ':WAT,:SOL,:NA,:CL,:Na+,:Cl-'
-    with open('cpptraj_drying.in', 'w') as file:
+    to_strip = ':WAT,:SOL,:HOH,:NA,:CL,:Na+,:Cl-,:CLA,:POT,:SOD'
+    cpptraj_file = f'cpptraj_{"".join(choice(ascii_lowercase + digits) for _ in range(10))}.in'
+
+    with open(cpptraj_file, 'w') as file:
         file.writelines([f'parm {topology}\n',
                         f'trajin {trajectory}\n',
                         f'strip {to_strip}\n',
                         f'trajout {output}\n',
                          'go\nquit\n'])
 
-    subprocess.run(['cpptraj', '-i', 'cpptraj_drying.in'])
-    os.remove('cpptraj_drying.in')
+    subprocess.run(['cpptraj', '-i', cpptraj_file])
+    os.remove(cpptraj_file)
 
     return None
 
