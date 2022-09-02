@@ -16,9 +16,11 @@ setup :                                   #durations of set up for each engine (
 
 parameters :                              #any additional LeAP commands for parameterisation, comma separated
 
-steering :                                #steering default PLUMED files, e.g.
-                                          #closed_state : /path/to/plumed
-                                          #open_state : /path/to/different_plumed
+steering :                                #steering defaults, e.g.
+                                          #closed_state : 
+                                          #    masks : mask1;mask2;mask3
+                                          #    plumed : /path/to/plumed
+                                          #    reference : ref1,ref2,ref3
                                           #Note: states should be same as used in systems folders
 
 snapshot_number : 100                     #default number of snapshots to save from a steered MD 
@@ -34,15 +36,16 @@ cluster_path :                            #full file path to a folder for this p
                                           #cluster above
 
 features :                                #default features for analysis in a dictionary format,
-                                          #e.g. my_distance :
-                                          #         type: distance
+                                          #e.g. feature_name :
+                                          #         feature: distance
                                           #         mask: ':1@CA :2@CA'
-                                          #         output : mydistance.txt
                                           #         shared_mask : ':1-283'
-                                          #         rmsd_reference : None
+                                          #         reference : None
                                           #Note: shared_mask and rmsd_reference required for RMSD only
 
 backup :                                  #remote backup host, e.g. user@backup.host
 
 backup_path :                             #full file path to a folder for this project on the
                                           #backup host above
+
+local :                                   #local host, e.g. user@host.some.address
