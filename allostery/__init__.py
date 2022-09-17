@@ -1,14 +1,50 @@
-import yaml
-import os
+"""A library for assessing allosteric modulation of proteins via an sMD/MSM protocol.
+"""
+import os as _os
+import warnings as _warnings
+_warnings.simplefilter('ignore', category=UserWarning)
+_warnings.simplefilter('ignore', category=DeprecationWarning)
+_warnings.simplefilter('ignore', category=Warning)
 
-# get allostery settings
-with open(f'{os.environ["ALLOSTERY_HOME"]}/config', 'r') as file:
-    allostery_settings = yaml.load(file, Loader=yaml.FullLoader)
+_warnings.warn('test', SyntaxWarning)
 
-# get current project settings
-__config_file = f'{allostery_settings["location"]}/{allostery_settings["project"]}/.defaults/config'
-if not os.path.exists(__config_file):
-    __config_file = f'{os.environ["ALLOSTERY_HOME"]}/data/project_default'  # change to default if no project settings
 
-with open(__config_file, 'r') as file:
-    settings = yaml.load(file, Loader=yaml.FullLoader)
+__all__ = ['analysis',
+           'equilibrium',
+           'msm',
+           'setup',
+           'steering',
+           'utils']
+
+# check for BioSimSpace and pytraj
+try:
+    import BioSimSpace
+    del BioSimSpace
+except ModuleNotFoundError:
+    raise ModuleNotFoundError('BioSimSpace required: www.biosimspace.org')
+
+try:
+    import pytraj
+    del pytraj
+except ModuleNotFoundError:
+    raise ModuleNotFoundError('pytraj required: https://amber-md.github.io/pytraj/latest/index.html')
+
+# check for AMBERHOME
+if 'AMBERHOME' not in _os.environ:
+    raise EnvironmentError('An installation of AMBER is required: https://ambermd.org/. Please install AMBER and set the AMBERHOME environment variable')
+
+# find GROMACS in PATH
+_gmx = False
+for loc in _os.environ['PATH'].split(':'):
+    if _os.path.exists(loc):
+        if 'gmx' in _os.listdir(loc):
+            _gmx = True
+            break
+if not _gmx:
+    raise EnvironmentError('A GROMACS installation is required: https://www.gromacs.org/. Please install GROMACS and include it in your PATH')
+
+from . import analysis
+from . import equilibrium
+from . import setup
+from . import steering
+from . import utils
