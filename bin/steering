@@ -3,11 +3,11 @@
 import os
 import subprocess
 from argparse import ArgumentParser
-from allostery import allostery_settings, settings
+from _settings import _allostery, _project
 
 
 def __check_system(system, state, seeded):
-    system_path = f'{allostery_settings["location"]}/{allostery_settings["project"]}/systems/{system}'
+    system_path = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}'
     state_path = f'{system_path}/{state}'
     seeded_path = f'{state_path}/{seeded}/steering'
 
@@ -26,12 +26,12 @@ def __check_system(system, state, seeded):
 
 def __get_steering_commands(args):
     """Get subprocess commands for running sMD. Will write slurm input if to be run as a job"""
-    steering = settings['steering'][args.state]
-    project = f'{allostery_settings["location"]}/{allostery_settings["project"]}'
+    steering = _project['steering'][args.state]
+    project = f'{_allostery["location"]}/{_allostery["project"]}'
     reference = [f'{project}/inputs/{ref}' for ref in steering['reference'].split(',')]
 
     # put together sMD command from defaults
-    md_command = [settings['python'],
+    md_command = [_project['python'],
                       f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/steered_md.py',
                       '--topology', '../../system-setup/system.prm7',
                       '--coordinates', '../../system-setup/system_equilibrated.rst7']
@@ -48,9 +48,8 @@ def __get_steering_commands(args):
     script_command = [md_command]
     # add additional processing if needed
     if args.backup:
-        script_command += [['ssh', settings["backup"], 'mkdir', '-p', f'{settings["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering'],
-                           ['rsync', '-a', '--exclude', 'steering_dry.nc', '--exclude', 'submit.out', '*', f'{settings["backup"]}:{settings["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering/.'],
-                           ['rm', 'steering.nc']]
+        script_command += [['ssh', _project["backup"], 'mkdir', '-p', f'{_project["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering'],
+                           ['rsync', '-a', '--exclude', 'steering_dry.nc', '--exclude', 'submit.out', '*', f'{_project["backup"]}:{_project["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering/.']]
 
     if args.slurm:
         with open('submit.sh', 'w') as file:
