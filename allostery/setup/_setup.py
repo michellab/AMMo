@@ -58,7 +58,7 @@ def __load_system(input_file, parameters=None, ligand_charges=None):
         if types[i] == 'peptide':
             parameterised = BSS.Parameters.ff14SB(molecules[i], leap_commands=parameters).getMolecule()
         elif types[i] == 'ligand':
-            parameterised = BSS.Parameters.gaff(molecules[i], net_charge=ligand_charges[ligand_count]).getMolecule()
+            parameterised = BSS.Parameters.gaff2(molecules[i], net_charge=ligand_charges[ligand_count]).getMolecule()
             ligand_count+=1
         else:
             raise TypeError(f'Unsupported molecule type {type} for molecule with index {i}')
@@ -91,7 +91,7 @@ def __load_parameterised_system(coordinates, topology):
     return system
 
 
-def __solvate(system):
+def __solvate(system, solvated):
     """Solvate and save dry system.
 
     Parameters
@@ -101,14 +101,18 @@ def __solvate(system):
 
     Returns
     -------
-    solvated : :class:`System <BioSimSpace._SireWrappers.System>`
+    solvated_system : :class:`System <BioSimSpace._SireWrappers.System>`
         solvated system (TIP3P water)
     """
-    solvated = BSS.Solvent.tip3p(system, shell=10*BSS.Units.Length.angstrom, ion_conc=0.15, is_neutral=True)
-    BSS.IO.saveMolecules('system', solvated, ['prm7', 'rst7'])
-    solvated = BSS.IO.readMolecules(['system.prm7', 'system.rst7'])
+    if not solvated:
+        solvated_system = BSS.Solvent.tip3p(system, shell=10*BSS.Units.Length.angstrom, ion_conc=0.15, is_neutral=True)
+    else:
+        solvated_system = system
 
-    return solvated
+    BSS.IO.saveMolecules('system', solvated_system, ['prm7', 'rst7'])
+    solvated_system = BSS.IO.readMolecules(['system.prm7', 'system.rst7'])
+
+    return solvated_system
 
 
 def __minimise(system, steps, engine):
@@ -214,28 +218,35 @@ def __equilibrate(system, runtime, engine):
     return equilibrated
 
 
-def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, parameters=None, topology=None):
-    """General system setup protocol, intended for PTP1B.
+def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, parameters=None, topology=None, solvated=False):
+    """General system setup protocol. The input system will be minimised, heated in the NVT ensemble and then equilibrated in the NPT ensemble.
+    The system can be provided as a PDB, in which case it will be parameterised with ff14SB. The first molecule is assumed to be the protein, and the following molecules that have more than one residue are treated as "peptide". Single residue molecules are treated as "ligand" and parameterised with gaff2.
+    The system is also solvated in TIP3P water (0.15 mM NaCl conc) with a 10 Angstrom shell, unless specified as already solvated.
+
+    Each step will produce a saved system coordinate file in the current directory, as well as the process output. If not "solvated=True" the dry system topology will also be saved.
 
     Parameters
     ----------
     input_file : str
-        System PDB file
+        System coordinate file
 
     protocol : tuple
         A tuple consisting of number of minimisation steps, heating duration in ps and equilibration duration in ps
 
     engine : str
-        simulation engine. Can be either 'AMBER' or 'GROMACS'. Default = 'GROMACS'
+        simulation engine supported by BioSimSpace. Default: 'GROMACS'
 
     ligand_charges : int, [int]
         list of ligand charges in the order they appear in the system
 
     parameters : [str]
-        any additional parameter arguments to give LeAP
+        any additional parameter arguments to give LeAP when parameterising proteins
 
     topology : str
-        AMBER topology of the system. If provided, the dry system will not be parameterised
+        topology of the system. If provided, the system will not be parameterised
+
+    solvated : bool
+        if True, the system will not be solvated
 
     Returns
     -------
@@ -250,10 +261,11 @@ def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, pa
     else:
         system = __load_parameterised_system(input_file, topology)
         print('Loading parameterised system...', end = '')
-    solvated = __solvate(system)
+    
+    solvated_system = __solvate(system, solvated)
     print('done.\n------------------------------\nMinimising system...', end='')
 
-    minimised = __minimise(solvated, protocol[0], engine)
+    minimised = __minimise(solvated_system, protocol[0], engine)
     print('done.\n------------------------------\nHeating system...', end='')
     heated = __heat(minimised, protocol[1]*BSS.Units.Time.picosecond, engine)
     print('done.\n------------------------------\nEquilibrating system...', end='')
