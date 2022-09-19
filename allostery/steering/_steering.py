@@ -3,7 +3,6 @@ import os
 import BioSimSpace as BSS
 import pytraj as pt
 from shutil import copyfile
-from allostery.steering import PlumedFile, RMSDReference
 from allostery.utils import get_dry_trajectory
 from time import sleep
 
@@ -236,9 +235,9 @@ def run_smd(topology, coordinates, masks, types, timings, values, forces, refere
     timings : [float, int]
         steering schedule in ns
     values : [[float,str]]
-        CV values in default PLUMED units. 'initial' will be replaced by a computed initial value
+        CV values in default PLUMED units at each point in "timings", with each list corresponding to an individual CV (unless there is only one point in "timings", in which case a single list of values is to be provided). 'initial' will be replaced by a computed initial value. In additional to that, addition, subtraction, multiplication and division are allowed between the initial value and a number (e.g. "initial/2" or "5+initial") to help with multiple step steering protocols
     forces : [[float,int]]
-        forces to be applied to each CV in kJ/mol
+        forces to be applied to each CV in kJ/mol, in the same format as "values"
     reference : str
         path to reference PDB file if using RMSD as a CV. All of the atoms in the reference have to also appear in the system, but not vice versa.
     engine : str
