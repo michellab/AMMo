@@ -1,6 +1,3 @@
-system_folders = ['system-setup', 'equilibrium', 'seeded-md', 'seeded-md/steering']
-
-
 def __parse_seeds(seeds):
     if seeds == 'all':
         seeds = [int(folder.split('_')[1]) for folder in os.listdir() if folder.startswith('snapshot_') and '.pdb' not in folder]
