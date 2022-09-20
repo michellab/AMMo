@@ -15,3 +15,23 @@ with open(__config_file, 'r') as file:
 
 
 _system_folders = ['system-setup', 'equilibrium', 'seeded-md', 'seeded-md/steering']
+
+
+def __parse_seeds(seeds):
+    if isinstance(seeds, (list, tuple)):
+        if not all(isinstance(idx, int) for idx in seeds):
+            raise TypeError('Seed indices must all be of type int')
+        else:
+            return seeds
+    elif isinstance(seeds, str):
+        if '-' in seeds:
+            idx_range = [int(idx) for idx in seeds.split('-')]
+            return np.arange(idx_range[0], idx_range[1]+1).tolist()
+        elif ',' in seeds:
+            return [int(idx) for idx in seeds.split(',')]
+        else:
+            return [int(seeds)]
+    elif isinstance(seeds, int):
+        return [seeds]
+    else:
+        raise TypeError('Seeds must be of type str, int, list or tuple')

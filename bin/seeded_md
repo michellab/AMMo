@@ -5,29 +5,28 @@ from argparse import ArgumentParser
 import subprocess
 from shutil import copyfile
 import numpy as np
-from allostery import settings, allostery_settings
-from allostery._structure import __parse_seeds
+from _settings import _project, _allostery, __parse_seeds
 
 
 def __setup_seeded(source, destination, seeds):
     print('Copying files...', end='')
     # create remote folder
-    subprocess.run(['ssh', settings['cluster'], 'mkdir', '-p', f'{destination}/snapshots'])
+    subprocess.run(['ssh', _project['cluster'], 'mkdir', '-p', f'{destination}/snapshots'])
 
     # copy topology
     topology = '/'.join(source.split('/')[:-1]) + '/system-setup/system.prm7'
-    subprocess.run(['scp', topology, f"{settings['cluster']}:{destination}/."], stdout=subprocess.DEVNULL)
+    subprocess.run(['scp', topology, f"{_project['cluster']}:{destination}/."], stdout=subprocess.DEVNULL)
 
     # copy snapshots
     for seed in seeds:
-        subprocess.run(['scp', f'{source}/snapshots/snapshot_{seed}.rst7', f"{settings['cluster']}:{destination}/snapshots/."], stdout=subprocess.DEVNULL)
+        subprocess.run(['scp', f'{source}/snapshots/snapshot_{seed}.rst7', f"{_project['cluster']}:{destination}/snapshots/."], stdout=subprocess.DEVNULL)
     print('...done.')
 
 
 def __write_input(source, destination, seeds, backup):
     print('Preparing job file...', end='')
     # read input file to determine scheduler
-    input_file = f'{allostery_settings["location"]}/{allostery_settings["project"]}/.defaults/seeded-md.sh'
+    input_file = f'{_allostery["location"]}/{_allostery["project"]}/.defaults/seeded-md.sh'
     with open(input_file, 'r') as file:
         input_contents = file.readlines()
     submit_command = None
@@ -39,7 +38,7 @@ def __write_input(source, destination, seeds, backup):
             array_id = '$SLURM_ARRAY_TASK_ID'
             submit_command = f'sbatch -a {",".join([str(idx) for idx in seeds])} {destination}/submit.sh'
             break
-        elif "#$" in line:
+        elif "#$" in line: # grid engine
             input_contents.insert(1, f'#$ -wd {destination}\n')
             array_id = '$SGE_TASK_ID'
             # check if consecutive seeds
@@ -57,12 +56,12 @@ def __write_input(source, destination, seeds, backup):
 
     # write a temporary submission file
     # add backup lines if needed
-    if settings['cluster'] is not None:
+    if _project['cluster'] is not None:
         if backup is not None:
-            input_contents += [f'rsync -a --exclude snapshot_{array_id}/production.nc snapshot_{array_id} {settings["local"]}:{source}/.\n',
+            input_contents += [f'rsync -a --exclude snapshot_{array_id}/production.nc snapshot_{array_id} {_project["local"]}:{source}/.\n',
                                f'rsync -a --exclude snapshot_{array_id}/production_dry.nc snapshot_{array_id} {backup}/.\n']
         else:
-            input_contents += [f'rsync -a snapshot_{array_id} {settings["local"]}:{source}/.\n']
+            input_contents += [f'rsync -a snapshot_{array_id} {_project["local"]}:{source}/.\n']
     else:
         if backup is not None:
             input_contents += [f'rsync -a --exclude snapshot_{array_id}/production_dry.nc snapshot_{array_id} {backup}/.\n',
@@ -71,8 +70,8 @@ def __write_input(source, destination, seeds, backup):
         file.writelines(input_contents)
     
     # copy job submission file
-    if settings['cluster'] is not None:
-        subprocess.run(['scp', '/tmp/seeded_submission.sh', f"{settings['cluster']}:{destination}/submit.sh"], stdout=subprocess.DEVNULL)
+    if _project['cluster'] is not None:
+        subprocess.run(['scp', '/tmp/seeded_submission.sh', f"{_project['cluster']}:{destination}/submit.sh"], stdout=subprocess.DEVNULL)
     else:
         copyfile('/tmp/seeded_submission.sh', f'{destination}/submit.sh')
     os.remove('/tmp/seeded_submission.sh')
@@ -83,28 +82,35 @@ def __write_input(source, destination, seeds, backup):
 
 
 def __submit_seeded(command):
-    if settings['cluster'] is not None:
-        subprocess.run(['ssh', settings['cluster']] + command.split())
+    if _project['cluster'] is not None:
+        subprocess.run(['ssh', _project['cluster']] + command.split())
     else:
         subprocess.run(command.split())
 
 
 def seeded_md(system, state, folder='seeded-md', seeds=None, backup=True):
+    # get seeds to run seeded MD for as a list of indices
     if seeds is None:
-        seeds = f'1-{settings["snapshot_number"]}'
+        seeds = f'1-{_project["snapshot_number"]}'
     seeds = __parse_seeds(seeds)
-    source = f'{allostery_settings["location"]}/{allostery_settings["project"]}/systems/{system}/{state}/{folder}'
-    destination = f'{settings["cluster_path"]}/{system}/{state}/{folder}'
+
+    # set full paths 
+    source = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}/{state}/{folder}'
+    if _project['cluster_path'] is not None:
+        destination = f'{_project["cluster_path"]}/{system}/{state}/{folder}' # remote destination
+    else:
+        destination = source # local destination, same as source
+
 
     if backup:
-        backup = f'{settings["backup"]}:{settings["backup_path"]}/{system}/{state}/{folder}'
-        subprocess.run(['ssh', settings['backup'], 'mkdir', '-p', f'{settings["backup_path"]}/{system}/{state}/{folder}'])
+        backup = f'{_project["backup"]}:{_project["backup_path"]}/{system}/{state}/{folder}'
+        subprocess.run(['ssh', _project['backup'], 'mkdir', '-p', f'{_project["backup_path"]}/{system}/{state}/{folder}'])
     else:
         backup = None
 
     # setup for running seeded MD by creating
     # required folders and copying files
-    if settings['cluster'] is not None:
+    if _project['cluster'] is not None:
         __setup_seeded(source, destination, seeds)
     else:
         print('Running seeded MD locally.')
