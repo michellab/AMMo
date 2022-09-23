@@ -1,5 +1,6 @@
 import yaml
 import os as os
+import numpy as np
 
 # get allostery settings
 with open(f'{os.environ["ALLOSTERY_HOME"]}/config', 'r') as file:
