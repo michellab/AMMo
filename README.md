@@ -6,6 +6,10 @@ This collection of a python library, command line scripts and tools is intended 
 
 The highest level is the set of command line tools that create and run an [allostery project](examples/project.md). The lowest level is the [allostery python library](examples/notebook.ipynb), with some default functions to run and analyse MD simulations (if even more customization is needed, [BioSimSpace](www.biosimspace.org) is recommended to set up own simulations). The [command line scrips](examples/scripts.md) simply run the functions available in the python library from the command line, allowing for easier execution and job scheduling. More information on how to use each of these can be found in [examples](examples).
 
+### Installation
+
+To use `allostery`, clone this repository and run `python setup.py`.
+
 ### Requirements
 
 * a python evnironment containing:

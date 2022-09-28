@@ -1,4 +1,4 @@
-export ALLOSTERY_HOME=/home/adele/Documents/allostery
+export ALLOSTERYHOME=
 export PATH="$ALLOSTERY_HOME/bin:$PATH"
 
 if [ -z "$PYTHONPATH" ]; then
