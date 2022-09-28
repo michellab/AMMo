@@ -11,5 +11,6 @@ __pycache__/
 __pypackages__/
 
 config
+allostery.sh
 .vscode
 

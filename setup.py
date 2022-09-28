@@ -36,18 +36,21 @@ def __set_home():
     # find location
     home = '/'.join(path.realpath(__file__).split('/')[:-1])
 
-    # read file contents
+    # prepare file contents
     source_file = f'{home}/allostery.sh'
-    with open(source_file, 'r') as file:
-        contents = file.readlines()
-    
-    # change first line to location
-    contents[0] = f'export ALLOSTERYHOME={home}\n'
-    print(f'ALLOSTERYHOME set to {home}')
+    contents = [f'export ALLOSTERYHOME={home}\n',
+                 'export PATH="$ALLOSTERY_HOME/bin:$PATH"\n\n',
+                 'if [ -z "$PYTHONPATH" ]; then\n',
+                 '  export PYTHONPATH="$ALLOSTERY_HOME"\n',
+                 'else\n',
+                 '  export PYTHONPATH="$ALLOSTERY_HOME:$PYTHONPATH"\n',
+                 'fi\n']
 
     # write new file
     with open(source_file, 'w') as file:
         file.writelines(contents)
+    print(f'ALLOSTERYHOME set to {home}')
+
 
     return home
 
