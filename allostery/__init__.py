@@ -6,8 +6,6 @@ _warnings.simplefilter('ignore', category=UserWarning)
 _warnings.simplefilter('ignore', category=DeprecationWarning)
 _warnings.simplefilter('ignore', category=Warning)
 
-_warnings.warn('test', SyntaxWarning)
-
 
 __all__ = ['analysis',
            'equilibrium',
@@ -31,7 +29,7 @@ except ModuleNotFoundError:
 
 # check for AMBERHOME
 if 'AMBERHOME' not in _os.environ:
-    raise EnvironmentError('An installation of AMBER is required: https://ambermd.org/. Please install AMBER and set the AMBERHOME environment variable')
+    print('An installation of AMBER is required: https://ambermd.org/. Please install AMBER and set the AMBERHOME environment variable')
 
 # find GROMACS in PATH
 _gmx = False
@@ -41,9 +39,8 @@ for loc in _os.environ['PATH'].split(':'):
             _gmx = True
             break
 if not _gmx:
-    raise EnvironmentError('A GROMACS installation is required: https://www.gromacs.org/. Please install GROMACS and include it in your PATH')
+   print('A GROMACS installation is required: https://www.gromacs.org/. Please install GROMACS and include it in your PATH')
 
-from . import analysis
 from . import equilibrium
 from . import setup
 from . import steering
