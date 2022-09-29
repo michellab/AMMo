@@ -18,14 +18,14 @@ __all__ = ['analysis',
 try:
     import BioSimSpace
     del BioSimSpace
-except ModuleNotFoundError:
-    raise ModuleNotFoundError('BioSimSpace required: www.biosimspace.org')
+except:
+    raise EnvironmentError('BioSimSpace required: www.biosimspace.org')
 
 try:
     import pytraj
     del pytraj
-except ModuleNotFoundError:
-    raise ModuleNotFoundError('pytraj required: https://amber-md.github.io/pytraj/latest/index.html')
+except:
+    raise EnvironmentError('pytraj required: https://amber-md.github.io/pytraj/latest/index.html')
 
 # check for AMBERHOME
 if 'AMBERHOME' not in _os.environ:

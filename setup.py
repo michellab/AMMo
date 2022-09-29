@@ -38,7 +38,7 @@ def __set_home():
 
     # prepare file contents
     source_file = f'{home}/allostery.sh'
-    contents = [f'export ALLOSTERYHOME={home}\n',
+    contents = [f'export ALLOSTERY_HOME={home}\n',
                  'export PATH="$ALLOSTERY_HOME/bin:$PATH"\n\n',
                  'if [ -z "$PYTHONPATH" ]; then\n',
                  '  export PYTHONPATH="$ALLOSTERY_HOME"\n',
