@@ -49,7 +49,7 @@ def __set_home():
     # write new file
     with open(source_file, 'w') as file:
         file.writelines(contents)
-    print(f'ALLOSTERYHOME set to {home}')
+    print(f'ALLOSTERY_HOME set to {home}')
 
 
     return home
