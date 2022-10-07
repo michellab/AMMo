@@ -1,0 +1,92 @@
+#!/usr/bin/python3
+
+import os
+from argparse import ArgumentParser
+import subprocess
+from _settings import _project, _allostery, __parse_seeds
+
+
+def __get_commands(seeds):
+    commands = []
+
+    for seed in seeds:
+        for name, params in _project['features'].items():
+            # add required arguments for running featurization
+            feature_command = [_project['python'],
+                               f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/featurize.py',
+                                '--topology', '../system-setup/system_dry.prm7',
+                                '--trajectory', f'snapshot_{seed}/production_dry.nc',
+                                '--output', f'snapshot_{seed}/{name}.txt']
+            for key in params:
+                feature_command += [f'--{key}', params[key]]
+            commands.append(feature_command)
+    
+    return commands
+
+
+def __write_input(seeds):
+    slurm_file = 'feat.sh'
+
+    with open(slurm_file, 'w') as file:
+        # write file start
+        file.writelines(['#!/bin/bash\n',
+                        f'#SBATCH --job-name={args.system}_{args.state}_sMD\n',
+                         '#SBATCH --ntasks=1\n',
+                         '#SBATCH --output=feat.out\n',
+                        f'seeds="{" ".join(seeds)}"\n',
+                         'for seed in $seeds;do\n  '])
+
+        # for every feature run featurization
+        for name, params in _project['features'].items():
+            file.writelines([_project['python'],
+                            f' {os.environ["ALLOSTERY_HOME"]}/allostery/scripts/featurize.py',
+                            ' --topology ', '../system-setup/system_dry.prm7',
+                            ' --trajectory ', f'snapshot_$seed/production_dry.nc',
+                            ' --output ', f'snapshot_$seed/{name}.txt'])
+            for key in params:
+                file.writelines([f' --{key} ', params[key])
+
+        # write file end
+        file.writelines(['\ndone\n'])
+    
+    return [['sbatch', slurm_file]]
+
+
+def featurize(system, state, folder, seeds=None, slurm=False):
+    # get seed indices
+    seeds = __parse_seeds(seeds)
+
+    # go to seeded md directory
+    os.chdir(f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}/{state}/{folder}')
+
+    # get commands to run
+    # if slurm then write input file
+    if slurm:
+        commands = __write_input(seeds)
+    # if not, get a command for each trajectory
+    else:
+        commands = __get_commands(seeds)
+    
+    # run
+    for command in commands:
+        subprocess.run(command)
+
+    return None
+
+
+def __main__():
+    parser = ArgumentParser(description='Featurize seeded MD trajectories')
+    parser.add_argument('--system', type=str, required=True, help='project system')
+    parser.add_argument('--state', type=str, required=True, help='system state')
+    parser.add_argument('--folder', type=str, default='seeded-md', help='seeded MD folder. Default : seeded-md')
+    parser.add_argument('--seeds', type=str, help='Range for snapshot indices (separated by "-") or indices separated by ","')
+    parser.add_argument('--slurm', action='store_true', help='Run featurization as a slurm job')
+    args = parser.parse_args()
+
+    featurize(args.system, args.state, args.folder, args.seeds, args.slurm)
+
+    return None
+
+
+if __name__ == '__main__':
+    __main__()
