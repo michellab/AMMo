@@ -18,33 +18,39 @@ def __get_commands(seeds):
                                 '--trajectory', f'snapshot_{seed}/production_dry.nc',
                                 '--output', f'snapshot_{seed}/{name}.txt']
             for key in params:
-                feature_command += [f'--{key}', params[key]]
+                if key == 'reference':
+                    feature_command += [f'--{key}', f'../../../../inputs/{params[key]}']
+                else:
+                    feature_command += [f'--{key}', params[key]]
             commands.append(feature_command)
     
     return commands
 
 
-def __write_input(seeds):
+def __write_input(seeds, system, state):
     slurm_file = 'feat.sh'
 
     with open(slurm_file, 'w') as file:
         # write file start
         file.writelines(['#!/bin/bash\n',
-                        f'#SBATCH --job-name={args.system}_{args.state}_sMD\n',
+                        f'#SBATCH --job-name={system}_{state}_feat\n',
                          '#SBATCH --ntasks=1\n',
                          '#SBATCH --output=feat.out\n',
-                        f'seeds="{" ".join(seeds)}"\n',
-                         'for seed in $seeds;do\n  '])
+                        f'seeds="{" ".join([str(seed) for seed in seeds])}"\n',
+                         'for seed in $seeds;do'])
 
         # for every feature run featurization
         for name, params in _project['features'].items():
-            file.writelines([_project['python'],
-                            f' {os.environ["ALLOSTERY_HOME"]}/allostery/scripts/featurize.py',
-                            ' --topology ', '../system-setup/system_dry.prm7',
-                            ' --trajectory ', f'snapshot_$seed/production_dry.nc',
-                            ' --output ', f'snapshot_$seed/{name}.txt'])
+            file.writelines([f'\n  {_project["python"]}',
+                             f' {os.environ["ALLOSTERY_HOME"]}/allostery/scripts/featurize.py',
+                              ' --topology ', '../system-setup/system_dry.prm7',
+                              ' --trajectory ', f'snapshot_$seed/production_dry.nc',
+                              ' --output ', f'snapshot_$seed/{name}.txt'])
             for key in params:
-                file.writelines([f' --{key} ', params[key])
+                if key == 'reference':
+                    file.writelines([f' --{key} ', f'"../../../../inputs/{params[key]}"'])
+                else:
+                    file.writelines([f' --{key} ', f'"{params[key]}"'])
 
         # write file end
         file.writelines(['\ndone\n'])
@@ -54,6 +60,8 @@ def __write_input(seeds):
 
 def featurize(system, state, folder, seeds=None, slurm=False):
     # get seed indices
+    if seeds is None:
+        seeds = f'1-{_project["snapshot_number"]}'
     seeds = __parse_seeds(seeds)
 
     # go to seeded md directory
@@ -62,7 +70,7 @@ def featurize(system, state, folder, seeds=None, slurm=False):
     # get commands to run
     # if slurm then write input file
     if slurm:
-        commands = __write_input(seeds)
+        commands = __write_input(seeds, system, state)
     # if not, get a command for each trajectory
     else:
         commands = __get_commands(seeds)
