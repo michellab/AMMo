@@ -2,7 +2,7 @@ import os
 
 import BioSimSpace as BSS
 import pytraj as pt
-from shutil import copyfile
+from shutil import move
 from allostery.utils import get_dry_trajectory
 from time import sleep
 
@@ -291,7 +291,7 @@ def run_smd(topology, coordinates, masks, types, timings, values, forces, refere
     else:
         to_copy['reference_1.pdb'] = 'reference_1.pdb'
     for file in to_copy:
-        copyfile(f'{process.workDir()}/{file}', to_copy[file])
+        move(f'{process.workDir()}/{file}', to_copy[file])
 
     # dry trajectory
     get_dry_trajectory(topology, 'steering.nc', 'steering_dry.nc')
