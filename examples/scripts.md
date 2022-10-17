@@ -1,6 +1,16 @@
 # Allostery example
 
+## Contents
+
+1. [System setup](#System-setup)
+2. [Running steered MD](#Running-steered-MD)
+3. [Analysing steered MD data](#Analysing-steered-MD-data)
+4. [Seeded MD](#Seeded-MD)
+5. [Trajectory featurization](#Trajectory-featurization)
+
 ## System setup
+[top](#Allostery-example)
+
 A common starting point in MD simulations is a PDB file. The script `setup_system.py` runs `allostery.setup.setup_system()` from command line. The inputs are the same as for the function:
 
 ```python
@@ -31,6 +41,7 @@ $ python setup_system.py --input input_protein.pdb --protocol "7500,100,250" --p
 produces system topology files (dry and solvated), and coordinate files for the minimised, heated, and equilibrated system.
 
 ## Running steered MD
+[top](#Allostery-example)
 
 Once the system is prepared, the next step is to run steered MD simulations. This allows for better sampling of intermediate conformations which are unstable and therefore short-lived. They can be run using the `steered_md.py` script:
 ```bash
@@ -95,10 +106,12 @@ In this case the dihedral angle CV was steered to its target value and kept cons
 Because a steered MD simulation can be quite complex if there are a lot of CVs and steps involved, running the script as above can involve a lot of typing, remembering values and masks. Therefore the functionality of creating an allostery project and running sMD using pre-configured settings can be useful in the long run, while the above direct running of the script is recommended mainly for protocol testing and troubleshooting.
 
 ## Analysing steered MD data
+[top](#Allostery-example)
 
 Once a steered MD trajectory is produced, it has to be checked to ensure steering has been successful, and snapshots need to be saved for seeded MD simulations. This simple trajectory analysis can be done however the user choses. There is an example notebook in `$ALLOSTERYHOME/data/sMD_analysis.ipynb` which can be a good starting point.
 
 ## Seeded MD
+[top](#Allostery-example)
 
 With snapshot saved from the sMD trajectory, they can be used as "seeds" to run equilibrium MD simulations. Since they are indeed just equilibrium MD simulations, they can be run using two scripts here: `equilibrium_md.py` and `seeded_md.py`.
 
@@ -144,7 +157,7 @@ optional arguments:
   --clean              Remove unneeded process files
 ```
 
-It needs to be given a directory containing a `snapshots` folder, where the seed coordinate files are named `snapshot_[seed_idx].rst7`. When tunning the MD simulation, it will create a directory called `snapshot_[seed_idx]` and run MD there. For example:
+It needs to be given a directory containing a `snapshots` folder, where the seed coordinate files are named `snapshot_[seed_idx].rst7`. When running the MD simulation, it will create a directory called `snapshot_[seed_idx]` and run MD there. For example:
 
 ```bash
 $ python seeded_md.py --folder seeded_md_folder --snapshot 45 --duration 100 --report 5000 --clean
@@ -154,7 +167,43 @@ Will run a 100 ns MD simulation in the directory `seeded_md_folder/snapshot_45`,
 
 Running seeded MD via a script (whether it be `equilibirum_md.py` or `seeded_md.py`) makes it easier to execute this part of the process using a job scheduler. Alternatively, it is very easy to write a simple python script to run MD differently with BioSimSpace, e.g. using a different MD engine.
 
+## Trajectory featurization
+[top](#Allostery-example)
+
+Once seeded MD simulations are finished, they can be used to build a Markov State Model. However, that requires dimensionality reduction, which starts by reducing trajectory data from all atom coordinates to select features.
+
+```bash
+$ python featurize.py
+usage: featurize.py [-h] --topology TOPOLOGY --trajectory TRAJECTORY --feature
+                    FEATURE --mask MASK --output OUTPUT
+                    [--reference REFERENCE] [--shared SHARED]
+
+Reduce trajectory data to a single feature. Run in the folder containing
+snapshot folders
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --topology TOPOLOGY   system topology file 
+  --trajectory TRAJECTORY
+                        seeded MD trajectory file
+  --feature FEATURE     Type of feature to calculate. Allowed: "rmsd",
+                        "torsion", "distance"
+  --mask MASK           AMBER selection mask for the feature
+  --output OUTPUT       output file for feature
+  --reference REFERENCE
+                        RMSD reference PDB file
+  --shared SHARED       mask for atoms used for aligning the RMSD reference.
+                        Default: "!@/H"
+```
+
+`featurize()` computes a distance, dihedral or RMSD values for the trajectory specified, using an AMBER selection mask ([documentation](https://amberhub.chpc.utah.edu/atom-mask-selection-syntax/)). If RMSD is being calculated, `reference` has to be provided as well, and `shared` is the selection mask for atoms used for alignment. For example:
+
+```bash
+$ python featurize.py --topology 'system.prm7' --trajectory 'production.nc' --feature 'distance', --mask ':10@CA :20@CA' --output 'featurized.txt'
+```
+
+A good idea would be to include this featurization as part of the seeded MD job above, if the MSM features are known beforehand.
+
 ## In progress
 This tool is currently a work in progress. Functionality still to come is:
-* Trajectory featurisation
 * MSM building

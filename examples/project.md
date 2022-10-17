@@ -2,13 +2,19 @@
 
 The highest level use of `allostery` is to create and run an allostery project. It uses the same functions and scripts outlined in other examples, but makes use of a consistent file structure and a settings file.
 
-The file structure as well as a suggested workflow are shown below:
-
-<img src="figures/project.png" width=500>
-
 Before starting with an allostery project, make sure that the `ALLOSTERYHOME` environment variable is set by either setting it manually to this main directory, or by running `source allostery.sh` if you ran `python setup.py` when the code was downloaded.
 
+## Contents
+
+1. [Creating an allostery project](#Creating-an-allostery-project)
+2. [System setup](#System-setup)
+3. [Running steered MD](#Running-steered-MD)
+4. [Analysing steered MD data](#Analysing-steered-MD-data)
+5. [Seeded MD](#Seeded-MD)
+6. [Trajectory featurization](#Trajectory-featurization)
+
 ## Creating an allostery project
+[top](#An-allostery-project-example)
 
 Allostery projects are managed by the `project` tool from the command line.
 
@@ -109,6 +115,8 @@ System my_system created
 ```
 
 ## System setup
+[top](#An-allostery-project-example)
+
 A common starting point in MD simulations is a PDB file. To begin working with a system, run the `setup_system` command:
 ```bash
 $ setup_system -h
@@ -149,6 +157,7 @@ Submitted batch job 16490
 The main output files (found in `systems/my_system/state1/system-setup`) are `system.prm7` and `system_equilibrated.rst7`. They will be used to run the steered MD simulations. Alternatively, other topology and coordinate files can simply be placed in `system-setup`, as long as they are named appropriately.
 
 ## Running steered MD
+[top](#An-allostery-project-example)
 
 Once the system is prepared, the next step is to run steered MD simulations. This allows for better sampling of intermediate conformations which are unstable and therefore short-lived. As part of an allostery project, this can be done with the `steering` command:
 
@@ -179,7 +188,7 @@ steering :
         forces: [2500,2500,2500]
         reference: reference.pdb
 ```
-In this case, the CVs will be the $\chi$1 angle of Tyr152, the distance between C$\gamma$ atoms of residues 196 and 280, and the heavy atom RMSD of residues 178-184. Note that in the masks below, the residue numbers are offset by 1. The system includes an ACE cap at the start, and the mask selection indexes starting from 1. The steering will be carried out in 100 ns. The `reference` parameter is pointing to a file in the `inputs` directory of the project. In addition to the specified values, times, and forces, additional steps will be added to apply the force over 4 ps, keeping the CV values as initial. The target values and forces used are based on knowledge of the system.
+The masks are AMBER selection masks, corresponding to the atoms involved in each CV used for steering. For example, the distance between the C$\alpha$ atoms of residues 100 and 200 would be ":100@CA :200@CA". More information can be found here. types corresponds to CV types supported by BioSimSpace. In this case, the CVs will be the $\chi$1 angle of Tyr152, the distance between C$\gamma$ atoms of residues 196 and 280, and the heavy atom RMSD of residues 178-184. Note that in the masks below, the residue numbers are offset by 1. The system includes an ACE cap at the start, and the mask selection indexes starting from 1. The steering will be carried out in 100 ns. In addition to the specified values, times, and forces, additional steps will be added to apply the force over 4 ps, keeping the CV values as initial. The target values and forces used are based on knowledge of the system.
 
 Steering is submitted as a slurm job:
 ```bash
@@ -213,6 +222,7 @@ Note that simple mathematical operations are allowed for the initial value, and 
 In this case the dihedral angle CV was steered to its target value and kept constant by applying force, while the distance CV was kept at its initial value by applying force during the first half of the simulation. An alternative protocol where they are not steered at all beyond changing the CV value could be employed by simply changing the appropriate force constants to 0.
 
 ## Analysing steered MD data
+[top](#An-allostery-project-example)
 
 Once a steered MD trajectory is produced, it has to be checked to ensure steering has been successful, and snapshots need to be saved for seeded MD simulations. When an allostery project is created, a notebook called `sMD_analysis.ipynb` is placed in the `analysis` folder. The notebook checks available systems and states, and allows the user to select which steered MD trajectory is analysed:
 
@@ -225,7 +235,9 @@ Then PLUMED output is plotted the user. Any additional analysis to check whether
 They are placed in a `snapshots` folder in `seeded-md`, and will be used as starting coordinates for the seeded MD simulations in the next step.
 
 ## Seeded MD
-With snapshot saved from the sMD trajectory, they can be used as "seeds" to run equilibrium MD simulations. Since this involves a large number of simulations run in parallel, it will often be done on a remote HPC cluster. This requires copying over the input files, submitting a job on the remote host, and then copying back the trajectories for analysis (and optionally backing them up too).
+[top](#An-allostery-project-example)
+
+With snapshots saved from the sMD trajectory, they can be used as "seeds" to run equilibrium MD simulations. Since this involves a large number of simulations run in parallel, it will often be done on a remote HPC cluster. This requires copying over the input files, submitting a job on the remote host, and then copying back the trajectories for analysis (and optionally backing them up too).
 
 The `seeded_md` command does all that, but required initial setup. Firstly, the cluster and local (and optionally backup) locations need to be set up in settings:
 ```bash
@@ -275,8 +287,41 @@ $ seeded_md --system my_system --state state1
 Submitted batch job 16492
 ```
 
-## In progress
-This tool is currently a work in progress. Functionality still to come is:
-* Command line equilibrium MD
-* Trajectory featurisation
-* MSM building
+## Trajectory featurization
+[top](#An-allostery-project-example)
+
+Once seeded MD simulations are finished, they can be used to build a Markov State Model. However, that requires dimensionality reduction, which starts by reducing trajectory data from all atom coordinates to select features. The `featurize` command does this for every seeded MD trajectory in a state in a system:
+
+```bash
+$ featurize -h
+usage: featurize [-h] --system SYSTEM --state STATE [--folder FOLDER]
+                 [--seeds SEEDS] [--slurm]
+
+Featurize seeded MD trajectories
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --system SYSTEM  project system
+  --state STATE    system state
+  --folder FOLDER  seeded MD folder. Default : seeded-md
+  --seeds SEEDS    Range for snapshot indices (separated by "-") or indices
+                   separated by ","
+  --slurm          Run featurization as a slurm job
+```
+
+The features computed are ones specified in settings, for example:
+
+```bash
+rmsd_feature:
+    feature: rmsd
+    mask: ":264-276&!(@/H)"
+    reference: reference.pdb
+    shared: ":122-292&!(@/H)"
+distance_feature:
+    feature: distance
+    mask: ":215@SG @P"
+```
+
+the features are saved as `.txt` files in the snapshot directory, named as the feature is in settings, so for the above it is `rmsd_feature.txt` and `distance_feature.txt`.
+
+An alternative approach is to add featurization to the seeded MD job file, using the python script provided.
