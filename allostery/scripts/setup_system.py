@@ -12,8 +12,18 @@ def __clean_args(args):
         args.charges = literal_eval(args.charges)
 
     # fix extra parameters is given
-    if args.parameters is not None:
+    if args.parameters == 'None':
+        args.parameters = None
+    elif args.parameters is not None:
         args.parameters = args.parameters.split(',')
+
+    # topology None
+    if args.topology == 'None':
+        args.topology = None
+
+    # fix if already solvated
+    if args.solvation == 'None':
+        args.solvation = None
 
     return args
 
@@ -29,11 +39,11 @@ def __main__():
     parser.add_argument('--parameters', type=str, help='any additional parameter arguments to give LeAP separated by comma')
     parser.add_argument('--topology', type=str, help='Dry topology of system. If provided will be used instead of '
                                                      're-parameterising')
-    parser.add_argument('--solvated', action='store_true', help='Indicate that the system is already solvated')
+    parser.add_argument('--solvation', default='shell,10', help='Way to solvate the system, e.g. 10 A shell is "shell,10", while a 15 A box in all dimensions is "box,15,15,15" (x, y, and z respectively). If None, the system will be treated as already solvated.')
     args = parser.parse_args()
     args = __clean_args(args)
 
-    setup_system(args.input, args.protocol, args.engine, args.charges, args.parameters, args.topology, args.solvated)
+    setup_system(args.input, args.protocol, args.engine, args.charges, args.parameters, args.topology, args.solvation)
 
     return None
 

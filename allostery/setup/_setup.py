@@ -91,23 +91,37 @@ def __load_parameterised_system(coordinates, topology):
     return system
 
 
-def __solvate(system, solvated):
-    """Solvate and save dry system.
+def __solvate(system, solvation='shell,10'):
+    """Solvate in TIP3P water and save system.
 
     Parameters
     ----------
     system : :class:`System <BioSimSpace._SireWrappers.System>`
-        the combined molecular system
+        the combined molecular system  
+
+    solvation : bool
+        way to solvate the system, e.g. 10 A shell is "shell,10", while a 15 A box in all dimensions is "box,15,15,15" (x, y, and z respectively)
+        If None, the system will be treated as already solvated.
 
     Returns
     -------
     solvated_system : :class:`System <BioSimSpace._SireWrappers.System>`
         solvated system (TIP3P water)
     """
-    if not solvated:
-        solvated_system = BSS.Solvent.tip3p(system, shell=10*BSS.Units.Length.angstrom, ion_conc=0.15, is_neutral=True)
-    else:
+    if solvation is None:
         solvated_system = system
+    else:
+        solvation = solvation.split(',')
+        # get solvation type, i.e. if box or shell
+        box = solvation[0]
+        # get dimensions
+        dimensions = [float(solvation[i])*BSS.Units.Length.angstrom for i in range(1, len(solvation))]
+        if box == 'shell':
+            solvated_system = BSS.Solvent.tip3p(system, shell=dimensions[0], ion_conc=0.15, is_neutral=True)
+        elif box == 'box':
+            solvated_system = BSS.Solvent.tip3p(system, box=dimensions, ion_conc=0.15, is_neutral=True)
+        else:
+            raise ValueError(f'Solvation has to be either "shell" or "box", but is {box}') 
 
     BSS.IO.saveMolecules('system', solvated_system, ['prm7', 'rst7'])
     solvated_system = BSS.IO.readMolecules(['system.prm7', 'system.rst7'])
@@ -218,7 +232,7 @@ def __equilibrate(system, runtime, engine):
     return equilibrated
 
 
-def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, parameters=None, topology=None, solvated=False):
+def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, parameters=None, topology=None, solvation='shell,10'):
     """General system setup protocol. The input system will be minimised, heated in the NVT ensemble and then equilibrated in the NPT ensemble.
     The system can be provided as a PDB, in which case it will be parameterised with ff14SB. The first molecule is assumed to be the protein, and the following molecules that have more than one residue are treated as "peptide". Single residue molecules are treated as "ligand" and parameterised with gaff2.
     The system is also solvated in TIP3P water (0.15 mM NaCl conc) with a 10 Angstrom shell, unless specified as already solvated.
@@ -245,8 +259,9 @@ def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, pa
     topology : str
         topology of the system. If provided, the system will not be parameterised
 
-    solvated : bool
-        if True, the system will not be solvated
+    solvation : str, None
+        way to solvate the system, e.g. 10 A shell is "shell,10", while a 15 A box in all dimensions is "box,15,15,15" (x, y, and z respectively)
+        If None, the system will be treated as already solvated.
 
     Returns
     -------
@@ -262,7 +277,7 @@ def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, pa
         system = __load_parameterised_system(input_file, topology)
         print('Loading parameterised system...', end = '')
     
-    solvated_system = __solvate(system, solvated)
+    solvated_system = __solvate(system, solvation)
     print('done.\n------------------------------\nMinimising system...', end='')
 
     minimised = __minimise(solvated_system, protocol[0], engine)

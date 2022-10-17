@@ -18,6 +18,10 @@ def __clean_args(args):
     if args.parameters == '"None"':
         args.parameters = None
 
+    args.solvation = f'"{_project["solvation"]}"'
+    if args.solvation == '"None"':
+        args.solvation = None
+
     args.input = os.path.abspath(args.input)
 
     if args.topology is not None:
@@ -49,8 +53,8 @@ def __get_commands(args):
                       f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/setup_system.py']
     for arg in vars(args):
         value = getattr(args, arg)
-        if value is not None and arg not in ['system', 'state', 'slurm']:
-            script_command += [f'--{arg}', value]
+        if arg not in ['system', 'state', 'slurm']:
+            script_command += [f'--{arg}', f'{value}']
 
     if args.slurm:
         with open('submit.sh', 'w') as file:
