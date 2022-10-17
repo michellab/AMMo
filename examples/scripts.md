@@ -29,10 +29,13 @@ optional arguments:
   --parameters PARAMETERS
                         any additional parameter arguments to give LeAP separated by comma
   --topology TOPOLOGY   Dry topology of system. If provided will be used instead of re-parameterising
-  --solvated            Indicate that the system is already solvated
+  --solvation SOLVATION
+                        Way to solvate the system, e.g. 10 A shell is "shell,10", while a 15 A box in all
+                        dimensions is "box,15,15,15" (x, y, and z respectively). If None, the system will be
+                        treated as already solvated.
 ```
 
-If a `--topology` file is provided, the system will not be re-parameterised. Additionally, if `--solvated`, no additional preparation will be done, and the script will go straight to minimisation.
+If a `--topology` file is provided, the system will not be re-parameterised. Additionally, if `--solvation None`, no additional preparation will be done, and the script will go straight to minimisation. Otherwise, solvation can specify the size of box or shell to solvate the system in.
 
 Running the script as:
 ```python

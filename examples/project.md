@@ -145,8 +145,9 @@ In the simplest case, only the input PDB needs to be provided, together with the
 setup :
     GROMACS: 7500,100,250
 parameters : "source leaprc.phosaa10"
+solvation : "shell,15"
 ```
-When the GROMACS MD engine is used for system setup, the input will be minimised for 7500 steps, heated to 300 K in 100 ps and further equilibrated for 250 ps. Additionally, when the main protein or other peptides are parameterised, an additional command `source leaprc.phosaa10` will be executed by tLeAP.
+When the GROMACS MD engine is used for system setup, the input will be minimised for 7500 steps, heated to 300 K in 100 ps and further equilibrated for 250 ps. Additionally, when the main protein or other peptides are parameterised, an additional command `source leaprc.phosaa10` will be executed by tLeAP. The system will then be solvated in water with a 15 A shell.
 
 The system setup can be submitted as a slurm job (support for other schedulers coming!). From the project directory:
 ```bash
