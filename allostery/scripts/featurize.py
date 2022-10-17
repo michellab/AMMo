@@ -5,8 +5,8 @@ from allostery.analysis import featurize
 
 def __main__():
     parser = ArgumentParser(description='Reduce trajectory data to a single feature. Run in the folder containing snapshot folders')
-    parser.add_argument('--topology', required=True, help='system topology file. Default: "../system-setup/system_dry.prm7"')
-    parser.add_argument('--trajectory', required=True, help='seeded MD trajectory file. Default: "production_dry.nc"')
+    parser.add_argument('--topology', required=True, help='system topology file')
+    parser.add_argument('--trajectory', required=True, help='seeded MD trajectory file"')
     parser.add_argument('--feature', required=True, help='Type of feature to calculate. Allowed: "rmsd", "torsion", "distance"')
     parser.add_argument('--mask', required=True, help='AMBER selection mask for the feature')
     parser.add_argument('--output', required=True, help='output file for feature')
