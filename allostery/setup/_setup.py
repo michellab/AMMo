@@ -235,7 +235,7 @@ def __equilibrate(system, runtime, engine):
 def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, parameters=None, topology=None, solvation='shell,10'):
     """General system setup protocol. The input system will be minimised, heated in the NVT ensemble and then equilibrated in the NPT ensemble.
     The system can be provided as a PDB, in which case it will be parameterised with ff14SB. The first molecule is assumed to be the protein, and the following molecules that have more than one residue are treated as "peptide". Single residue molecules are treated as "ligand" and parameterised with gaff2.
-    The system is also solvated in TIP3P water (0.15 mM NaCl conc) with a 10 Angstrom shell, unless specified as already solvated.
+    The system is also solvated in TIP3P water (0.15 mM NaCl conc), unless specified as already solvated.
 
     Each step will produce a saved system coordinate file in the current directory, as well as the process output. If not "solvated=True" the dry system topology will also be saved.
 
