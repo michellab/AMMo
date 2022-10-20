@@ -148,3 +148,40 @@ def __parse_seeds(seeds):
         return [seeds]
     else:
         raise TypeError('Seeds must be of type str, int, list or tuple')
+
+
+def __parse_time(input, output_units, output_digits=3, output_type='string'):
+    """Parse time given as a string and return either as string with units or numerical value
+
+    Parameters
+    ----------
+    input : str
+        time in format "value unit", e.g. "10 ps"
+
+    output_units : str
+        units to give output in. Allowed values are: "fs", "ps", "ns, "us", "ms", and "s"
+
+    output_digits : int
+        place to round output to
+
+    output_type : str
+        type of output to give. If "string" it will be "value unit" and if "number" it will be the numerical value 
+    """
+    conversion = {'fs': -15, 'ps': -12, 'ns': -9, 'us': -6, 'ms': -3, 's': 0}
+
+    components = input.split(' ')
+
+    try:
+        value = int(components[0]) # get numerical value
+        value = value * 10**(conversion[components[1]]) # convert to seconds
+    except:
+        raise ValueError(f'Time has to be in the format "value unit", e.g. "10 ps". Time provided: {input}')
+    
+    output_value = round(value * 10**(-1*conversion[output_units]), output_digits)
+
+    if output_type == 'string':
+        return f'{output_value} {output_units.replace("u", "μ")}'
+    elif output_type == 'number':
+        return output_value
+    else:
+        raise ValueError(f'"output_type" can be either "string" or "number". Was: {output_type}')
