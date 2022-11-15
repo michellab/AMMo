@@ -1,6 +1,6 @@
-# allostery
+# AMMo
 
-This collection of a python library, command line scripts and tools is intended for easier Markov State Model building and comparison, using steered MD simulations to explore a larger conformational space. Depending on how much customization is desired, there are 3 levels of tools available:
+AMMo (Allostery in Markov Models) is a collection of a python library, command line scripts and tools, for assessing allosteric modulators. The main use for easier Markov State Model building and comparison, using steered MD simulations to explore a larger conformational space. Depending on how much customization is desired, there are 3 levels of tools available:
 
 <img src="data/structure.png" width=500>
 
