@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+
+import os
+from argparse import ArgumentParser
+import subprocess
+from _settings import _allostery, _project
+
+
+def __check_system(system, state):
+    system_path = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}'
+    state_path = f'{system_path}/{state}'
+    eq_path = f'{state_path}/equilibrium'
+
+    if not os.path.exists(system_path):
+        raise OSError(f'System {system} does not exist')
+    elif not os.path.exists(state_path):
+        raise OSError(f'State {state} does not exist')
+    elif not os.path.exists(eq_path):
+        raise OSError(f'Equilibrium MD folder not found for state {state} in {system}')
+
+    # go to directory
+    os.chdir(eq_path)
+
+    return None
+
+
+def __get_commands(args):
+    # get input to run MD
+    md_command = [_project['python'],
+                  f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/equilibrium_md.py',
+                  '--duration', args.duration,
+                  '--topology', '../system-setup/system.prm7',
+                  '--coordinates', '../system-setup/system_equilibrated.rst7',
+                  '--report', str(args.report),
+                  '--workdir', '.', 
+                  '--clean']
+
+    script_command = [md_command]
+
+    # add backup if needed
+    if args.backup:
+        script_command += [['ssh', _project["backup"], 'mkdir', '-p', f'{_project["backup_path"]}/{args.system}/{args.state}/equilibrium'],
+                           ['rsync', '-a', '--exclude', '*_dry.nc', '--exclude', 'submit.out', '*', f'{_project["backup"]}:{_project["backup_path"]}/{args.system}/{args.state}/equilibrium/.']]
+
+    if args.slurm:
+        with open('submit.sh', 'w') as file:
+            file.writelines(['#!/bin/bash\n',
+                            f'#SBATCH --job-name={args.system}_{args.state}_eq\n',
+                             '#SBATCH --ntasks=1\n',
+                             '#SBATCH --output=submit.out\n',
+                             '#SBATCH --gres=gpu:1\n'])
+            for command in script_command:
+                file.writelines(f'{" ".join(command)}\n')
+        return [['sbatch', 'submit.sh']]
+    else:
+        return script_command
+
+
+
+def __main__():
+    parser = ArgumentParser(description='Run equilibrium MD')
+    parser.add_argument('--system', type=str, required=True, help='project system')
+    parser.add_argument('--state', type=str, required=True, help='system state')
+    parser.add_argument('--duration', type=str, required=True, help='duration in ns')
+    parser.add_argument('--report', type=str, default=2500, help='Report interval in steps. Default: 2500')
+    parser.add_argument('--slurm', action='store_true', help='Whether to run sMD as a slurm job')
+    parser.add_argument('--backup', action='store_true', help='Backup wet trajectory')
+    args = parser.parse_args()
+
+    __check_system(args.system, args.state)
+
+    commands = __get_commands(args)
+    for command in commands:
+        subprocess.run(command)
+
+    return None
+
+if __name__ == '__main__':
+    __main__()

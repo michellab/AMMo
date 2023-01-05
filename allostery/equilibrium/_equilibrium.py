@@ -50,7 +50,8 @@ def run_eq_md(duration, topology, coordinates, output=None, report=2500, workdir
     Returns
     -------
     None
-    """   
+    """
+    print(topology,coordinates)   
     system = BSS.IO.readMolecules([topology, coordinates])
 
     if output is None:
