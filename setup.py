@@ -13,21 +13,20 @@ def __change_interpreter(file, interpreter):
     return None
 
 
-def __check_for_python3():
+def __check_for_python3(interpreter):
+    # find ALLOSTERY_HOME
     home = '/'.join(path.realpath(__file__).split('/')[:-1])
-    python_path = ''
 
-    for loc in environ['PATH'].split(':'):
-        if 'python3' in listdir(loc):
-            python_path = f'{loc}/python3'
+    # check that interpreter exists
+    if not path.exists(interpreter):
+        raise ValueError(f'{interpreter} not found')
     
-    if python_path == '':
-        raise ValueError('python3 not found in $PATH')
-    elif python_path != '/usr/bin/python3':
+    # change in scripts if needed
+    if interpreter != '/usr/bin/python3':
         for file in listdir(f'{home}/bin'):
-            if not file.startswith('_'):
+            if not file.endswith('.py'):
                 print()
-                __change_interpreter(f'{home}/bin/{file}', python_path)
+                __change_interpreter(f'{home}/bin/{file}', interpreter)
     
     return None
 
@@ -69,12 +68,13 @@ def __set_location(location, home):
     return None
 
 
-def setup(location):
-    print(f'{"#"*17}\n### ALLOSTERY ###\n{"#"*17}')
+def setup(interpreter, location):
+    print(f'{"#"*34}\n### Allostery in Markov Models ###\n{"#"*34}')
+    print()
     
     # check for python 3
     print('Looking for python 3...', end='')
-    __check_for_python3()
+    __check_for_python3(interpreter)
     print('done.')
 
     # set allostery home
@@ -86,14 +86,16 @@ def setup(location):
     print('-'*30)
     print(f'Setup complete. Please add "source {home}/allostery.sh" to your .bashrc')
     print('-'*30)
+    print('Commands can be run using "ammo", for all available commands run "ammo -h"')
 
 
 def __main__():
-    parser = ArgumentParser(description='set up allostery')
+    parser = ArgumentParser(description='set up AMMo (Allostery in Markov Models)')
+    parser.add_argument('--interpreter', type=str, default='/usr/bin/python3', help='Python interpreter to run AMMo commands. Requirements: python3 and a yaml installation. Default: /usr/bin/python3')
     parser.add_argument('--location', type=str, default=f'{environ["HOME"]}/Documents', help=f'Default location of allostery projects. Default: {environ["HOME"]}/Documents')
     args = parser.parse_args()
 
-    setup(args.location)
+    setup(args.interpreter, args.location)
 
 
 if __name__ == '__main__':

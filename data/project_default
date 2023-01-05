@@ -5,47 +5,59 @@
 #YAML format. More information for each parameter
 #is given below.
 
-python : /home/adele/anaconda3/bin/python #python executable that will be used for all MD scripts
+#python executable that will be used for all MD scripts
+python : /home/user/anaconda3/bin/python 
 
-states :                                  #project states, e.g. active/inactive
+ #project states, e.g. active/inactive
+states :    
     - state1
     - state2
 
-setup :                                   #durations of set up for each engine (in steps/ps), comma separated,e.g.
-                                          #AMBER : minimisation_steps,heating_in_ps,equilibration_in_ps
+#durations of set up for each engine (in steps/ps), comma separated,e.g.
+#AMBER : minimisation_steps,heating_in_ps,equilibration_in_ps
+setup :              
+#any additional LeAP commands for parameterisation, comma separated
+parameters :
+#solvation parameters, e.g. "box,10,10,10" for a box with edges at least 10 A away from solute
+#if None, no solvation will be performed (for already solvated systems)
+solvation :
 
-parameters :                              #any additional LeAP commands for parameterisation, comma separated
+#steering defaults, e.g.
+#closed_state : 
+#    masks : mask1;mask2;mask3
+#    plumed : /path/to/plumed
+#    reference : ref1,ref2,ref3
+#Note: states should be same as used in systems folders
+steering :
 
-steering :                                #steering defaults, e.g.
-                                          #closed_state : 
-                                          #    masks : mask1;mask2;mask3
-                                          #    plumed : /path/to/plumed
-                                          #    reference : ref1,ref2,ref3
-                                          #Note: states should be same as used in systems folders
+#default number of snapshots to save from a steered MD 
+#trajectory. Adjust as needed based on protocol
+snapshot_number : 100   
 
-snapshot_number : 100                     #default number of snapshots to save from a steered MD 
-                                          #trajectory. Adjust as needed based on protocol
+#default duration of seeded MD trajectories in ns.
+#Adjust as needed based on protocol
+snapshot_duration : 100                   
 
-snapshot_duration : 100                   #default duration of seeded MD trajectories in ns.
-                                          #Adjust as needed based on protocol
+#HPC cluster (recommended for seeded MD), e.g.
+#user@cluster
+cluster :
+#full file path to a folder for this project on the
+#cluster above
+cluster_path :
 
-cluster :                                 #HPC cluster (recommended for seeded MD), e.g.
-                                          #user@cluster
+#default features for analysis in a dictionary format,
+#e.g. feature_name :
+#         feature: distance
+#         mask: ':1@CA :2@CA'
+#         shared_mask : ':1-283'
+#         reference : None
+#Note: shared_mask and rmsd_reference required for RMSD only
+features :
 
-cluster_path :                            #full file path to a folder for this project on the
-                                          #cluster above
-
-features :                                #default features for analysis in a dictionary format,
-                                          #e.g. feature_name :
-                                          #         feature: distance
-                                          #         mask: ':1@CA :2@CA'
-                                          #         shared_mask : ':1-283'
-                                          #         reference : None
-                                          #Note: shared_mask and rmsd_reference required for RMSD only
-
-backup :                                  #remote backup host, e.g. user@backup.host
-
-backup_path :                             #full file path to a folder for this project on the
-                                          #backup host above
-
-local :                                   #local host, e.g. user@host.some.address
+#remote backup host, e.g. user@backup.host
+backup :
+#full file path to a folder for this project on the
+#backup host above
+backup_path :
+#local host, e.g. user@host.some.address
+local :
