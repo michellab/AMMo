@@ -53,7 +53,7 @@ def __create_project(name):
     print('done.')
     print('-'*30)
 
-    subprocess.run(['project', '--activate', name])
+    subprocess.run(['ammo', 'project', '--activate', name])
 
     return None
 
