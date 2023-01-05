@@ -2,9 +2,6 @@
 """
 import os as _os
 import warnings as _warnings
-#_warnings.simplefilter('ignore', category=UserWarning)
-#_warnings.simplefilter('ignore', category=DeprecationWarning)
-#_warnings.simplefilter('ignore', category=Warning)
 
 
 __all__ = ['analysis',
@@ -13,21 +10,6 @@ __all__ = ['analysis',
            'setup',
            'steering',
            'utils']
-
-# check for BioSimSpace and pytraj
-with _warnings.catch_warnings():
-    _warnings.simplefilter("ignore")
-    try:
-        import BioSimSpace
-        del BioSimSpace
-    except:
-        raise EnvironmentError('BioSimSpace required: www.biosimspace.org')
-
-    try:
-        import pytraj
-        del pytraj
-    except:
-        raise EnvironmentError('pytraj required: https://amber-md.github.io/pytraj/latest/index.html')
 
 # check for AMBERHOME
 if 'AMBERHOME' not in _os.environ:
@@ -43,9 +25,11 @@ for loc in _os.environ['PATH'].split(':'):
 if not _gmx:
    print('A GROMACS installation is required: https://www.gromacs.org/. Please install GROMACS and include it in your PATH')
 
-from . import analysis
-from . import equilibrium
-from . import msm
-from . import setup
-from . import steering
-from . import utils
+with _warnings.catch_warnings():
+    _warnings.simplefilter("ignore")
+    from . import analysis
+    from . import equilibrium
+    from . import msm
+    from . import setup
+    from . import steering
+    from . import utils
