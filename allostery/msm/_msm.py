@@ -2,7 +2,6 @@
 building and analysing Markov State Models contained by MSMCollection in such a way
 that they are comparable, e.g. using the same clusters and metastable states"""
 
-from errno import E2BIG
 from os import path as _path, remove as _remove
 import pickle as _pickle
 import pyemma.plots as _plots
@@ -100,7 +99,7 @@ class MSMCollection:
         with open(file, 'wb') as file:
             _pickle.dump(self, file)
 
-    def add_msm(self, msm, locations=None):
+    def add_msm(self, msm):
         """Add an MSM to the MSMs dictionary.
         
         If locations are provided for new MSM, data will also be loaded.
@@ -110,9 +109,6 @@ class MSMCollection:
         msm :  allostery.msm.MSM, str
             an MSM object or title for a new MSM
         
-        locations : [str]
-            file paths to seeded MD data directories
-        
         Returns
         -------
         None
@@ -120,10 +116,7 @@ class MSMCollection:
         if isinstance(msm, MSM):
             self._MSMs[msm.title] = msm
         elif isinstance(msm, str):
-            if locations is None:
-                self._MSMs[msm] = MSM(msm)
-            else:
-                self.load_data([msm], [locations])
+            self._MSMs[msm] = MSM(msm)
         else:
             raise ValueError('Please provide an MSM object or a name for a new MSM')
 
@@ -312,6 +305,8 @@ class MSMCollection:
         if plot:
             n = len(titles)
             fig, ax = _subplots(n, figsize=(6, 4.5 * n))
+            if n == 1:
+                ax = [ax]
             limits = []
             for i, key in enumerate(titles):
                 _plots.plot_implied_timescales(self._MSMs[key].its, ax[i])
@@ -393,6 +388,8 @@ class MSMCollection:
             colorbar
         """
         # fix inputs
+        if cmap is None:
+            cmap = _light_palette("seagreen", as_cmap=True)
         titles = self.__fix_titles(titles)
 
         fig, ax = _subplots(shape[0], shape[1], figsize=(5 * shape[1], 5 * shape[0]))
@@ -408,7 +405,7 @@ class MSMCollection:
                                                          _np.vstack(self._MSMs[key].data)[:, y])
             density = _plots.plots2d._to_density(Z)
             clims.append((density.min(), density.max()))
-        clims = (_np.array(clims)[:, x].min(), _np.array(clims)[:, y].max())
+        clims = (_np.array(clims)[:, 0].min(), _np.array(clims)[:, 1].max())
 
         # find the same axes limits
         limits = [_np.hstack([_np.vstack(self._MSMs[key].data)[:, x] for key in titles]).min(),
@@ -422,7 +419,8 @@ class MSMCollection:
             for col in range(shape[1]):
                 fig_curr, ax_curr, misc_curr = _plots.plot_density(
                     _np.vstack(self._MSMs[titles[row, col]].data)[:, x],
-                    _np.vstack(self._MSMs[titles[row, col]].data)[:, y], ax=ax[row, col], cbar=False, vmax=clims[1])
+                    _np.vstack(self._MSMs[titles[row, col]].data)[:, y],
+                    ax=ax[row, col], cbar=False, vmax=clims[1], cmap=cmap)
                 ax_curr.set_xlim((limits[0], limits[1]))
                 ax_curr.set_ylim((limits[2], limits[3]))
                 ax_curr.set_title(titles[row, col])
@@ -485,6 +483,82 @@ class MSMCollection:
             print()
 
         return None
+
+    def plot_stationary_distribution(self, shape, titles=None, x=0, y=1, features='infer', cmap=None, color='orange'):
+        """Plot stationary distributions of each microstate as a contour plot
+        
+        Parameters
+        ----------
+        shape : tuple
+            plot layout in the form (columns, rows)
+
+        titles : str, [str]
+            MSMs to plot the data of
+
+        x : int
+            x dimension
+
+        y : int
+            y dimension
+
+        features : [str]
+            a  list of x and y feature names for axis titles. "infer" will use "self.features" to find names. "None" will set no names
+
+        cmap : matplotlib.colors.Colormap
+            specify a colormap to use
+
+        color : str
+            cluster color
+        """
+        # fix inputs
+        titles = self.__fix_titles(titles)
+
+        fig, ax = _subplots(shape[0], shape[1], figsize=(5 * shape[1], 5 * shape[0]))
+        if type(ax)==_np.ndarray:
+            ax = ax.reshape(shape)
+        else:
+            ax = _np.array([ax]).reshape(shape)
+
+        # find denisty limits
+        probs = []
+        for title in titles:
+            probs += self._MSMs[title].stationary_distribution.tolist()
+        clims = (min(probs), max(probs))
+
+        # find the same axes limits
+        limits = [_np.hstack([_np.vstack(self._MSMs[key].data)[:, x] for key in titles]).min(),
+                  _np.hstack([_np.vstack(self._MSMs[key].data)[:, x] for key in titles]).max(),
+                  _np.hstack([_np.vstack(self._MSMs[key].data)[:, y] for key in titles]).min(),
+                  _np.hstack([_np.vstack(self._MSMs[key].data)[:, y] for key in titles]).max()]
+
+        titles = _np.array(titles).reshape(shape)
+        for row in range(shape[0]):
+            for col in range(shape[1]):
+                fig_curr, ax_curr, misc_curr = _plots.plot_contour(
+                    _np.vstack(self._MSMs[titles[row, col]].data)[:, x],
+                    _np.vstack(self._MSMs[titles[row, col]].data)[:, y],
+                    _np.array(self._MSMs[titles[row, col]].stationary_distribution)[_np.hstack(self._MSMs[titles[row, col]].dtrajs)],
+                    ax=ax[row, col], cbar=False, vmax=clims[1], cmap=cmap, method='nearest', mask=True)
+                ax_curr.set_xlim((limits[0], limits[1]))
+                ax_curr.set_ylim((limits[2], limits[3]))
+                ax_curr.set_title(titles[row, col])
+                ax_curr.scatter(self.clusters.clustercenters[:,x], self.clusters.clustercenters[:,y], s=8, c=color)
+                if features == 'infer':
+                    features = self._MSMs[titles[row,col]].features
+                elif features == None:
+                    features = [None, None]
+                ax_curr.set_xlabel(features[0])
+                ax_curr.set_ylabel(features[1])
+
+        # plot colourbar legend
+        cbar_ax = fig.add_axes([1.01, 0.18, 0.02, 0.7])
+        cbar = fig.colorbar(
+            _scalarmappable(norm=_colornorm(clims[0], clims[1]), cmap=cmap), cax=cbar_ax,
+            label='stationary probability')
+        fig.tight_layout()
+
+        return fig, ax, cbar
+
 
     def plot_clusters(self, cluster_sets, shape, titles=None, x=0, y=1, features='infer', cmap=None, colors=['magenta', 'orange', 'teal', 'red']):
         """Plot the data for each MSM as a density plot, with cluster centers on top
@@ -572,7 +646,8 @@ class MSMCollection:
             msm = self._MSMs[key]
             centers = []
             for i in range(states):
-                centers.append(msm.cluster_centers[msm.pcca[states][i]])
+                if len(msm.pcca[states][i]) > 0:
+                    centers.append(msm.cluster_centers[msm.pcca[states][i]])
             all_cluster_centers.append(_np.array(centers))
 
         return _np.array(all_cluster_centers)
@@ -896,6 +971,8 @@ class MSM:
                 self.features = features
             else:
                 raise ValueError(f'"features" ({features}) should match "file_names" ({file_names})')
+        else:
+            self.features = [None for _ in range(len(file_names))]
 
         # load featurised data
         self.data = []
@@ -1046,7 +1123,8 @@ class MSM:
         self.its = _timescales(self.dtrajs, lags=lags_to_try, nits=nits, errors=errors)
 
         if plot:
-            fig, ax = _plots.plot_implied_timescales(self.its)
+            fig, ax = _subplots(1, figsize=(7,5))
+            _plots.plot_implied_timescales(self.its, ax=ax)
             return fig, ax
         
         return None
@@ -1180,9 +1258,14 @@ class MSM:
         # find the probabilities
         self.metastable_assignments[title] = {}
         for i in range(len(metastable_sets)):
-            probability = round((self.stationary_distribution[metastable_sets[i]] * weights[i]).sum() * 100, 2)
-            error = round(_np.std(self.stationary_distribution[metastable_sets[i]] * weights[i]) * 100, 2)
-            counts = len(metastable_sets[i])
+            if len(metastable_sets[i]) > 0:
+                probability = round((self.stationary_distribution[metastable_sets[i]] * weights[i]).sum() * 100, 2)
+                error = round(_np.std(self.stationary_distribution[metastable_sets[i]] * weights[i]) * 100, 2)
+                counts = len(metastable_sets[i])
+            else:
+                probability = 0
+                error = 0
+                counts = 0
             self.metastable_assignments[f'{msm.title}, {n_states} states'][i + 1] = [probability, error, counts]
             if verbose:
                 print(f'MS {i + 1} has {counts} counts and {probability}% probability (± {error}%)')
@@ -1224,6 +1307,44 @@ class MSM:
         fig, ax, misc = self.plot_data(x, y, features, cmap)
         for i, centers in enumerate(cluster_sets):
             ax.scatter(centers[:, x], centers[:, y], c=colors[i], s=8)
+
+        return fig, ax, misc
+
+    def plot_stationary_distribution(self, x=0, y=1, features='infer', cmap=None, color='orange'):
+        """Plot stationary distributions of each microstate as a contour plot
+
+        Parameters
+        ----------
+        x : int
+            x dimension
+
+        y : int
+            y dimension
+
+        features : [str]
+            a  list of x and y feature names for axis titles. "infer" will use "self.features" to find names. "None" will set no names
+
+        cmap : matplotlib.colors.Colormap
+            specify a colormap to use
+
+        color : str
+            cluster color
+
+        Returns
+        -------
+        fig : matplotlib.figure.Figure
+            figure containing plot axes
+
+        ax : np.array of AxesSubplot
+            stationary distribution as a contour plot
+
+        misc : dict
+            mappable and cbar
+        """
+        z = _np.array(self.stationary_distribution)[_np.hstack(self.dtrajs)]
+        fig, ax, misc = _plots.plot_contour(_np.vstack(self.data)[:,x], _np.vstack(self.data)[:,y], z, method='nearest', mask=True, cmap=cmap)
+        ax.scatter(self.cluster_centers[:,x], self.cluster_centers[:,y], s=8, c=color)
+        misc['cbar'].set_label('stationary probability')
 
         return fig, ax, misc
 
@@ -1325,8 +1446,6 @@ class MSM:
         # get timestep
         if timestep is None:
             timestep = self.timestep
-        step_time = _parse_time(timestep, 'us', 6, 'number')
-        step_units = 'μs'
 
         # use own msm if none specified
         if msm is None:
@@ -1346,7 +1465,7 @@ class MSM:
         # compute mfpt with the same states and msm
         # if missing
         if title not in self.mfpt or overwrite:
-            self.compute_mfpt(n_states, step_time, step_units, msm, False, overwrite)
+            self.compute_mfpt(n_states, timestep, msm, False, overwrite)
 
         for key, info in self.mfpt[title].items():
             rate = 1 / info[0]
