@@ -3,11 +3,11 @@
 import os
 import subprocess
 from argparse import ArgumentParser
-from _settings import _allostery, _project
+from _settings import _ammo, _project
 
 
 def __check_system(system, state, seeded):
-    system_path = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}'
+    system_path = f'{_ammo["location"]}/{_ammo["project"]}/systems/{system}'
     state_path = f'{system_path}/{state}'
     seeded_path = f'{state_path}/{seeded}/steering'
 
@@ -27,12 +27,12 @@ def __check_system(system, state, seeded):
 def __get_steering_commands(args):
     """Get subprocess commands for running sMD. Will write slurm input if to be run as a job"""
     steering = _project['steering'][args.state]
-    project = f'{_allostery["location"]}/{_allostery["project"]}'
+    project = f'{_ammo["location"]}/{_ammo["project"]}'
     reference = [f'{project}/inputs/{ref}' for ref in steering['reference'].split(',')]
 
     # put together sMD command from defaults
     md_command = [_project['python'],
-                      f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/steered_md.py',
+                      f'{os.environ["AMMO_HOME"]}/allostery/scripts/steered_md.py',
                       '--topology', '../../system-setup/system.prm7',
                       '--coordinates', '../../system-setup/system_equilibrated.rst7']
 
@@ -63,8 +63,6 @@ def __get_steering_commands(args):
         return [['sbatch', 'submit.sh']]
     else:
         return script_command
-
-
 
 
 def __main__():

@@ -1,4 +1,4 @@
-from allostery.equilibrium import run_eq_md
+from ammo.equilibrium import run_eq_md
 from argparse import ArgumentParser
 
 

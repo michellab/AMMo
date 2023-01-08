@@ -1,6 +1,6 @@
 import numpy as np
 from argparse import ArgumentParser
-from allostery.analysis import featurize
+from ammo.analysis import featurize
 
 
 def __main__():

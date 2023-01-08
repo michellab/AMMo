@@ -3,13 +3,13 @@ import os as os
 import numpy as np
 
 # get allostery settings
-with open(f'{os.environ["ALLOSTERY_HOME"]}/config', 'r') as file:
-    _allostery = yaml.load(file, Loader=yaml.FullLoader)
+with open(f'{os.environ["AMMO_HOME"]}/config', 'r') as file:
+    _ammo = yaml.load(file, Loader=yaml.FullLoader)
 
 # get current project settings
-__config_file = f'{_allostery["location"]}/{_allostery["project"]}/.defaults/config'
+__config_file = f'{_ammo["location"]}/{_ammo["project"]}/.defaults/config'
 if not os.path.exists(__config_file):
-    __config_file = f'{os.environ["ALLOSTERY_HOME"]}/data/project_default'  # change to default if no project settings
+    __config_file = f'{os.environ["AMMO_HOME"]}/data/project_default'  # change to default if no project settings
 
 with open(__config_file, 'r') as file:
     _project = yaml.load(file, Loader=yaml.FullLoader)

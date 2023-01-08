@@ -4,11 +4,11 @@ import os
 from shutil import rmtree
 from argparse import ArgumentParser
 import yaml
-from _settings import _allostery, _project, _system_folders
+from _settings import _ammo, _project, _system_folders
 
 
 def __write_settings(_project):
-    project = f'{_allostery["location"]}/{_allostery["project"]}'
+    project = f'{_ammo["location"]}/{_ammo["project"]}'
     config_file = f'{project}/.defaults/config'
     with open(config_file, 'w') as file:
         yaml.dump(_project, file)
@@ -17,7 +17,7 @@ def __write_settings(_project):
 
 def __create(name):
     """Create system an all associated folders"""
-    path = f'{_allostery["location"]}/{_allostery["project"]}/systems'
+    path = f'{_ammo["location"]}/{_ammo["project"]}/systems'
     system_path = f'{path}/{name}'
 
     # check if system already exists
@@ -45,7 +45,7 @@ def __add_state(state):
         _project['states'].append(state)
         __write_settings(_project)
         # create everywhere
-        project = f'{_allostery["location"]}/{_allostery["project"]}'
+        project = f'{_ammo["location"]}/{_ammo["project"]}'
         for system in os.listdir(f'{project}/systems'):
             os.mkdir(f'{project}/systems/{system}/{state}')
             for folder in _system_folders:
@@ -65,7 +65,7 @@ def __remove_state(state):
 
     # check if any have contents
     not_empty = []
-    project = f'{_allostery["location"]}/{_allostery["project"]}'
+    project = f'{_ammo["location"]}/{_ammo["project"]}'
     for system in os.listdir(f'{project}/systems'):
         contents = [os.path.join(dp, f) for dp, dn, fn in os.walk(f'{project}/systems/{system}/{state}') for f in fn]
         if len(contents) > 0:

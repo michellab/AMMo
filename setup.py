@@ -14,7 +14,7 @@ def __change_interpreter(file, interpreter):
 
 
 def __check_for_python3(interpreter):
-    # find ALLOSTERY_HOME
+    # find AMMO_HOME
     home = '/'.join(path.realpath(__file__).split('/')[:-1])
 
     # check that interpreter exists
@@ -36,19 +36,19 @@ def __set_home():
     home = '/'.join(path.realpath(__file__).split('/')[:-1])
 
     # prepare file contents
-    source_file = f'{home}/allostery.sh'
-    contents = [f'export ALLOSTERY_HOME={home}\n',
-                 'export PATH="$ALLOSTERY_HOME/bin:$PATH"\n\n',
+    source_file = f'{home}/ammo.sh'
+    contents = [f'export AMMO_HOME={home}\n',
+                 'export PATH="$AMMO_HOME/bin:$PATH"\n\n',
                  'if [ -z "$PYTHONPATH" ]; then\n',
-                 '  export PYTHONPATH="$ALLOSTERY_HOME"\n',
+                 '  export PYTHONPATH="$AMMO_HOME"\n',
                  'else\n',
-                 '  export PYTHONPATH="$ALLOSTERY_HOME:$PYTHONPATH"\n',
+                 '  export PYTHONPATH="$AMMO_HOME:$PYTHONPATH"\n',
                  'fi\n']
 
     # write new file
     with open(source_file, 'w') as file:
         file.writelines(contents)
-    print(f'ALLOSTERY_HOME set to {home}')
+    print(f'AMMO_HOME set to {home}')
 
 
     return home
@@ -84,7 +84,7 @@ def setup(interpreter, location):
     __set_location(location, home)
 
     print('-'*30)
-    print(f'Setup complete. Please add "source {home}/allostery.sh" to your .bashrc')
+    print(f'Setup complete. Please add "source {home}/ammo.sh" to your .bashrc')
     print('-'*30)
     print('Commands can be run using "ammo", for all available commands run "ammo -h"')
 

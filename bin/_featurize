@@ -3,7 +3,7 @@
 import os
 from argparse import ArgumentParser
 import subprocess
-from _settings import _project, _allostery, __parse_seeds
+from _settings import _project, _ammo, __parse_seeds
 
 
 def __get_commands(seeds):
@@ -13,7 +13,7 @@ def __get_commands(seeds):
         for name, params in _project['features'].items():
             # add required arguments for running featurization
             feature_command = [_project['python'],
-                               f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/featurize.py',
+                               f'{os.environ["AMMO_HOME"]}/allostery/scripts/featurize.py',
                                 '--topology', '../system-setup/system_dry.prm7',
                                 '--trajectory', f'snapshot_{seed}/production_dry.nc',
                                 '--output', f'snapshot_{seed}/{name}.txt']
@@ -42,7 +42,7 @@ def __write_input(seeds, system, state):
         # for every feature run featurization
         for name, params in _project['features'].items():
             file.writelines([f'\n  {_project["python"]}',
-                             f' {os.environ["ALLOSTERY_HOME"]}/allostery/scripts/featurize.py',
+                             f' {os.environ["AMMO_HOME"]}/allostery/scripts/featurize.py',
                               ' --topology ', '../system-setup/system_dry.prm7',
                               ' --trajectory ', f'snapshot_$seed/production_dry.nc',
                               ' --output ', f'snapshot_$seed/{name}.txt'])
@@ -65,7 +65,7 @@ def featurize(system, state, folder, seeds=None, slurm=False):
     seeds = __parse_seeds(seeds)
 
     # go to seeded md directory
-    os.chdir(f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}/{state}/{folder}')
+    os.chdir(f'{_ammo["location"]}/{_ammo["project"]}/systems/{system}/{state}/{folder}')
 
     # get commands to run
     # if slurm then write input file

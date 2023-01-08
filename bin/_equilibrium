@@ -3,11 +3,11 @@
 import os
 from argparse import ArgumentParser
 import subprocess
-from _settings import _allostery, _project
+from _settings import _ammo, _project
 
 
 def __check_system(system, state):
-    system_path = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}'
+    system_path = f'{_ammo["location"]}/{_ammo["project"]}/systems/{system}'
     state_path = f'{system_path}/{state}'
     eq_path = f'{state_path}/equilibrium'
 
@@ -27,7 +27,7 @@ def __check_system(system, state):
 def __get_commands(args):
     # get input to run MD
     md_command = [_project['python'],
-                  f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/equilibrium_md.py',
+                  f'{os.environ["AMMO_HOME"]}/allostery/scripts/equilibrium_md.py',
                   '--duration', args.duration,
                   '--topology', '../system-setup/system.prm7',
                   '--coordinates', '../system-setup/system_equilibrated.rst7',

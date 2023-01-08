@@ -3,7 +3,7 @@ import os
 import BioSimSpace as BSS
 import pytraj as pt
 from shutil import move
-from allostery.utils import get_dry_trajectory
+from ammo.utils import get_dry_trajectory
 from time import sleep
 
 

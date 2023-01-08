@@ -1,6 +1,6 @@
 from ast import literal_eval
 from argparse import ArgumentParser
-from allostery.setup import setup_system
+from ammo.setup import setup_system
 
 
 def __clean_args(args):

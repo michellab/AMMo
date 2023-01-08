@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from allostery.utils import renumber_pdb
+from ammo.utils import renumber_pdb
 
 
 def __main__():

@@ -2,7 +2,7 @@ import os
 from shutil import move
 from re import match
 import BioSimSpace as BSS
-from allostery.utils import get_dry_trajectory
+from ammo.utils import get_dry_trajectory
 
 
 from time import sleep

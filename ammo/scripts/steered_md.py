@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from ast import literal_eval
-from allostery.steering import run_smd
+from ammo.steering import run_smd
 
 
 def __main__():

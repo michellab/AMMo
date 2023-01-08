@@ -15,7 +15,7 @@ from matplotlib.pyplot import subplots as _subplots
 from seaborn import light_palette as _light_palette, color_palette as _color_palette
 from subprocess import run as _subprocess
 from scipy.optimize import curve_fit as _curve_fit
-from allostery.utils._utils import __parse_time as _parse_time
+from ammo.utils._utils import __parse_time as _parse_time
 
 
 _pyemma_config.show_progress_bars = False
@@ -425,7 +425,7 @@ class MSMCollection:
                 ax_curr.set_ylim((limits[2], limits[3]))
                 ax_curr.set_title(titles[row, col])
                 if features == 'infer':
-                    features = self._MSMs[titles[row,col]].features
+                    features = [self._MSMs[titles[row,col]].features[x], self._MSMs[titles[row,col]].features[y]]
                 elif features == None:
                     features = [None, None]
                 ax_curr.set_xlabel(features[0])
@@ -1192,7 +1192,7 @@ class MSM:
         state_to_add = remapped[disconnected]
         for i in range(1, len(self.msm.connected_sets)):
             for center_idx in self.msm.connected_sets[i]:
-                state_to_add = _np.append(state_to_add, center_idx)
+                state_to_add = _np.append(state_to_add, int(center_idx))
         state_to_add.sort()
         remapped[disconnected] = state_to_add
 

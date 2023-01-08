@@ -1,6 +1,6 @@
 import os
 from argparse import ArgumentParser
-from allostery.equilibrium import run_eq_md
+from ammo.equilibrium import run_eq_md
 
 
 def run_seeded_md(folder, snapshot, duration, report=5000, clean=False):

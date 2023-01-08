@@ -3,7 +3,7 @@
 import os
 import subprocess
 from argparse import ArgumentParser
-from _settings import _project, _allostery
+from _settings import _project, _ammo
 
 
 def __clean_args(args):
@@ -12,7 +12,7 @@ def __clean_args(args):
         args.protocol = _project['setup'][args.engine]
     except Exception:
         raise KeyError(f'Engine {args.engine} has no defaults specified. Either set defaults for {args.engine} or '
-                       f'run the scrip manually with python {os.environ["ALLOSTERY_HOME"]}/allostery/scripts/system_setup.py')
+                       f'run the scrip manually with python {os.environ["AMMO_HOME"]}/allostery/scripts/system_setup.py')
 
     args.parameters = f'"{_project["parameters"]}"'
     if args.parameters == '"None"':
@@ -32,7 +32,7 @@ def __clean_args(args):
 
 def __check_system(system, state):
     """Create system if needed and change working directory"""
-    system_path = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}'
+    system_path = f'{_ammo["location"]}/{_ammo["project"]}/systems/{system}'
     state_path = f'{system_path}/{state}'
 
     # create system if does not exist
@@ -50,7 +50,7 @@ def __check_system(system, state):
 def __get_commands(args):
     """Get subprocess commands. Will write slurm input if to run as a job"""
     script_command = [_project['python'],
-                      f'{os.environ["ALLOSTERY_HOME"]}/allostery/scripts/setup_system.py']
+                      f'{os.environ["AMMO_HOME"]}/allostery/scripts/setup_system.py']
     for arg in vars(args):
         value = getattr(args, arg)
         if arg not in ['system', 'state', 'slurm']:

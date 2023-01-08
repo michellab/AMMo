@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 import subprocess
 from shutil import copyfile
 import numpy as np
-from _settings import _project, _allostery, __parse_seeds
+from _settings import _project, _ammo, __parse_seeds
 
 
 def __setup_seeded(source, destination, seeds):
@@ -26,7 +26,7 @@ def __setup_seeded(source, destination, seeds):
 def __write_input(source, destination, seeds, backup):
     print('Preparing job file...', end='')
     # read input file to determine scheduler
-    input_file = f'{_allostery["location"]}/{_allostery["project"]}/.defaults/seeded-md.sh'
+    input_file = f'{_ammo["location"]}/{_ammo["project"]}/.defaults/seeded-md.sh'
     with open(input_file, 'r') as file:
         input_contents = file.readlines()
     submit_command = None
@@ -95,7 +95,7 @@ def seeded_md(system, state, folder='seeded-md', seeds=None, backup=True):
     seeds = __parse_seeds(seeds)
 
     # set full paths 
-    source = f'{_allostery["location"]}/{_allostery["project"]}/systems/{system}/{state}/{folder}'
+    source = f'{_ammo["location"]}/{_ammo["project"]}/systems/{system}/{state}/{folder}'
     if _project['cluster_path'] is not None:
         destination = f'{_project["cluster_path"]}/{system}/{state}/{folder}' # remote destination
     else:

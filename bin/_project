@@ -5,12 +5,12 @@ import subprocess
 import yaml
 from argparse import ArgumentParser
 from shutil import copyfile
-from _settings import _allostery
+from _settings import _ammo
 
 
 def __configure_project(name):
     """Configure project by editing the .defaults/config file"""
-    config_file = f'{_allostery["location"]}/{name}/.defaults/config'
+    config_file = f'{_ammo["location"]}/{name}/.defaults/config'
     subprocess.run(['vi', config_file])
     return None
 
@@ -21,7 +21,7 @@ def __create_project(name):
     print(f'Creating project: {name}')
 
     # check if folder exists
-    full_path = f'{_allostery["location"]}/{name}'
+    full_path = f'{_ammo["location"]}/{name}'
     if os.path.exists(full_path):
         print(f'Folder {full_path} already exists. Continue anyway (y/n)?')
         value = input()
@@ -44,9 +44,9 @@ def __create_project(name):
     to_copy = {'data/project_default': '.defaults/config',
                'data/sMD_analysis.ipynb': 'analysis/sMD_analysis.ipynb'}
     for source, destination in to_copy.items():
-        copyfile(f'{os.environ["ALLOSTERY_HOME"]}/{source}', f'{full_path}/{destination}')
+        copyfile(f'{os.environ["AMMO_HOME"]}/{source}', f'{full_path}/{destination}')
 
-    print(f'Created project in {_allostery["location"]}/{name}')
+    print(f'Created project in {_ammo["location"]}/{name}')
     print('.'*30)
     print('Configuring project...', end='')
     __configure_project(name)
@@ -60,9 +60,9 @@ def __create_project(name):
 
 def __activate_project(name):
     """Set project as current"""
-    project_path = f'{_allostery["location"]}/{name}'
+    project_path = f'{_ammo["location"]}/{name}'
     if os.path.exists(project_path):
-        config_file = f'{_allostery["home"]}/config'
+        config_file = f'{_ammo["home"]}/config'
         with open(config_file, 'r') as file:
             settings = yaml.load(file, Loader=yaml.FullLoader)
         settings["project"] = name
@@ -78,9 +78,9 @@ def __activate_project(name):
 
 def __show_current():
     """Display current active project"""
-    project_path = f'{_allostery["location"]}/{_allostery["project"]}'
+    project_path = f'{_ammo["location"]}/{_ammo["project"]}'
     if os.path.exists(project_path):
-        print(f'Current project: {_allostery["project"]}')
+        print(f'Current project: {_ammo["project"]}')
     else:
         print(f'!!!Warning!!! Expecting a project in {project_path}, but none found')
     return None
@@ -112,7 +112,7 @@ def project(create, activate, current, reconfigure):
     elif current:
         __show_current()
     elif reconfigure:
-        __configure_project(_allostery["project"])
+        __configure_project(_ammo["project"])
     else:
         print('Please select an action')
 
