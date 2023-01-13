@@ -27,7 +27,7 @@ def __check_system(system, state):
 def __get_commands(args):
     # get input to run MD
     md_command = [_project['python'],
-                  f'{os.environ["AMMO_HOME"]}/allostery/scripts/equilibrium_md.py',
+                  f'{os.environ["AMMO_HOME"]}/ammo/scripts/equilibrium_md.py',
                   '--duration', args.duration,
                   '--topology', '../system-setup/system.prm7',
                   '--coordinates', '../system-setup/system_equilibrated.rst7',

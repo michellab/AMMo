@@ -50,7 +50,7 @@ def __check_system(system, state):
 def __get_commands(args):
     """Get subprocess commands. Will write slurm input if to run as a job"""
     script_command = [_project['python'],
-                      f'{os.environ["AMMO_HOME"]}/allostery/scripts/setup_system.py']
+                      f'{os.environ["AMMO_HOME"]}/ammo/scripts/setup_system.py']
     for arg in vars(args):
         value = getattr(args, arg)
         if arg not in ['system', 'state', 'slurm']:
