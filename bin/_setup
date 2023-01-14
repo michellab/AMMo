@@ -14,6 +14,13 @@ def __clean_args(args):
         raise KeyError(f'Engine {args.engine} has no defaults specified. Either set defaults for {args.engine} or '
                        f'run the scrip manually with python {os.environ["AMMO_HOME"]}/allostery/scripts/system_setup.py')
 
+    if not os.path.exists(args.input):
+        input_file = f'{_ammo["location"]}/{_ammo["project"]}/inputs/{args.input}'
+        if os.path.exists(input_file):
+            args.input = input_file
+        else:
+            raise ValueError(f'Input file {args.input} not found')
+
     args.parameters = f'"{_project["parameters"]}"'
     if args.parameters == '"None"':
         args.parameters = None
