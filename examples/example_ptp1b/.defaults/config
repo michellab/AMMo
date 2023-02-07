@@ -1,0 +1,27 @@
+backup: user@backup.address
+backup_path: /path/to/project
+cluster: user@cluster.address
+cluster_path: /path/to/project
+local: user@local.address
+features: 
+  wpd_loop:
+    feature: rmsd
+    mask: ":122-292&(@CA,C,N,O)"
+    reference: closed.pdb
+    shared: ":1-282&(!@/H)&(!:198)"
+  p_loop:
+    feature: rmsd
+    mask: ":264-276&!(@/H)"
+    reference: closed.pdb
+    shared: ":1-282&(!@/H)&(!:198)"
+solvation: "shell,10"
+parameters: ["addPath /path/AMMo/examples/example_ptp1b/inputs/parameters", "source leaprc.phosaa10"]
+python: /home/user/anaconda3/envs/my-env/bin/python
+setup:
+  GROMACS: 7500,100,250
+snapshot_duration: 50
+snapshot_number: 100
+states:
+- open
+- closed
+steering:
