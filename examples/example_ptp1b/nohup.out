@@ -1,0 +1,1292 @@
+Fatal Python error: init_import_site: Failed to import the site module
+Python runtime state: initialized
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site.py", line 589, in <module>
+    main()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site.py", line 576, in main
+    known_paths = addsitepackages(known_paths)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site.py", line 359, in addsitepackages
+    addsitedir(sitedir, known_paths)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site.py", line 208, in addsitedir
+    addpackage(sitedir, name, known_paths)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site.py", line 169, in addpackage
+    exec(line)
+  File "<string>", line 1, in <module>
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/importlib/util.py", line 2, in <module>
+    from . import abc
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/importlib/abc.py", line 17, in <module>
+    from typing import Protocol, runtime_checkable
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/typing.py", line 22, in <module>
+    import collections.abc
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 680, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 846, in exec_module
+  File "<frozen importlib._bootstrap_external>", line 941, in get_code
+  File "<frozen importlib._bootstrap_external>", line 1040, in get_data
+KeyboardInterrupt
+[I 13:35:28.846 NotebookApp] Serving notebooks from local directory: /home/adele/Documents/allostery/examples/example_ptp1b
+[I 13:35:28.846 NotebookApp] Jupyter Notebook 6.4.12 is running at:
+[I 13:35:28.846 NotebookApp] http://localhost:8884/
+[I 13:35:28.847 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 14:06:48.789 NotebookApp] 302 GET /tree (127.0.0.1) 2.130000ms
+[I 14:06:53.711 NotebookApp] 302 POST /login?next=%2Ftree (127.0.0.1) 819.360000ms
+[W 14:07:11.077 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:07:13.714 NotebookApp] Kernel started: bfd79334-860c-4b9c-b536-1594a8b9c561, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 55956333-9cd9-4b93-9040-06c6acf234e0
+[I 14:09:12.775 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:09:12.783 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:09:23.985 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:09:23.987 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+[I 14:11:12.779 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:11:12.781 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:19:12.809 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:19:12.811 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:21:12.866 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:21:12.898 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:23:12.921 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:23:12.923 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:25:13.285 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:25:13.287 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:27:12.938 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:27:12.939 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:31:13.087 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:31:13.100 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:33:13.152 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:33:13.154 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:35:13.180 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:35:13.182 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:37:12.974 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:37:12.976 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:39:13.879 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:39:13.880 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:41:12.803 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:41:12.804 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:43:12.823 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:43:12.837 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:45:12.978 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:45:12.979 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:47:13.892 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:47:13.914 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:49:13.649 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:49:13.651 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:51:13.142 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:51:13.144 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:52:17.927 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[I 14:52:20.684 NotebookApp] Kernel restarted: bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 14:52:20.771 NotebookApp] Restoring connection for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[W 14:52:25.289 NotebookApp] Nudge: attempt 10 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 14:52:30.306 NotebookApp] Nudge: attempt 20 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 14:52:35.324 NotebookApp] Nudge: attempt 30 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 14:52:40.341 NotebookApp] Nudge: attempt 40 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 14:52:43.015 NotebookApp] Replaying 3 buffered messages
+[I 14:53:12.954 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:53:12.956 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+[I 14:55:12.881 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:55:12.883 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:57:12.878 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:57:12.958 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:59:12.809 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:59:12.890 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:22:31.291 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[I 15:22:34.177 NotebookApp] Kernel restarted: bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 15:22:34.264 NotebookApp] Restoring connection for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[W 15:22:38.782 NotebookApp] Nudge: attempt 10 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 15:22:43.798 NotebookApp] Nudge: attempt 20 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 15:22:48.815 NotebookApp] Nudge: attempt 30 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 15:22:53.831 NotebookApp] Nudge: attempt 40 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 15:22:56.181 NotebookApp] Replaying 3 buffered messages
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+[I 15:25:12.808 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:25:12.809 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:27:12.832 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:27:12.842 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:31:13.447 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:31:13.449 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:33:12.704 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:33:12.705 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:35:12.679 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:35:12.720 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:37:12.709 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:37:12.711 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:39:12.686 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:39:12.687 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:41:12.722 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:41:12.723 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:43:12.676 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:43:12.678 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:45:12.780 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:45:12.794 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:46:56.303 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[I 15:46:59.047 NotebookApp] Kernel restarted: bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 15:46:59.135 NotebookApp] Restoring connection for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[W 15:47:03.653 NotebookApp] Nudge: attempt 10 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 15:47:08.671 NotebookApp] Nudge: attempt 20 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 15:47:12.742 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:47:12.744 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 15:47:13.689 NotebookApp] Nudge: attempt 30 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 15:47:18.707 NotebookApp] Nudge: attempt 40 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 15:47:18.768 NotebookApp] Replaying 3 buffered messages
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+[I 15:48:31.363 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:48:31.364 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:49:12.638 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:49:12.640 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:51:12.626 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:51:12.627 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:51:38.018 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:51:38.019 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:55:12.654 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:55:12.667 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:57:12.685 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:57:12.687 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:59:12.674 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:59:12.682 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 16:01:12.631 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 16:01:12.632 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 16:03:12.718 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 16:03:12.731 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 16:05:12.737 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 16:05:12.738 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 16:07:12.784 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 16:07:12.785 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 19:46:59.136 NotebookApp] WebSocket ping timeout after 119937 ms.
+[I 19:47:04.321 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:39bc1eb2e2af4b59b8f28c95f32a0d56
+[W 14:25:30.221 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:27:32.304 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:27:32.723 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:27:59.359 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:27:59.381 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:29:04.164 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:29:04.339 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:29:31.800 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:29:31.806 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:29:47.094 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:29:47.095 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:32:29.207 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:32:29.215 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:35:31.923 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:35:32.040 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:36:02.423 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:36:02.431 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:37:32.163 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:37:32.177 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:39:31.971 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:39:32.069 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:45:33.576 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:45:34.767 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:47:32.667 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:47:32.679 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:48:13.675 NotebookApp] Creating new notebook in /analysis
+[I 14:48:26.298 NotebookApp] Kernel started: dfe7f99f-8abe-42f8-ac43-de1547d1ca76, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: c7f01ec1-ac14-4ab3-b745-017ecfa793db
+[I 14:50:29.265 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 14:51:31.699 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:51:31.722 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:53:31.948 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:53:31.950 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:54:57.432 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:54:57.434 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:57:32.240 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:57:32.242 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+Error: Number of atoms in NetCDF file (4764) does not match number
+Error:  in associated topology (4770)!
+Error: Could not set up '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/active.nc' for reading.
+Error: Could not set up trajectory '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/active.nc'
+Error: Number of atoms in NetCDF file (4764) does not match number
+Error:  in associated topology (4770)!
+Error: Could not set up '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/inactive.nc' for reading.
+Error: Could not set up trajectory '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/inactive.nc'
+[I 14:59:02.268 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:59:02.271 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:02:55.079 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:03:16.509 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:03:21.229 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:eab2290f8cba40fa846c41cf33ef7c17
+[I 15:03:21.487 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:d45b92714bbf46cca013103a952f3769
+[W 15:29:25.758 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:29:27.117 NotebookApp] Discarding 2 buffered messages for bfd79334-860c-4b9c-b536-1594a8b9c561:d45b92714bbf46cca013103a952f3769
+Internal Error: in Frame::Frame(int,double*) pointer is NULL.
+Internal Error: Size of atoms array is 4770, Frame size is 0
+Internal Error: in Frame::Frame(int,double*) pointer is NULL.
+Internal Error: Size of atoms array is 4770, Frame size is 0
+[I 15:31:27.689 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:31:27.690 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 15:31:30.025 NotebookApp] Notebook analysis/new_divergence.ipynb is not trusted
+[I 15:31:31.335 NotebookApp] Kernel started: 0a49a69d-b439-45ee-a12d-959a22ac7dec, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 6181230d-037a-4193-997a-dfa9eab14455
+Error: Number of atoms in NetCDF file (4764) does not match number
+Error:  in associated topology (4770)!
+Error: Could not set up '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/active.nc' for reading.
+Error: Could not set up trajectory '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/active.nc'
+Error: Number of atoms in NetCDF file (4764) does not match number
+Error:  in associated topology (4770)!
+Error: Could not set up '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/inactive.nc' for reading.
+Error: Could not set up trajectory '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/inactive.nc'
+[I 15:33:27.173 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:33:27.174 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:33:31.586 NotebookApp] Saving file at /analysis/new_divergence.ipynb
+[W 15:33:31.589 NotebookApp] Notebook analysis/new_divergence.ipynb is not trusted
+Error: Number of atoms in NetCDF file (4764) does not match number
+Error:  in associated topology (4770)!
+Error: Could not set up '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/active.nc' for reading.
+Error: Could not set up trajectory '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/active.nc'
+Error: Number of atoms in NetCDF file (4764) does not match number
+Error:  in associated topology (4770)!
+Error: Could not set up '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/inactive.nc' for reading.
+Error: Could not set up trajectory '/home/adele/Documents/allostery/examples/example_ptp1b/systems/reference/inactive.nc'
+Internal Error: in Frame::Frame(int,double*) pointer is NULL.
+Internal Error: Size of atoms array is 4770, Frame size is 0
+Internal Error: in Frame::Frame(int,double*) pointer is NULL.
+Internal Error: Size of atoms array is 4770, Frame size is 0
+[I 15:35:27.166 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:35:27.167 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:36:03.029 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:36:03.030 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:37:03.454 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:37:03.520 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:37:27.190 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:37:27.191 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:37:58.854 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:37:58.861 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:38:02.315 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:ef26e2ef45964d5b82366b228c92a87a
+[W 15:38:11.577 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:38:11.984 NotebookApp] Kernel started: 62937f19-649a-4c88-99bd-f8dc5b8dbf09, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 895513d5-c0ae-42f4-9111-8b366ce9fce9
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: c9d9776a-05f9-4e8f-9392-c42bd245a473
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/pyemma/util/log.py:41: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if LooseVersion(yaml.__version__) >= LooseVersion('5.1'):
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/pyemma/util/log.py:41: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if LooseVersion(yaml.__version__) >= LooseVersion('5.1'):
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/assessment.py:24: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/assessment.py:25: DeprecationWarning: Please use `diags` from the `scipy.sparse` namespace, the `scipy.sparse.construct` namespace is deprecated.
+  from scipy.sparse.construct import diags
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/expectations.py:29: DeprecationWarning: Please use `diags` from the `scipy.sparse` namespace, the `scipy.sparse.construct` namespace is deprecated.
+  from scipy.sparse.construct import diags
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/api.py:36: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/dense/tmat_sampling/tmatrix_sampler.py:37: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  from . sampler_revpi import SamplerRevPi
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py:32: DeprecationWarning: Please use `csr_matrix` from the `scipy.sparse` namespace, the `scipy.sparse.csr` namespace is deprecated.
+  from scipy.sparse.csr import csr_matrix
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/flux/api.py:28: DeprecationWarning: Please use `issparse` from the `scipy.sparse` namespace, the `scipy.sparse.base` namespace is deprecated.
+  from scipy.sparse.base import issparse
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/flux/api.py:29: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+[I 15:40:11.786 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:40:12.445 NotebookApp] Saving file at /analysis/02_collective_variables.ipynb
+[I 15:42:12.335 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:42:26.614 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:44:12.336 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:45:51.208 NotebookApp] Saving file at /analysis/02_collective_variables.ipynb
+[I 15:45:51.829 NotebookApp] Starting buffering for 62937f19-649a-4c88-99bd-f8dc5b8dbf09:e1a4a83e042842ef87f28859e688549a
+[I 15:45:58.340 NotebookApp] Kernel shutdown: 62937f19-649a-4c88-99bd-f8dc5b8dbf09
+[W 15:45:58.344 NotebookApp] delete /analysis/02_collective_variables.ipynb
+[I 15:46:12.478 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:46:13.142 NotebookApp] Saving file at /analysis/new_divergence.ipynb
+[W 15:46:13.144 NotebookApp] Notebook analysis/new_divergence.ipynb is not trusted
+[I 15:46:15.580 NotebookApp] Starting buffering for 0a49a69d-b439-45ee-a12d-959a22ac7dec:d4b618b402724be8a0c9031f5008533d
+[W 15:48:05.725 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 15:48:06.415 NotebookApp] Kernel started: 6febe0f4-071e-4701-8757-06945649f8d9, name: python3
+[I 15:48:12.423 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 581714fb-e154-49ce-9107-50bab6095a80
+[I 15:50:06.558 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 15:50:06.559 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 15:50:12.424 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:52:06.538 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 15:52:06.539 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 15:53:54.032 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 15:53:54.033 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 15:53:57.585 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:cba0e6484fce458a99dc0d4c1c0e166e
+[I 15:53:57.613 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:32549b98f1ac460586560411d9902b5b
+[I 15:53:57.614 NotebookApp] Starting buffering for 6febe0f4-071e-4701-8757-06945649f8d9:cd4a69c9d0574fab8cd793ada87c9c2c
+[W 11:55:36.057 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[W 11:55:36.439 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 44b64e0a-a819-4b52-8f58-9ed5f6304c78
+[I 11:57:38.556 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 11:57:38.641 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 11:58:09.633 NotebookApp] New terminal with automatic name: 1
+[I 11:59:37.287 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 11:59:37.288 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 12:01:37.544 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:01:37.545 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:01:38.220 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 12:01:38.221 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 12:03:37.381 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 12:03:37.382 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 12:03:37.823 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:03:37.824 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:05:37.377 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 12:05:37.378 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 12:07:37.750 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 12:07:37.751 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[I 12:09:37.482 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:09:37.569 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:10:31.966 NotebookApp] Saving file at /analysis/05_steering_loop_only.ipynb
+[W 12:10:31.967 NotebookApp] Notebook analysis/05_steering_loop_only.ipynb is not trusted
+[W 12:10:51.002 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 12:11:37.479 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:11:37.480 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:13:37.926 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:13:37.927 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:14:17.628 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:14:17.629 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:14:54.402 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:14:54.403 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:17:37.524 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:17:37.525 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:20:14.619 NotebookApp] Starting buffering for 6febe0f4-071e-4701-8757-06945649f8d9:45edeea7c83d460d9f22c9b632dc97e9
+[I 12:20:21.256 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:20:21.257 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:20:30.281 NotebookApp] Kernel shutdown: 6febe0f4-071e-4701-8757-06945649f8d9
+[W 12:20:30.281 NotebookApp] delete /analysis/05_steering_loop_only.ipynb
+[W 12:20:37.512 NotebookApp] delete /analysis/06_shared_clusters_only.ipynb
+[W 12:20:42.110 NotebookApp] Notebook analysis/07_more_clusters.ipynb is not trusted
+[I 12:20:42.803 NotebookApp] Kernel started: 53e472ea-b57a-42e9-ba83-6b914f3436cd, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 60606c85-f151-40f3-bc91-992a97c809aa
+[I 12:21:37.896 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:21:37.897 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:23:37.440 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:23:37.441 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:25:07.439 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:25:07.440 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:25:30.287 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 12:25:30.287 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 12:25:35.629 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:25:35.629 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:25:37.427 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:25:37.428 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:26:54.357 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 12:26:54.358 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 12:27:37.424 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:27:37.424 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:29:37.420 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:29:37.433 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[W 12:34:37.302 NotebookApp] WebSocket ping timeout after 119946 ms.
+[W 12:34:37.787 NotebookApp] WebSocket ping timeout after 119932 ms.
+[I 12:34:42.306 NotebookApp] Starting buffering for 53e472ea-b57a-42e9-ba83-6b914f3436cd:b7858cf8d8af4c12874401be8a1e7d6d
+[I 12:34:42.790 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:3e1fd3968b3549b9916e61ccf8c186a3
+[W 12:34:52.863 NotebookApp] WebSocket ping timeout after 111132 ms.
+[I 12:34:57.865 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:06e3ee5f257a4f5dbb7d559d768fe398
+[W 14:15:39.579 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[W 14:15:43.683 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 14:15:45.655 NotebookApp] Notebook analysis/07_more_clusters.ipynb is not trusted
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: a3457c13-9841-423a-a0cb-1b742d51237f
+[I 14:16:01.427 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:16:01.428 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:17:41.496 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:17:41.983 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:18:56.137 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:18:56.138 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:19:41.943 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:19:41.944 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:19:43.745 NotebookApp] Starting buffering for 53e472ea-b57a-42e9-ba83-6b914f3436cd:2e8de89ad06d4c1b937f481b969df370
+[I 14:19:48.348 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:19:48.348 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 14:19:49.092 NotebookApp] delete /analysis/07_more_clusters.ipynb
+[I 14:19:49.325 NotebookApp] Kernel shutdown: 53e472ea-b57a-42e9-ba83-6b914f3436cd
+[W 14:19:57.905 NotebookApp] Notebook analysis/09_increased_sampling_p_loop.ipynb is not trusted
+[I 14:19:59.273 NotebookApp] Kernel started: 5a74d6e3-6276-4cb1-81b8-365b9d6f3258, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 456692ba-467a-49e0-bdd2-c13f76fdd839
+[I 14:21:41.819 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:21:41.821 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:21:47.886 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:21:47.887 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:23:47.141 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:23:47.143 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:25:47.152 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:25:47.154 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:26:50.200 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:26:50.201 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:27:04.045 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:d5f5eb9feabb478ba6862604d03a6e8d
+[I 14:27:07.070 NotebookApp] Kernel restarted: bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 14:27:07.275 NotebookApp] Restoring connection for bfd79334-860c-4b9c-b536-1594a8b9c561:d5f5eb9feabb478ba6862604d03a6e8d
+[W 14:27:11.791 NotebookApp] Nudge: attempt 10 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[W 14:27:16.811 NotebookApp] Nudge: attempt 20 on kernel bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 14:27:17.832 NotebookApp] Replaying 3 buffered messages
+[I 14:27:46.850 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:27:46.852 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+[I 14:29:41.526 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:29:41.527 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:29:47.476 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:29:47.478 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:31:41.386 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:31:41.387 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:31:47.634 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:31:47.635 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:32:56.159 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:32:56.159 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:33:25.576 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:33:25.577 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:33:41.830 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:33:41.883 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:35:01.637 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:35:01.638 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:35:40.687 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:35:40.688 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:38:45.684 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:38:45.684 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:39:41.362 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:39:41.363 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:41:41.301 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:41:41.302 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:43:41.288 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:43:41.288 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:45:41.735 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:45:41.736 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:47:41.375 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:47:41.376 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:49:41.394 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:49:41.394 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:50:25.598 NotebookApp] Starting buffering for 5a74d6e3-6276-4cb1-81b8-365b9d6f3258:2e2ae7c34cf44dc3aa791df52a296bac
+[I 14:50:35.401 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:50:35.402 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:50:53.121 NotebookApp] Kernel shutdown: 5a74d6e3-6276-4cb1-81b8-365b9d6f3258
+[W 14:50:53.124 NotebookApp] delete /analysis/09_increased_sampling.ipynb
+[W 14:50:53.213 NotebookApp] delete /analysis/09_increased_sampling_p_loop.ipynb
+[W 14:50:59.956 NotebookApp] Notebook analysis/10_different_active_states.ipynb is not trusted
+[I 14:51:01.153 NotebookApp] Kernel started: dba5b12f-549f-403e-a565-aeaeca4d1356, name: python3
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: fd6b2db5-c5bd-4bdc-ac0e-5abeb29a165d
+[I 14:51:41.380 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:51:41.381 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:53:41.796 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:53:41.798 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:53:47.150 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:53:47.151 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:55:08.497 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:55:08.498 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:55:41.274 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:55:41.275 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:57:41.268 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:57:41.269 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 14:58:36.752 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:58:36.752 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:59:09.520 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 14:59:09.521 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 14:59:41.165 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 14:59:41.166 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:00:00.540 NotebookApp] Kernel interrupted: dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 15:00:48.414 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:00:48.415 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:00:52.713 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:00:52.714 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:01:41.775 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:01:41.775 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:02:51.050 NotebookApp] Kernel interrupted: dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+Process ForkPoolWorker-236:
+Process ForkPoolWorker-237:
+Process ForkPoolWorker-235:
+Process ForkPoolWorker-230:
+Process ForkPoolWorker-240:
+Process ForkPoolWorker-229:
+Process ForkPoolWorker-225:
+Process ForkPoolWorker-222:
+Process ForkPoolWorker-221:
+Process ForkPoolWorker-231:
+Process ForkPoolWorker-238:
+Process ForkPoolWorker-239:
+Process ForkPoolWorker-228:
+Process ForkPoolWorker-227:
+Process ForkPoolWorker-233:
+Process ForkPoolWorker-223:
+Process ForkPoolWorker-232:
+Process ForkPoolWorker-226:
+Process ForkPoolWorker-234:
+Process ForkPoolWorker-224:
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "<__array_function__ internals>", line 177, in sum
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 231, in statistical_inefficiency
+    prod = x[:Nx-lag] * x[lag:]
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 231, in statistical_inefficiency
+    prod = x[:Nx-lag] * x[lag:]
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "<__array_function__ internals>", line 177, in sum
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 231, in statistical_inefficiency
+    prod = x[:Nx-lag] * x[lag:]
+KeyboardInterrupt
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 365, in get
+    res = self._reader.recv_bytes()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/connection.py", line 221, in recv_bytes
+    buf = self._recv_bytes(maxlength)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/connection.py", line 419, in _recv_bytes
+    buf = self._recv(4)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/connection.py", line 384, in _recv
+    chunk = read(handle, remaining)
+KeyboardInterrupt
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "<__array_function__ internals>", line 180, in sum
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 73, in _wrapreduction
+    if type(obj) is not mu.ndarray:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+KeyboardInterrupt
+KeyboardInterrupt
+KeyboardInterrupt
+KeyboardInterrupt
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "<__array_function__ internals>", line 180, in sum
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 70, in _wrapreduction
+    passkwargs = {k: v for k, v in kwargs.items()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 71, in <dictcomp>
+    if v is not np._NoValue}
+KeyboardInterrupt
+KeyboardInterrupt
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 70, in _wrapreduction
+    passkwargs = {k: v for k, v in kwargs.items()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 71, in <dictcomp>
+    if v is not np._NoValue}
+KeyboardInterrupt
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 69, in _wrapreduction
+    def _wrapreduction(obj, ufunc, method, axis, dtype, out, **kwargs):
+KeyboardInterrupt
+Traceback (most recent call last):
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py", line 107, in _wrapper
+    partial[n] = statistical_inefficiency(s, truncate_acf=truncate_acf, mact=mact)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/util/statistics.py", line 232, in statistical_inefficiency
+    acf += np.sum(prod)
+  File "<__array_function__ internals>", line 180, in sum
+  File "<__array_function__ internals>", line 180, in sum
+  File "<__array_function__ internals>", line 180, in sum
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 2296, in sum
+    return _wrapreduction(a, np.add, 'sum', axis, dtype, out, keepdims=keepdims,
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 86, in _wrapreduction
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 70, in _wrapreduction
+    passkwargs = {k: v for k, v in kwargs.items()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/numpy/core/fromnumeric.py", line 71, in <dictcomp>
+    if v is not np._NoValue}
+KeyboardInterrupt
+KeyboardInterrupt
+KeyboardInterrupt
+[I 15:03:41.318 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:03:41.320 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:05:08.909 NotebookApp] Kernel interrupted: dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 15:05:41.343 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:05:41.344 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:06:02.253 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:06:02.254 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+Process ForkPoolWorker-250:
+Process ForkPoolWorker-252:
+Process ForkPoolWorker-258:
+Process ForkPoolWorker-241:
+Process ForkPoolWorker-251:
+Process ForkPoolWorker-244:
+Process ForkPoolWorker-257:
+Process ForkPoolWorker-247:
+Process ForkPoolWorker-254:
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Process ForkPoolWorker-243:
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+KeyboardInterrupt
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+Traceback (most recent call last):
+KeyboardInterrupt
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Process ForkPoolWorker-256:
+Process ForkPoolWorker-245:
+Process ForkPoolWorker-253:
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Process ForkPoolWorker-249:
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Process ForkPoolWorker-248:
+Process ForkPoolWorker-242:
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Process ForkPoolWorker-255:
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+Process ForkPoolWorker-246:
+Traceback (most recent call last):
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/pool.py", line 114, in worker
+    task = get()
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/queues.py", line 364, in get
+    with self._rlock:
+  File "/home/adele/anaconda3/envs/bss/lib/python3.9/multiprocessing/synchronize.py", line 95, in __enter__
+    return self._semlock.__enter__()
+KeyboardInterrupt
+[I 15:06:53.204 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 15:06:53.205 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 15:06:56.423 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:bd546ef531b24eca836954bdc65854e4
+[I 15:07:00.449 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:07:00.450 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 15:16:45.971 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 15:16:45.972 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 15:29:07.275 NotebookApp] WebSocket ping timeout after 119932 ms.
+[I 15:29:12.288 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:d5f5eb9feabb478ba6862604d03a6e8d
+[W 15:29:23.438 NotebookApp] WebSocket ping timeout after 111767 ms.
+[I 15:29:28.439 NotebookApp] Starting buffering for dba5b12f-549f-403e-a565-aeaeca4d1356:76f60e703e804499888bd288457e421e
+[W 19:46:54.381 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:46:56.976 NotebookApp] Discarding 10 buffered messages for bfd79334-860c-4b9c-b536-1594a8b9c561:d5f5eb9feabb478ba6862604d03a6e8d
+[W 19:47:01.252 NotebookApp] Notebook analysis/10_different_active_states.ipynb is not trusted
+[IPKernelApp] ERROR | No such comm target registered: jupyter.widget.control
+[IPKernelApp] WARNING | No such comm: 8008246e-1742-4b6f-b425-e297c8aa8fde
+[I 19:48:57.180 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:48:57.182 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:50:57.215 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:50:57.217 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:51:10.120 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:51:10.121 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:51:20.265 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:51:20.266 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:52:05.029 NotebookApp] Starting buffering for dba5b12f-549f-403e-a565-aeaeca4d1356:69a310c9c18e4e388e2065463da23b51
+[W 19:52:16.288 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 19:53:25.688 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 19:53:25.690 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[W 19:53:36.403 NotebookApp] Notebook analysis/new_divergence.ipynb is not trusted
+[W 19:53:42.875 NotebookApp] Nudge: attempt 10 on kernel 0a49a69d-b439-45ee-a12d-959a22ac7dec
+[I 19:53:46.197 NotebookApp] Kernel shutdown: 0a49a69d-b439-45ee-a12d-959a22ac7dec
+[W 19:53:46.198 NotebookApp] delete /analysis/new_divergence.ipynb
+[W 19:53:48.290 NotebookApp] Nudge: attempt 20 on kernel 0a49a69d-b439-45ee-a12d-959a22ac7dec
+[W 19:53:49.796 NotebookApp] Got events for closed stream <zmq.eventloop.zmqstream.ZMQStream object at 0x7f724a85f9d0>
+[W 19:53:49.797 NotebookApp] Got events for closed stream <zmq.eventloop.zmqstream.ZMQStream object at 0x7f724a85f9d0>
+[W 19:53:49.797 NotebookApp] Got events for closed stream <zmq.eventloop.zmqstream.ZMQStream object at 0x7f724a85f9d0>
+[W 19:53:49.797 NotebookApp] Got events for closed stream <zmq.eventloop.zmqstream.ZMQStream object at 0x7f724a85f9d0>
+[I 19:53:59.237 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:53:59.238 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:54:18.388 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 19:54:18.388 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 19:54:35.426 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:54:35.427 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:54:43.153 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:54:43.154 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:54:57.215 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:54:57.215 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:55:40.103 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:55:40.104 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:56:18.391 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 19:56:18.392 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 19:58:57.314 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:58:57.316 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:59:53.150 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:59:53.151 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 19:59:54.833 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 19:59:54.835 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 20:00:57.696 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 20:00:57.697 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 20:02:34.390 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 20:02:34.392 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 20:02:36.777 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:c9753f14dd70438183aabe677cf495db
+[I 20:02:36.784 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:7a48fce045e444f38765291bd65ba693
+[W 07:55:40.855 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[W 07:55:46.339 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 07:55:47.539 NotebookApp] Saving file at /analysis/msm.ipynb
+[W 07:55:47.541 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 07:55:54.350 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:60defb9188d74685902f42e0f5c28135
+Process ForkPoolWorker-262:
+Process ForkPoolWorker-266:
+Process ForkPoolWorker-265:
+Process ForkPoolWorker-263:
+Process ForkPoolWorker-264:
+Process ForkPoolWorker-261:
+[I 07:55:57.299 NotebookApp] Kernel restarted: dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 07:55:57.373 NotebookApp] Restoring connection for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:60defb9188d74685902f42e0f5c28135
+[I 07:55:57.373 NotebookApp] Replaying 2 buffered messages
+[I 07:56:19.319 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 07:56:19.320 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 07:56:27.857 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:5e1909df766245278bd0c57ac5b37eed
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/pyemma/util/log.py:41: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if LooseVersion(yaml.__version__) >= LooseVersion('5.1'):
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/pyemma/util/log.py:41: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if LooseVersion(yaml.__version__) >= LooseVersion('5.1'):
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/assessment.py:24: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/assessment.py:25: DeprecationWarning: Please use `diags` from the `scipy.sparse` namespace, the `scipy.sparse.construct` namespace is deprecated.
+  from scipy.sparse.construct import diags
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/expectations.py:29: DeprecationWarning: Please use `diags` from the `scipy.sparse` namespace, the `scipy.sparse.construct` namespace is deprecated.
+  from scipy.sparse.construct import diags
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/api.py:36: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/dense/tmat_sampling/tmatrix_sampler.py:37: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  from . sampler_revpi import SamplerRevPi
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py:32: DeprecationWarning: Please use `csr_matrix` from the `scipy.sparse` namespace, the `scipy.sparse.csr` namespace is deprecated.
+  from scipy.sparse.csr import csr_matrix
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/flux/api.py:28: DeprecationWarning: Please use `issparse` from the `scipy.sparse` namespace, the `scipy.sparse.base` namespace is deprecated.
+  from scipy.sparse.base import issparse
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/flux/api.py:29: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+[I 07:57:47.735 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 07:57:47.736 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 07:59:47.723 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 07:59:47.724 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:01:47.634 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:01:47.635 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:05:49.319 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:05:49.320 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:13:47.633 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:13:47.633 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:25:47.634 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:25:47.635 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:35:47.632 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:35:47.653 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:45:47.636 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:45:47.638 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 08:51:32.897 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 08:51:32.898 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:05:47.640 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:05:47.653 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:07:47.636 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:07:47.638 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:09:47.635 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:09:47.637 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:23:47.637 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:23:47.653 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:24:13.873 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:24:13.874 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:35:47.654 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:35:47.669 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:51:47.659 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:51:47.660 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:53:47.660 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:53:47.662 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 09:54:42.636 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 09:54:42.637 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:27:48.980 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:27:49.014 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:31:48.367 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:31:48.369 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:33:48.167 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:33:48.168 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:35:48.127 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:35:48.129 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:36:58.011 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:60defb9188d74685902f42e0f5c28135
+[I 12:37:00.865 NotebookApp] Kernel restarted: dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 12:37:01.028 NotebookApp] Restoring connection for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:60defb9188d74685902f42e0f5c28135
+[W 12:37:05.546 NotebookApp] Nudge: attempt 10 on kernel dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[W 12:37:10.566 NotebookApp] Nudge: attempt 20 on kernel dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 12:37:12.877 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:37:12.879 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[W 12:37:15.583 NotebookApp] Nudge: attempt 30 on kernel dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[W 12:37:20.604 NotebookApp] Nudge: attempt 40 on kernel dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 12:37:24.037 NotebookApp] Replaying 3 buffered messages
+[I 12:37:47.820 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:37:47.822 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+Warning: importing 'simtk.openmm' is deprecated.  Import 'openmm' instead.
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/pyemma/util/log.py:41: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if LooseVersion(yaml.__version__) >= LooseVersion('5.1'):
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/pyemma/util/log.py:41: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+  if LooseVersion(yaml.__version__) >= LooseVersion('5.1'):
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/assessment.py:24: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/assessment.py:25: DeprecationWarning: Please use `diags` from the `scipy.sparse` namespace, the `scipy.sparse.construct` namespace is deprecated.
+  from scipy.sparse.construct import diags
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/analysis/sparse/expectations.py:29: DeprecationWarning: Please use `diags` from the `scipy.sparse` namespace, the `scipy.sparse.construct` namespace is deprecated.
+  from scipy.sparse.construct import diags
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/api.py:36: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/dense/tmat_sampling/tmatrix_sampler.py:37: DeprecationWarning: `np.float` is a deprecated alias for the builtin `float`. To silence this warning, use `float` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.float64` here.
+Deprecated in NumPy 1.20; for more details and guidance: https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+  from . sampler_revpi import SamplerRevPi
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/estimation/sparse/effective_counts.py:32: DeprecationWarning: Please use `csr_matrix` from the `scipy.sparse` namespace, the `scipy.sparse.csr` namespace is deprecated.
+  from scipy.sparse.csr import csr_matrix
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/flux/api.py:28: DeprecationWarning: Please use `issparse` from the `scipy.sparse` namespace, the `scipy.sparse.base` namespace is deprecated.
+  from scipy.sparse.base import issparse
+/home/adele/anaconda3/envs/bss/lib/python3.9/site-packages/msmtools/flux/api.py:29: DeprecationWarning: Please use `isdense` from the `scipy.sparse` namespace, the `scipy.sparse.sputils` namespace is deprecated.
+  from scipy.sparse.sputils import isdense
+[I 12:39:48.049 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:39:48.064 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:46:09.764 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:46:09.765 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:49:47.989 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:49:47.991 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:51:32.910 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:51:32.911 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:53:47.976 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:53:47.977 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 12:55:15.922 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 12:55:15.923 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:01:47.465 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:01:47.466 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:01:54.409 NotebookApp] Kernel shutdown: dba5b12f-549f-403e-a565-aeaeca4d1356
+[W 13:01:54.423 NotebookApp] delete /analysis/10_different_active_states.ipynb
+[W 13:02:00.503 NotebookApp] Notebook analysis/msm.ipynb is not trusted
+[I 13:02:09.429 NotebookApp] Starting buffering for bfd79334-860c-4b9c-b536-1594a8b9c561:8f50f2db8f0342bf9ed39eb83cc152f9
+[I 13:04:49.465 NotebookApp] Kernel shutdown: bfd79334-860c-4b9c-b536-1594a8b9c561
+[I 13:04:52.892 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:04:52.894 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:15:48.053 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:15:48.054 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:16:44.774 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:16:44.775 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:26:04.392 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:26:04.547 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:30:01.022 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:30:01.023 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:30:17.716 NotebookApp] Kernel started: 6e290350-1b9b-4f79-91f9-91a7a0e69200, name: python3
+[I 13:32:16.409 NotebookApp] Saving file at /analysis/sMD_analysis.ipynb
+[I 13:33:41.569 NotebookApp] Saving file at /analysis/sMD_analysis.ipynb
+[I 13:33:52.079 NotebookApp] Saving file at /analysis/sMD_analysis.ipynb
+[I 13:33:53.781 NotebookApp] Starting buffering for 6e290350-1b9b-4f79-91f9-91a7a0e69200:27260cfe64804746905c00c4968bd46b
+[I 13:35:48.814 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:35:48.816 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:37:48.283 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[W 13:37:48.285 NotebookApp] Notebook analysis/supplementary_information.ipynb is not trusted
+[I 13:37:57.894 NotebookApp] Kernel interrupted: dfe7f99f-8abe-42f8-ac43-de1547d1ca76
+[I 13:39:48.759 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 13:41:48.514 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 13:44:04.456 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 13:45:48.534 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 13:49:48.011 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 13:50:15.988 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 13:54:39.538 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 14:04:16.466 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 14:15:47.712 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 14:17:47.810 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 14:39:47.869 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:09:31.387 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:10:29.249 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:11:17.561 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:11:21.540 NotebookApp] Saving file at /analysis/supplementary_information.ipynb
+[I 15:11:23.163 NotebookApp] Starting buffering for dfe7f99f-8abe-42f8-ac43-de1547d1ca76:60defb9188d74685902f42e0f5c28135

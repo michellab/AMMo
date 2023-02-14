@@ -50,6 +50,8 @@ Steered MD is run using the `steering` command, and the main options are provide
 
 BioSimSpace supports 3 types of CVs: distance, dihedral angle and RMSD. This covers all of the above, except of P185 stacking to W179. The stacking is defined as the absolute difference between the following two distances: P185(CG)-W179(CE) and P185(CA)-W179(CD1). This requires a custom expression. As such, the sMD simulations here were run manually. The input files can be found in `systems/peptide-1/open/seeded-md/steering` and `systems/peptide-1/closed/seeded-md/steering` to represent the steering protocol from open to closed conformation and from closed to open conformation respectively.
 
+Once the sMD trajectories were obtained, the analysis was run in `analysis/sMD_analysis.ipynb`.
+
 ## Seeded MD
 [top](#Example---PTP1B)
 
@@ -77,7 +79,7 @@ The parameters for featurization can be found in the `features` part of the sett
 
 Markov State Models were built in a jupyter notebook, which can be found in `analysis/msm.ipynb`. It makes use of the `MSMCollection` part of the `ammo` python library, which allows to build mutiple MSMs at once, so ensuring consistent clustering and metastable state assignments. More details can be found in the notebook itself.
 
-Additionally, data analysis found in the SI is also in the `analysis` folder.
+Additionally, data analysis found in the SI is in `analysis/supplementary_information.ipynb`.
 
 ## References
 
