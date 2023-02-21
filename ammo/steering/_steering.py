@@ -218,7 +218,7 @@ def __create_protocol(cvs, timings, restraints):
     return protocol
 
 
-def run_smd(topology, coordinates, masks, types, timings, values, forces, reference=None, engine='AMBER'):
+def run_smd(topology, coordinates, masks, types, timings, values, forces, reference=None, engine='AMBER', workdir='.'):
     """
     Run a steered MD simulation with AMBER or GROMACS and PLUMED.
 
@@ -242,6 +242,8 @@ def run_smd(topology, coordinates, masks, types, timings, values, forces, refere
         path to reference PDB file if using RMSD as a CV. All of the atoms in the reference have to also appear in the system, but not vice versa.
     engine : str
         MD engine to run sMD with. Allowed 'AMBER' and 'GROMACS'
+    workdir : str
+        working directory for MD. If None, it will be run in a temporary directory and copied to the current directory
 
     Returns
     -------
@@ -275,15 +277,17 @@ def run_smd(topology, coordinates, masks, types, timings, values, forces, refere
     protocol = __create_protocol(cvs, timings, restraints)
 
     # create the process
+    workdir = os.path.abspath(workdir)
     if engine == 'AMBER':
-        process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda') # specify using pmemd.cuda
+        process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda', work_dir=workdir) # specify using pmemd.cuda
     else:
-        process = BSS.Process.createProcess(system, protocol, engine)
+        process = BSS.Process.createProcess(system, protocol, engine, work_dir=workdir)
 
     # run process
     process.start()
     print(f'Process running in {process.workDir}')
     process.wait()
+
     to_copy = {'amber.nc': 'steering.nc', 'plumed.dat': 'plumed.dat', 'COLVAR': 'steering.dat', 'amber.out': 'steering.out'}
     if isinstance(reference, list):
         for i in range(len(reference)):

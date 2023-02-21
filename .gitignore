@@ -4,6 +4,11 @@ __pycache__/
 *$py.class
 */*/__pycache__/
 
+# Trajectory data
+*.nc
+*.prm7
+*.pkl
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -13,4 +18,4 @@ __pypackages__/
 config
 ammo.sh
 .vscode
-
+.idea/*

@@ -262,7 +262,7 @@ class MSMCollection:
 
     def compute_its(self, titles=None, plot=True,
                     lags_to_try=(1, 5, 10, 25, 50, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000), nits=10,
-                    errors='bayes'):
+                    errors='bayes', time_units=None):
         """Compute Implied Timescales for each MSM
         
         Also plot each with the same yaxis scale if required.
@@ -283,6 +283,13 @@ class MSMCollection:
          
         errors : str
             whether to compute statistical uncertainties
+
+        plot : bool
+            plot the ITS
+
+        time_units : str
+            units for plotting, e.g. 'ns' or 'us'. If None, the default "steps" will be used
+
         
         Returns
         -------
@@ -316,6 +323,15 @@ class MSMCollection:
             ylim = (_np.array(limits)[:, 0].min(), _np.array(limits)[:, 1].max())
             for i in range(n):
                 ax[i].set_ylim(ylim)
+
+            # fix axes units if required
+            if time_units is not None:
+                for i in range(n):
+                    factor = _parse_time(self._MSMs[titles[i]].timestep, time_units, output_type='number')
+                    ax[i].set_xticklabels([int(val) for val in ax[i].get_xticks()*factor])
+                    ax[i].set_xlabel(f'lag time / {time_units}')
+                    ax[i].set_yticklabels([val for val in ax[i].get_yticks()*factor])
+                    ax[i].set_ylabel(f'timescale / {time_units}')
             fig.tight_layout()
             return fig, ax
 
@@ -472,7 +488,7 @@ class MSMCollection:
 
         for key in msm:
             if n_states not in self._MSMs[key].pcca.keys() or overwrite:
-                centers = self._MSMs[key].run_pcca(n_states)
+                centers = self._MSMs[key].run_pcca(n_states, disconnected)
 
             # compute assignments
             print(f'Metastable state assignments based on {key} MSM, {n_states} states:')
@@ -1095,7 +1111,7 @@ class MSM:
         self.dtrajs = _assign_to_centers(data=self.data, centers=self.cluster_centers)
 
     def compute_its(self, lags_to_try=(1, 5, 10, 25, 50, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000), nits=10,
-                    errors='bayes', plot=True):
+                    errors='bayes', plot=True, time_units=None):
         """Compute implied timescales
 
         Parameters
@@ -1112,6 +1128,9 @@ class MSM:
         plot : bool
             plot the ITS
 
+        time_units : str
+            units for plotting, e.g. 'ns' or 'us'. If None, the default "steps" will be used
+
         Return
         ------
         fig : matplotlib.figure.Figure
@@ -1125,6 +1144,14 @@ class MSM:
         if plot:
             fig, ax = _subplots(1, figsize=(7,5))
             _plots.plot_implied_timescales(self.its, ax=ax)
+
+            # fix axes units if required
+            if time_units is not None:
+                factor = _parse_time(self.timestep, time_units, output_type='number')
+                ax.set_xticklabels([int(val) for val in ax.get_xticks()*factor])
+                ax.set_xlabel(f'lag time / {time_units}')
+                ax.set_yticklabels([val for val in ax.get_yticks()*factor])
+                ax.set_ylabel(f'timescale / {time_units}')
             return fig, ax
         
         return None
@@ -1192,9 +1219,13 @@ class MSM:
         state_to_add = remapped[disconnected]
         for i in range(1, len(self.msm.connected_sets)):
             for center_idx in self.msm.connected_sets[i]:
-                state_to_add = _np.append(state_to_add, int(center_idx))
+                state_to_add = _np.append(state_to_add, center_idx)
         state_to_add.sort()
         remapped[disconnected] = state_to_add
+
+        # ensure center indices are integers
+        for state in range(n_states):
+            remapped[state] = _np.array([int(center) for center in remapped[state]])
 
         self.pcca[n_states] = remapped
         # using list(centers) allows to give empty metastable sets
@@ -1741,7 +1772,7 @@ class MSM:
             #try: # if msm stationary probabilities too low, an error is thrown - discard those
             stationary_distribution, trajectories = self.__build_bootstrapped_msm(cluster_centers)
             # add results
-            probability = _np.array([[round(stationary_distribution[state_clusters].sum()*100, 2) for state_clusters in msm.pcca[n_states]]])
+            probability = _np.array([[round(stationary_distribution[list(state_clusters)].sum()*100, 2) for state_clusters in msm.pcca[n_states]]])
             if i == 1: # if first iteration
                 self.bootstrapping_data[pcca]['probabilities'] = probability
             else:

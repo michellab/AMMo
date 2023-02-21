@@ -14,12 +14,15 @@ def __main__():
     parser.add_argument('--forces', type=str, required=True, help='forces to be applied to each CV in kJ/mol, in the same format as "--values"')
     parser.add_argument('--reference', type=str, help='path to reference PDB file(s) if using RMSD as a CV. All of the atoms in the reference have to also appear in the system')
     parser.add_argument('--engine', type=str, default='AMBER', help='MD engine to run sMD with. Default: AMBER')
+    parser.add_argument('--workdir', type=str, default='.', help='Working directory. If None, sMD will be run in a temporary folder and copied over. Default: "."')
     args = parser.parse_args()
 
     if args.reference is not None:
         args.reference = args.reference.split(',')
         if len(args.reference) == 1:
             args.reference = args.reference[0]
+    if args.workdir == 'None':
+        args.workdir = None
     
     args.masks = literal_eval(args.masks)
     args.types = literal_eval(args.types)
@@ -27,7 +30,7 @@ def __main__():
     args.values = literal_eval(args.values)
     args.forces = literal_eval(args.forces)
 
-    run_smd(args.topology, args.coordinates, args.masks, args.types, args.timings, args.values, args.forces, args.reference, args.engine)
+    run_smd(args.topology, args.coordinates, args.masks, args.types, args.timings, args.values, args.forces, args.reference, args.engine, args.workdir)
 
     return None
 
