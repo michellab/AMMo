@@ -34,16 +34,10 @@ def __get_steering_commands(args):
     md_command = [_project['python'],
                       f'{os.environ["AMMO_HOME"]}/ammo/scripts/steered_md.py',
                       '--topology', '../../system-setup/system.prm7',
-                      '--coordinates', '../../system-setup/system_equilibrated.rst7']
-
-    other_parameters = ['masks', 'types', 'timings', 'values', 'forces']
-    for parm in other_parameters:
-        if args.slurm:
-            md_command += [f'--{parm}', f'"{steering[parm]}"']
-        else:
-            md_command += [f'--{parm}', str(steering[parm])]
-
-    md_command += ['--reference', ','.join(reference), '--engine', args.engine]
+                      '--coordinates', '../../system-setup/system_equilibrated.rst7',
+                      '--input', f'../../../../../.defaults/{steering["input"]}',
+                      '--reference', ','.join(reference),
+                      '--engine', args.engine]
 
     script_command = [md_command]
     # add additional processing if needed

@@ -1,5 +1,5 @@
 import os
-
+import subprocess
 import BioSimSpace as BSS
 import pytraj as pt
 from shutil import move
@@ -7,63 +7,169 @@ from ammo.utils import get_dry_trajectory
 from time import sleep
 
 
-def __validate_input(timings, values, forces):
-    if len(timings) == 1: # if a single steering step
-        # check if values given as a single list
-        if not isinstance(values[0], list):
-            values = [[val] for val in values]
-        # check the same for forces
-        if not isinstance(forces[0], list):
-            forces = [[force] for force in forces]
-    
-    # add the standard start and end steps to all
-    timings = [0, 0.004] + timings + [timings[-1]+2]
-    values = [['initial', 'initial'] + val + [val[-1]] for val in values]
-    forces = [[0, force[0]] + force + [0] for force in forces]
-
-    return timings, values, forces
-
-
-def __parse_masks(masks, system, types, reference=None):
-    """
-    Parse masks to return atom indices for the system
-
-    Parameters
-    ----------
-    masks : [str], str
-        a list of AMBER masks for each CV in the order they appear in the plumed file
-    system : pytraj.Trajectory
-        the system to be steered
-    types : [str]
-        CV types
-    reference : str, [str]
-        RMSD reference. Required if rmsd is one of the CV types
-
-    Returns
-    -------
-    atoms : [[int]]
-        a list of atom lists for each CV
-    """
-    if isinstance(types, str):
-        types = [types]
-    if isinstance(masks, str):
-        masks = [masks]
-    if len(types) != len(masks):
-        raise ValueError(f'Number of types ({len(types)}) has to match masks ({len(masks)}).')
-    if isinstance(reference, str):
-        reference = [reference]*types.count('rmsd')
-
-    atoms = []
-    rmsd_count = 0
-    for mask, cv_type in zip(masks,types):
-        if cv_type != 'rmsd':
-            results = system.topology.select(mask)
+def __load_input(input):
+    # first check if file
+    if isinstance(input, str):
+        if os.path.exists(input):
+            with open(input, 'r') as file:
+                plumed = file.readlines()
         else:
-            results = pt.load(reference[rmsd_count]).topology.select(mask)
-            rmsd_count+=1
-        atoms.append(results.tolist())
+            raise ValueError(f'If "plumed" is a string, it has to point to a valid file.')
+    # otherwise must be input string
+    else:
+        plumed = input
 
-    return atoms
+    return plumed
+
+
+def __get_duration(plumed):
+    """Find total number of steps in the plumed file"""
+    reading_steps = False
+    duration = 0
+    for line in plumed:
+        if 'MOVINGRESTRAINT' in line and not reading_steps:
+            reading_steps = True
+        elif 'MOVINGRESTRAINT' in line and reading_steps:
+            reading_steps = False
+            break
+        if 'STEP' in line and reading_steps:
+            parts = line.split()
+            for part in parts:
+                if 'STEP' in part:
+                    step_duration = int(part.split('=')[1])
+                    duration = max(duration, step_duration)
+    return duration
+
+
+def __create_process(system, duration, engine, workdir):
+    # create a simple distance CV
+    cv = BSS.Metadynamics.CollectiveVariable.Distance(1, 2)
+    schedule = [0*BSS.Units.Time.nanosecond, duration*0.002*BSS.Units.Time.picosecond] # timestep is 0.002 ps
+    restraints = [BSS.Metadynamics.Restraint(1*BSS.Units.Length.angstrom), BSS.Metadynamics.Restraint(1*BSS.Units.Length.angstrom)]
+
+    # create the protocol
+    protocol = BSS.Protocol.Steering(cv, schedule, restraints, runtime=schedule[-1], report_interval=2500, restart_interval=2500)
+    
+    # create the process
+    workdir = os.path.abspath(workdir)
+    if engine == 'AMBER':
+        process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda', work_dir=workdir) # specify using pmemd.cuda
+    else:
+        process = BSS.Process.createProcess(system, protocol, engine, work_dir=workdir)
+    
+    # go to the process workdir
+    os.chdir(workdir)
+
+    return protocol, process
+
+
+def __edit_masks(plumed, system, pytraj_system, reference):
+    rmsd_count = 0
+    # loop over plumed input and replace masks with atoms
+    # and "initial" values with actual system values
+    for i, line in enumerate(plumed):
+        # replace mask with atom indices
+        if 'ATOMS=' in line:
+            new_line = __parse_masks(line, pytraj_system)
+            plumed[i] = new_line
+        # write reference
+        elif 'REFERENCE=' in line:
+            if isinstance(reference, list):
+                ref = reference[rmsd_count]
+            else:
+                ref = reference
+            rmsd_count += 1
+            new_line = __write_reference(line, system, ref, rmsd_count)
+            plumed[i] = new_line
+        # reach steering part of the file
+        elif 'MOVINGRESTRAINT' in line:
+            # write plumed file with only the CVs
+            with open('plumed.dat', 'w') as file:
+                file.writelines(plumed[:i]+['PRINT ARG=* FILE=initial.dat\n'])
+            # run plumed driver to find the initial values
+            subprocess.run(['plumed', 'driver', '--mf_pdb', 'input.pdb'])
+            break
+
+    return plumed
+
+
+def __parse_masks(line, system):
+    """Parse masks to return atom indices for the system"""
+    parts = line.replace('\n', '').split() # remove newline character
+
+    for i, part in enumerate(parts):
+        if 'ATOMS' in part:
+            mask = part.split('=')[1]
+            atoms = system.topology.select(mask)+1 # add 1 since pytraj.Topology.select() indexes from 0 but PLUMED does from 1
+            parts[i] = f'ATOMS={",".join([str(idx) for idx in atoms])}'
+    
+    new_line = ' '.join(parts) + '\n'
+
+    return new_line
+
+
+def __write_reference(line, system, reference, count):
+    """Write a correctly ordered RMSD reference file"""
+    parts = line.replace('\n', '').split() # remove newline character
+
+    for i, part in enumerate(parts):
+        if 'REFERENCE' in part:
+            mask = part.split('=')[1]
+            parts[i] = f'REFERENCE=reference_{count}.pdb'
+    
+    reference_atoms = pt.load(reference).topology.select(mask).tolist() # do not need to add 1 because indices will be handled by BSS
+    reference = BSS.IO.readMolecules(reference).getMolecule(0)
+
+    cv = BSS.Metadynamics.CollectiveVariable.RMSD(system, reference, reference_atoms, 0)
+    with open(f'reference_{count}.pdb', 'w') as file:
+        file.writelines([line+'\n' for line in cv.getReferencePDB()])
+
+    new_line = ' '.join(parts) + '\n'
+
+    return new_line
+
+
+def __edit_values(plumed):
+    # read in the initial values
+    with open('initial.dat', 'r') as file:
+        initial_contents = file.readlines()
+    all_labels = initial_contents[0].split()[3:]
+    all_values = [float(val) for val in initial_contents[-1].split()[1:]]
+    values = {}
+    for i in range(len(all_labels)):
+        values[all_labels[i]] = all_values[i]
+
+    # go over plumed file
+    reading_restraint = False
+    for i, line in enumerate(plumed):
+        # find MOVINGRESTRAINT part
+        if 'MOVINGRESTRAINT' in line and not reading_restraint:
+            reading_restraint = True
+        # reach end of restraint
+        elif 'MOVINRESTRAINT' in line and reading_restraint:
+            reading_restraint = False
+            break
+        # find which CVs are used for steering
+        if 'ARG=' in line and reading_restraint:
+            parts = line.replace('\n', '').split()
+            for part in parts:
+                if 'ARG=' in part:
+                    labels = part.replace('ARG=', '').split(',')
+        # find step definitions
+        # and check if there are "initial"
+        # values that need to be replaces
+        elif 'STEP' in line and 'initial' in line and reading_restraint:
+            parts = line.replace('\n', '').split()
+            for j, part in enumerate(parts):
+                if 'AT' in part and 'initial' in part:
+                    step_values = part.split('=')[1].split(',')
+                    for k, val in enumerate(step_values):
+                        if 'initial' in val:
+                            step_values[k] = str(__parse_operation(val, values[labels[k]]))
+                    parts[j] = f'{part.split("=")[0]}={",".join(step_values)}'
+            plumed[i] = '  ' + ' '.join(parts) + '\n'
+    
+    return plumed
 
 
 def __parse_operation(expression, initial):
@@ -78,147 +184,15 @@ def __parse_operation(expression, initial):
     elif '+' in expression:
         components = [float(component) for component in expression.split('+')]
         value = components[0]+components[1]
-    else:
+    elif '-' in expression:
         components = [float(component) for component in expression.split('-')]
         value = components[0]-components[1]
+    else:
+        value = initial
     return value
 
 
-def __create_cvs(system, types, atoms, reference=None):
-    """Create CVs for sMD simulations
-
-    Parameters
-    ----------
-    system : BioSimSpace._SireWrappers.System
-        system to be steered
-  
-    types : str, [str]
-        CV types. Allowed values are 'rmsd', 'torsion', and 'distance'
-
-    atoms : str, [str]
-        atom indices for each CV
-
-    reference : BioSimSpace._SireWrappers.Molecule, [BioSimSpace._SireWrappers.Molecule]
-        RMSD reference. Required if rmsd is one of the CV types
-
-    Returns
-    -------
-    cvs : [BioSimSpace.Metadyanmics.CollectiveVariable]
-        the CVs created
-    """
-    cvs = []
-
-    # validate input
-    if isinstance(reference, BSS._SireWrappers.Molecule):
-        reference = [reference]*types.count('rmsd')
-
-    # loop and create cvs
-    rmsd_count = 0 # keep track of RMSD
-    for cv_type, indices in zip(types, atoms):
-        if cv_type == 'distance':
-            cv = BSS.Metadynamics.CollectiveVariable.Distance(indices[0], indices[1])
-        elif cv_type == 'torsion':
-            cv = BSS.Metadynamics.CollectiveVariable.Torsion(indices)
-        elif cv_type == 'rmsd':
-            cv = BSS.Metadynamics.CollectiveVariable.RMSD(system, reference[rmsd_count], indices, 0)
-            rmsd_count+=1
-        else:
-            raise ValueError(f'CV type {type} not supported. Available types are: distance, torsion, rmsd')
-        cvs.append(cv)
-    
-    return cvs
-
-
-def __compute_value(system, cv_type, atoms):
-    """Compute CV values using pytraj"""
-    if cv_type == 'distance':
-        result = pt.calc_distance(system, atoms)[0][0]/10
-    elif cv_type == 'torsion':
-        result = pt.calc_dihedral(system, atoms)[0][0]*0.017453
-    else:
-        raise TypeError(f'Unsupported CV: {cv_type}')
-    return result
-
-
-def __compute_restraints(cvs, values, forces, system):
-    """
-    Convert the CV values into steering restraints
-
-    Parameters
-    ----------
-    cvs : [BioSimSpace.Metadyanmics.CollectiveVariable]
-        the CVs created
-    values : [[float,int,str]]
-        CV values in default PLUMED units. 'initial' will be replaced by a computed initial value
-    forces : [[float,int]]
-        force constant for each CV at each step
-    system : pytraj.Trajectory
-        pytraj system
-
-    Returns
-    -------
-    restraints : [[BSS.Metadynamics.Restraint]]
-        steering restrants
-    """
-    unord_restraints = []
-
-    # loop through each CV
-    for cv, cv_values, cv_forces in zip(cvs, values, forces):
-        # compute initial values and get units
-        if isinstance(cv, BSS.Metadynamics.CollectiveVariable.RMSD):
-            initial = cv.getInitialValue().nanometers().value()
-            units = BSS.Units.Length.nanometer
-        elif isinstance(cv, BSS.Metadynamics.CollectiveVariable.Distance):
-            initial = __compute_value(system, 'distance', [cv.getAtom0(), cv.getAtom1()])
-            units = BSS.Units.Length.nanometer
-        else:
-            initial = __compute_value(system, 'torsion', cv.getAtoms())
-            units = BSS.Units.Angle.radian
-
-        # create the restraints
-        cv_restraints = []
-        for val, force in zip(cv_values, cv_forces):
-            if isinstance(val, str):
-                if val == 'initial':
-                    val = initial
-                elif 'initial' in val: # allow a simple mathematical operation
-                    val = __parse_operation(val, initial)
-            cv_restraints.append(BSS.Metadynamics.Restraint(val*units, force))
-
-        unord_restraints.append(cv_restraints)
-    
-    restraints = []
-    for i in range(len(unord_restraints[0])):
-        restraints.append([restraint[i] for restraint in unord_restraints])
-
-    return restraints
-
-
-def __create_protocol(cvs, timings, restraints):
-    """Create protocol
-
-    Parameters
-    ----------
-    cvs : [BioSimSpace.Metadyanmics.CollectiveVariable]
-        the CVs
-    timings : [int, float]
-        steering schedule in ns
-    restraints : [[BSS.Metadynamics.Restraint]]
-        steering restrants
-
-    Returns
-    -------
-    protocol : BSS.Protocol.Steering
-        steering protocol
-    """
-    ns = BSS.Units.Time.nanosecond
-    schedule = [time*ns for time in timings]
-    protocol = BSS.Protocol.Steering(cvs, schedule, restraints, runtime=schedule[-1], report_interval=2500, restart_interval=2500)
-
-    return protocol
-
-
-def run_smd(topology, coordinates, masks, types, timings, values, forces, reference=None, engine='AMBER', workdir='.'):
+def run_smd(topology, coordinates, input, reference=None, engine='AMBER', workdir='.'):
     """
     Run a steered MD simulation with AMBER or GROMACS and PLUMED.
 
@@ -228,16 +202,8 @@ def run_smd(topology, coordinates, masks, types, timings, values, forces, refere
         topology file
     coordinates : str
         equilibrated system coordinate file
-    masks : [str], str
-        a list of AMBER masks for each CV in the order they appear in the plumed file
-    types : [str], str
-        CV types
-    timings : [float, int]
-        steering schedule in ns
-    values : [[float,str]]
-        CV values in default PLUMED units at each point in "timings", with each list corresponding to an individual CV (unless there is only one point in "timings", in which case a single list of values is to be provided). 'initial' will be replaced by a computed initial value. In additional to that, addition, subtraction, multiplication and division are allowed between the initial value and a number (e.g. "initial/2" or "5+initial") to help with multiple step steering protocols
-    forces : [[float,int]]
-        forces to be applied to each CV in kJ/mol, in the same format as "values"
+    input : str, [str]
+        pseudo PLUMED input, either as the input itself, or as a path to a file containing it. ATOMS are replaced by AMBER masks, and CV values can be "initial" and with simple arithmetic operations, e.g. "initial/2"
     reference : str
         path to reference PDB file if using RMSD as a CV. All of the atoms in the reference have to also appear in the system, but not vice versa.
     engine : str
@@ -250,38 +216,29 @@ def run_smd(topology, coordinates, masks, types, timings, values, forces, refere
     process : BioSimSpace.Process
         BioSimSpace process used for steering
     """
-    # load system
+    # load system files
     system = BSS.IO.readMolecules([topology, coordinates])
     pytraj_system = pt.load(coordinates, top=topology) # using pytraj system for searching and some initial value computing
+    if isinstance(reference, list):
+        reference = [os.path.abspath(ref) for ref in reference]
+    elif isinstance(reference, str):
+        reference = os.path.abspath(reference)
 
-    # parse masks to atoms
-    cv_atoms = __parse_masks(masks, pytraj_system, types, reference)
+    # load input
+    plumed = __load_input(input)
+    duration = __get_duration(plumed)
 
-    #load reference
-    if reference is not None:
-        if isinstance(reference, str):
-            reference = BSS.IO.readMolecules(reference).getMolecule(0)
-        else:
-            reference = [BSS.IO.readMolecules(ref).getMolecule(0) for ref in reference]
+    # create protocol and process
+    protocol, process = __create_process(system, duration, engine, workdir)
+    # now in process workdir
+    # write input as PDB
+    BSS.IO.saveMolecules('input', system, 'pdb')
 
-    # create CVs
-    timings, values, forces = __validate_input(timings, values, forces)
-    cvs = __create_cvs(system, types, cv_atoms, reference)
-
-    # append values with initial values
-    # at the moment torsion and distance CVs do not have
-    # a 'getInitialValue()' option
-    restraints = __compute_restraints(cvs, values, forces, pytraj_system)
-
-    # create the protocol
-    protocol = __create_protocol(cvs, timings, restraints)
-
-    # create the process
-    workdir = os.path.abspath(workdir)
-    if engine == 'AMBER':
-        process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda', work_dir=workdir) # specify using pmemd.cuda
-    else:
-        process = BSS.Process.createProcess(system, protocol, engine, work_dir=workdir)
+    # fix plumed
+    plumed = __edit_masks(plumed, system, pytraj_system, reference)
+    plumed = __edit_values(plumed)
+    with open('plumed.dat', 'w') as file:
+        file.writelines(plumed)
 
     # run process
     process.start()
