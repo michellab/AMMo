@@ -25,3 +25,9 @@ states:
 - open
 - closed
 steering:
+  open:
+    input: open_to_closed.dat
+    reference: closed_ref.pdb
+  closed:
+    input: closed_to_open.dat
+    reference: open_ref.pdb

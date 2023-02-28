@@ -48,7 +48,28 @@ Steered MD is run using the `steering` command, and the main options are provide
 * P185 stacking to W179
 * F196 stacking to F280 (CG distances)
 
-BioSimSpace supports 3 types of CVs: distance, dihedral angle and RMSD. This covers all of the above, except of P185 stacking to W179. The stacking is defined as the absolute difference between the following two distances: P185(CG)-W179(CE) and P185(CA)-W179(CD1). This requires a custom expression. As such, the sMD simulations here were run manually. The input files can be found in `systems/peptide-1/open/seeded-md/steering` and `systems/peptide-1/closed/seeded-md/steering` to represent the steering protocol from open to closed conformation and from closed to open conformation respectively.
+AMMo uses PLUMED[[4]](#4) to apply a harmonic restraint to the system and so bias it towards a certain value of a collective variable (CV) (or multiple CVs). While BioSimSpace has support for steering with distance, torsion and RMSD based CVs[[5]](#5), in order to support larger CV flexibility AMMo uses a pseudo PLUMED input file. An example is shown below:
+
+```bash
+rmsd: RMSD REFERENCE=:179-185&(!@/H) TYPE=OPTIMAL
+tyr: TORSION ATOMS=:153@N:153@CA:153@CB:153@CG
+pro1: DISTANCE ATOMS=:180@CE2:186@CD
+pro2: DISTANCE ATOMS=:180@CD1:185@CA
+stacking: CUSTOM ARG=pro1,pro2 FUNC=abs(x-y) PERIODIC=NO
+phe: DISTANCE ATOMS=:197@CG:281@CG
+MOVINGRESTRAINT ...
+  ARG=rmsd,tyr,stacking,phe
+  STEP0=0    AT0=initial,initial,initial,initial    KAPPA0=0.0,0.0,0.0,0.0
+  STEP1=2000    AT1=initial,initial,initial,initial    KAPPA1=3500.0,3500.0,3500.0,3500.0
+  STEP2=75000000    AT2=0.0,1.047,0.0,0.45    KAPPA2=3500.0,3500.0,3500.0,3500.0
+  STEP3=76000000    AT3=0.0,1.047,0.0,0.45    KAPPA3=0.0,0.0,0.0,0.0
+... MOVINGRESTRAINT
+PRINT STRIDE=2500 ARG=* FILE=COLVAR
+```
+
+In a usual PLUMED file, the `ATOMS=` arguments would point to atom indices, while here they are replaced with AMBER atom masks. This makes the pseudo-PLUMED files easier to write, and makes them more transferable. When sMD is being set up, the masks are replaced with the corresponding atom indices. In case of RMSD, the mask is used to prepare the reference file. Additionally, the `initial` keyword is allowed when defining the steering steps. During set up it is replaced with the starting value of the CV. Simple arithmetic operations, such as `initial/2` or `initial+5.2` are also allowed.
+
+The pseudo-PLUMED files used here are available in `.defaults`, and the references for RMSD are in `inputs`. The `steering` part of `.defaults/config` points to these file for AMMo to use.
 
 Once the sMD trajectories were obtained, the analysis was run in `analysis/sMD_analysis.ipynb`.
 
@@ -85,6 +106,10 @@ Additionally, data analysis found in the SI is in `analysis/supplementary_inform
 
 <a id="1">[1]</a> Wiesmann, C.; Barr1, K. J.; Kung, J.; Zhu, J.; Erlanson, D. A.; Shen, W.; Fahr, B. J.; Zhong, M.; Taylor, L.; Randal1, M.; McDowell1, R. S.; Hansen, S. K. Nat. Struct. Mol. Biol. 2004, 11, 730–737.
 
-<a id="1">[2]</a> Brandão, T. A. S.; Hengge, A. C.; Johnson, S. J. J. Biol. Chem. 2010, 285, 15874–15883.
+<a id="2">[2]</a> Brandão, T. A. S.; Hengge, A. C.; Johnson, S. J. J. Biol. Chem. 2010, 285, 15874–15883.
 
-<a id="1">[3]</a> Choy, M. S.; Li, Y.; Machado, L. E.; Kunze, M. B.; Connors, C. R.; Wei, X.; Lindorff-Larsen, K.; Page, R.; Peti, W. Mol. Cell 2017, 65, 644–658.
+<a id="3">[3]</a> Choy, M. S.; Li, Y.; Machado, L. E.; Kunze, M. B.; Connors, C. R.; Wei, X.; Lindorff-Larsen, K.; Page, R.; Peti, W. Mol. Cell 2017, 65, 644–658.
+
+<a id="4">[4]</a>https://www.plumed.org/doc-v2.7/user-doc/html/_m_o_v_i_n_g_r_e_s_t_r_a_i_n_t.html
+
+<a id="5">[5]</a>https://github.com/michellab/BioSimSpaceTutorials/tree/main/03_steered_md
