@@ -64,7 +64,7 @@ def __write_input(seeds, system, state):
         # for every feature run featurization
         for name, params in _project['features'].items():
             file.writelines([f'\n  {_project["python"]}',
-                             f' {os.environ["AMMO_HOME"]}/allostery/scripts/featurize.py',
+                             f' {os.environ["AMMO_HOME"]}/ammo/scripts/featurize.py',
                               ' --topology ', '../system-setup/system_dry.prm7',
                               ' --trajectory ', f'snapshot_$seed/production_dry.nc',
                               ' --output ', f'snapshot_$seed/{name}.txt'])
