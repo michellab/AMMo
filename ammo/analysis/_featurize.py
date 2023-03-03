@@ -1,42 +1,11 @@
-import pytraj as pt
+import os
+from random import choice
+from string import ascii_lowercase
+import subprocess
+from numpy import loadtxt
 
 
-def __validate_input(trajectory, topology):
-    if isinstance(trajectory, str):
-        if topology is not None:
-            trajectory = pt.load(trajectory, top=topology)
-        else:
-            raise ValueError('if trajectory is "str", topology must be provided')
-    elif not isinstance(trajectory, pt.Trajectory):
-        raise TypeError('trajectory has to be of type "str" or "pytraj.Trajectory"')
-        
-    return trajectory
-
-
-def __rmsd(trajectory, mask, reference, shared):
-    if reference is None:
-        raise ValueError('Please provide a reference for RMSD calculation')
-    else:
-        reference = pt.load(reference)
-        
-    if shared is None:
-        shared = '*'
-    
-    aligned = pt.align(trajectory, shared, ref=reference, ref_mask=shared)
-    
-    rmsd = pt.rmsd(aligned, mask, ref=reference, ref_mask=mask, nofit=True, update_coordinate=False)
-    return rmsd
-        
-
-def __distance(trajectory, mask):
-    return pt.calc_distance(trajectory, mask)
-
-
-def __torsion(trajectory, mask):
-    return pt.calc_dihedral(trajectory, mask)
-
-
-def featurize(trajectory, feature, mask, reference=None, shared='!@/H', topology=None):
+def featurize(trajectory, topology, feature, mask, reference=None, shared='!@/H'):
     """Reduce trajectory data to a single feature.
     
     Parameters
@@ -67,16 +36,36 @@ def featurize(trajectory, feature, mask, reference=None, shared='!@/H', topology
     featurized : numpy.array
         a time series of the feature
     """
-    trajectory = __validate_input(trajectory, topology)
+    cpptraj_input = [f'parm {os.path.abspath(topology)}\n',
+                     f'trajin {os.path.abspath(trajectory)}\n']
+
+    file = f'/tmp/cpptraj_{"".join(choice(ascii_lowercase) for i in range(10))}.in'
+    output = f'/tmp/cpptraj_{"".join(choice(ascii_lowercase) for i in range(10))}.out'
         
     # calculate the feature
     if feature == 'rmsd':
-        featurized = __rmsd(trajectory, mask, reference, shared)
-    elif feature == 'distance':
-        featurized = __distance(trajectory, mask)
-    elif feature == 'torsion':
-        featurized = __torsion(trajectory, mask)
+        cpptraj_input += [f'parm {os.path.abspath(reference)} name ref_parm\n',
+                          f'reference {os.path.abspath(reference)} parm ref_parm name rmsd_ref\n',
+                          f'rms {shared} ref rmsd_ref\n',
+                          f'rmsd {mask} out {output} nofit ref rmsd_ref\n']
     else:
-        raise ValueError('"feature" must be "rmsd", "distance" or "torsion"')
+        cpptraj_input += [f'{feature} {mask} out {output}\n']
+    cpptraj_input += ['go\nquit\n']
+
+    # run cpptraj
+    with open(file, 'w') as fl:
+        fl.writelines(cpptraj_input)
+    process_output = subprocess.run(['cpptraj', '-i', file], capture_output=True, text=True)
+    os.remove(file)
+
+    # check for errors
+    error = 'Error: Error(s) occurred during execution.'
+    if error in process_output.stderr:
+        print(process_output.stderr.split('\n')[0])
+        return None
+    
+    # load results
+    data = loadtxt(output, comments='#')
+    os.remove(output)
         
-    return featurized
+    return data[:,1]

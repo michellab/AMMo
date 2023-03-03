@@ -10,6 +10,15 @@ def __get_commands(seeds):
     commands = []
 
     for seed in seeds:
+        if 'input_file' in _project['features']:
+            if os.path.exists(f'{_ammo["location"]}/{_ammo["project"]}/.defaults/{_project["features"]["input_file"]}'):
+                input_file = f'{_ammo["location"]}/{_ammo["project"]}/.defaults/{_project["features"]["input_file"]}'
+            else:
+                input_file = os.path.abspath(_project["features"]["input_file"])
+            commands.append([['cd', f'snapshot_{seed}'],
+                             ['cpptraj', '-i', input_file],
+                             ['cd', '..']])
+            continue
         for name, params in _project['features'].items():
             # add required arguments for running featurization
             feature_command = [_project['python'],
@@ -39,6 +48,19 @@ def __write_input(seeds, system, state):
                         f'seeds="{" ".join([str(seed) for seed in seeds])}"\n',
                          'for seed in $seeds;do'])
 
+        # check for input file
+        if 'input_file' in _project['features']:
+            if os.path.exists(f'{_ammo["location"]}/{_ammo["project"]}/.defaults/{_project["features"]["input_file"]}'):
+                input_file = f'{_ammo["location"]}/{_ammo["project"]}/.defaults/{_project["features"]["input_file"]}'
+            else:
+                input_file = os.path.abspath(_project["features"]["input_file"])
+            file.writelines([f'\ncd snapshot_$seed\n',
+                             f'cpptraj -i {input_file}\n',
+                             f'cd ..\ndone\n'])
+            # stop here
+            return [['sbatch', slurm_file]]
+            
+        # otherwise write out each feature
         # for every feature run featurization
         for name, params in _project['features'].items():
             file.writelines([f'\n  {_project["python"]}',

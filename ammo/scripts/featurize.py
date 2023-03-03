@@ -14,7 +14,7 @@ def __main__():
     parser.add_argument('--shared', default='!@/H', help='mask for atoms used for aligning the RMSD reference. Default: "!@/H"')
     args = parser.parse_args()
 
-    featurized = featurize(args.trajectory, args.feature, args.mask, args.reference, args.shared, args.topology)
+    featurized = featurize(args.trajectory, args.topology, args.feature, args.mask, args.reference, args.shared)
     np.savetxt(args.output, featurized)
     
     return None
