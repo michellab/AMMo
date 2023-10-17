@@ -1,7 +1,6 @@
 """A library for assessing allosteric modulation of proteins via an sMD/MSM protocol.
 """
 import os as _os
-import warnings as _warnings
 
 
 __all__ = ['analysis',
@@ -24,4 +23,3 @@ for loc in _os.environ['PATH'].split(':'):
             break
 if not _gmx:
    print('A GROMACS installation is required: https://www.gromacs.org/. Please install GROMACS and include it in your PATH')
-   

@@ -456,7 +456,7 @@ class MSMCollection:
 
         return fig, ax, cbar
 
-    def pcca_assignments(self, n_states, msm=None, titles=None, disconnected=0, overwrite=False):
+    def pcca_assignments(self, n_states, msm=None, titles=None, disconnected=None, overwrite=False):
         """Compute metastable state probabilities from MSM stationary distributions
 
         Parameters
@@ -470,9 +470,9 @@ class MSMCollection:
         titles : str, [str]
             MSMs for which to compute the probabilities
             
-        disconnected : int
-            which metastable state to assign disconnected sets to
-
+        disconnected : int, [int]
+            which metastable state to assign disconnected sets to. If list, length must match "msm" (i.e. different disconnected assignments for each pcca MSM). If None, will be assigned to the nearest metastable cluster
+            
         overwrite : bool
             whether to overwrite existing probabilities
 
@@ -485,18 +485,43 @@ class MSMCollection:
             msm = [key for key in self._MSMs.keys()]
         elif isinstance(msm, str):
             msm = [msm]
+        if isinstance(disconnected, int) or disconnected is None:
+            disconnected = [disconnected]*len(msm)
+        if len(msm) != len(disconnected):
+            raise ValueError(f'The length of "disconnected" ({disconnected}) must match "msm"')
 
-        for key in msm:
+        for key, state in zip(msm, disconnected):
             if n_states not in self._MSMs[key].pcca.keys() or overwrite:
-                centers = self._MSMs[key].run_pcca(n_states, disconnected)
+                centers = self._MSMs[key].run_pcca(n_states, state)
 
             # compute assignments
             print(f'Metastable state assignments based on {key} MSM, {n_states} states:')
             for title in titles:
                 print(title)
-                self._MSMs[title].assign_to_metastable(n_states, disconnected, self._MSMs[key], overwrite=overwrite)
+                self._MSMs[title].assign_to_metastable(n_states, state, self._MSMs[key], overwrite=overwrite)
                 print('-' * 20)
             print()
+
+        return None
+    
+    def add_state_labels(self, n_states, labels, titles=None):
+        """Add meaningful labels for the PCCA assigned metastable states, e.g. "active" and "inactive"
+
+        Parameters
+        ----------
+        n_states : int
+            number of metastable states (for mapping to the corresponding PCCA assignments)
+
+        labels : [str]
+            list of state names. Length has to match the number of states
+
+        titles: str, [str]
+            MSMs to add the labels for. If None, will be added for all
+        """
+        titles = self.__fix_titles(titles)
+
+        for title in titles:
+            self._MSMs[title].add_state_labels(n_states, labels)
 
         return None
 
@@ -560,7 +585,7 @@ class MSMCollection:
                 ax_curr.set_title(titles[row, col])
                 ax_curr.scatter(self.clusters.clustercenters[:,x], self.clusters.clustercenters[:,y], s=8, c=color)
                 if features == 'infer':
-                    features = self._MSMs[titles[row,col]].features
+                    features = [self._MSMs[titles[row,col]].features[x], self._MSMs[titles[row,col]].features[y]]
                 elif features == None:
                     features = [None, None]
                 ax_curr.set_xlabel(features[0])
@@ -576,7 +601,7 @@ class MSMCollection:
         return fig, ax, cbar
 
 
-    def plot_clusters(self, cluster_sets, shape, titles=None, x=0, y=1, features='infer', cmap=None, colors=['magenta', 'orange', 'teal', 'red']):
+    def plot_clusters(self, cluster_sets, shape, titles=None, x=0, y=1, features='infer', cmap=None, same_clusters=True, colors=['magenta', 'orange', 'teal', 'red']):
         """Plot the data for each MSM as a density plot, with cluster centers on top
 
         Parameters
@@ -602,6 +627,9 @@ class MSMCollection:
         cmap : matplotlib.colors.Colormap
             specify a colormap to use
 
+        same_clusters : bool
+            whether to plot the same cluster sets on all data plots. If "False", it will be assumed that a correct number of individual cluster sets has been provided.
+
         colors : [str]
             cluster colors
 
@@ -622,8 +650,8 @@ class MSMCollection:
         # sort the cluster sets
         if type(cluster_sets) == list:
             cluster_sets = _np.array(cluster_sets)
-        if cluster_sets.shape[0] == 1: #if only one cluster set given
-            cluster_sets = _np.array([cluster_sets[0] for i in range(len(titles))])
+        if same_clusters: #if only one cluster set given
+            cluster_sets = _np.array([cluster_sets for i in range(len(titles))])
             
         for row in range(shape[0]):
             for col in range(shape[1]):
@@ -789,7 +817,7 @@ class MSMCollection:
         
         return None
 
-    def bootstrapping(self, n_states, msm=None, titles=None, cluster_centers=None, min_iter=10, max_iter=100, tol=1, last=10, verbose=False, overwrite=False):
+    def bootstrapping(self, n_states, msm=None, titles=None, cluster_centers=None, min_iter=100, max_iter=100, tol=1, last=10, verbose=False, overwrite=False):
         """
         Compute bootstrapped probabilities until they have converged to a Gaussian distribution or until maximum number
         of iterations have been reached.
@@ -800,7 +828,7 @@ class MSMCollection:
             number of metastable states
 
         msm : allostery.msm.MSM
-            MSMs whose pcca assignment to use. If None, all will be used
+            MSMs whose metastable state assignment to use. If None, all will be used
         
         titles : str, [str]
             MSMs to compute probabilities for. If None, all with be used
@@ -849,81 +877,109 @@ class MSMCollection:
                 print('-'*30)
         
         return probabilities
-
-    def plot_bootstrapping_violin(self, n_states, state_idx, msm=None, titles=None, state_name=None, colors=None):
-        """
-        Plot bootstrapped probabilities as a violin plot
-
+    
+    def plot_bootstrapping_violin(self, assignment, xaxis='titles', titles=None, states=None, shape=None, colors=None):
+        """Plot bootstrapped probabilities as a violin plot
+        
         Parameters
         ----------
-        n_states : int
-            number of metastable states in the metastable assignment
-        
-        state_idx : int
-            index of state in pcca assignment
+        assignment: str
+            metastable state assingment to use, e.g. "reference, 2 states"
 
-        msm : allostery.msm.MSM
-            MSMs whose pcca assignment to use. If None, a plot for each will be made
+        xaxis : str
+            what variable will be shown on the xaxis. Allowed values are: "titles" or "states". The other value will be kept constant and have to be provided as variables
 
         titles : str, [str]
-            MSMs to compute probabilities for. If None, all with be used
+            msm titles. If None, all will be used. If "xaxis=state", titles has to be a str of one MSM title
 
-        state_name : str
-            name of state that is being plotted, used for axis titles
+        states : str, int, [str], [int]
+            metastable states to plot. If None, all will be plotted. Can be type str if state labels have been set, otherwise are integers starting from 1
+
+        shape : tuple
+            plot layout in the form (rows, columns)
 
         colors : [str]
             colors for each of the violin plots
-        
+
         Returns
         -------
         fig : matplotlib.figure.Figure
             figure containing plot axes
 
         ax : np.array of AxesSubplot
-            bootstrapped probabilities as a violin plot
+            bootstrapped probabilities as a violin plot             
         """
-        # get titles and msms
+        # metastable assignment breakdown
+        assignment_title = assignment.split(',')[0]
+        n_states = int(assignment.split(',')[1].split()[0])
+
+        # clean titles and states input
         titles = self.__fix_titles(titles)
-        if msm is None:
-            msm = [key for key in self._MSMs.keys()]
-        elif isinstance(msm, str):
-            msm = [msm]
+        if states is None:
+            if n_states in self._MSMs[assignment_title].state_labels:
+                states = self._MSMs[assignment_title].state_labels[n_states]
+            else:
+                states = [i+1 for i in range(n_states)]
+        if not (isinstance(states, list) or isinstance(states, _np.ndarray)):
+            states = [states]
+        if isinstance(states[0], str):
+            state_labels = states
+            state_idxs = [_np.where(self._MSMs[assignment_title].state_labels[n_states]==state_name)[0][0] for state_name in states]
+        elif isinstance(states[0], int):
+            if n_states in self._MSMs[assignment_title].state_labels:
+                state_labels = [self._MSMs[assignment_title].state_labels[3][i-1] for i in states]
+            else:
+                state_labels = [f'state {i}' for i in states]
+            state_idxs = [i-1 for i in states]
+        else:
+            raise ValueError('"states" has to be int, str, or list of int or str')
 
-        # get colors
-        if colors is None:
-            colors = _color_palette(None, len(titles))
+        # get data and set axis labels depending on "xaxis"
+        data = []
+        if xaxis == 'titles':
+            xticklabels = titles
+            ylabels = [f'{state.capitalize()} state probability/%' for state in state_labels]
+            for idx in state_idxs:
+                data.append([self._MSMs[title].bootstrapping_data[assignment]['probabilities'][:,idx] for title in titles])
+        elif xaxis == 'states':
+            xticklabels = state_labels
+            ylabels = [f'State probabilities of {title} MSM/%' for title in titles]
+            for title in titles:
+                data.append([self._MSMs[title].bootstrapping_data[assignment]['probabilities'][:,idx] for idx in state_idxs])
 
-        # plot width depending on number of titles
-        width = max(5, len(titles)*1.5)
-        # figure height depending on number of msms
-        height = 5*len(msm)
+        # get figure parameters
+        max_cols = 3
+        if shape is None:
+            shape = (len(data)//max_cols+int(len(data)%max_cols>0), max_cols)
+        width = max(5, (len(data[0])*1.5))*shape[1]
+        height = shape[0]*5
 
-        # initialize plot
-        fig, axes = _subplots(len(msm), figsize=(width, height))
-        if len(msm) == 1:
-            axes = [axes]
-
-        # plot for each msm
-        for ax, pcca in zip(axes, msm):
-            data = [self._MSMs[title].bootstrapping_data[f'{pcca}, {n_states} states']['probabilities'][:,state_idx-1] for title in titles]
-            violins = ax.violinplot(data)
-            # change color
-            for violin, color in zip(violins['bodies'], colors):
-                violin.set_color(color)
-                violin.set_alpha(0.7)
-            violins['cmaxes'].set_color('black')
-            violins['cbars'].set_color('black')
-            violins['cmins'].set_color('black')
-            # set ticks and labels
-            ax.set_xticks(_np.arange(1, len(titles)+1))
-            ax.set_xticklabels(titles)
-            ax.set_xlabel('System')
-            ax.set_ylabel(f'{state_name} state probability/%')
-            ax.set_title(f'{pcca}, {n_states} states')
+        # plot violin
+        fig, ax = _subplots(shape[0], shape[1], figsize=(width, height))
+        ax = _np.hstack(ax)
+        for i in range(len(ax)):
+            # if no more data, make invisible
+            if i >= len(data):
+                ax[i].set_visible(False)
+            else:
+                violins = ax[i].violinplot(data[i])
+                # change color
+                if colors is None:
+                    colors = _color_palette(None, len(data[i]))
+                for violin, color in zip(violins['bodies'], colors):
+                    violin.set_color(color)
+                violins['cmaxes'].set_color('black')
+                violins['cbars'].set_color('black')
+                violins['cmins'].set_color('black')
+                # set ticks and labels
+                ax[i].set_xticks(_np.arange(1, len(xticklabels)+1))
+                ax[i].set_xticklabels(xticklabels, size=14)
+                ax[i].set_ylabel(ylabels[i], size=14)
 
         fig.tight_layout()
 
-        return fig, axes
+        return fig, ax
+    
 
 class MSM:
     def __init__(self, title):
@@ -939,6 +995,7 @@ class MSM:
         self.its = None
         self.msm = None
         self.pcca = {}
+        self.state_labels = {}
         self.metastable_assignments = {}
         self.metastable_assignments_bootstrapped = {}
         self.bootstrapping_data = {}
@@ -1189,7 +1246,7 @@ class MSM:
         while len(self.stationary_distribution)!=len(self.cluster_centers):
             self.stationary_distribution = _np.append(self.stationary_distribution, 0.0)
 
-    def run_pcca(self, n_states, disconnected=0):
+    def run_pcca(self, n_states, disconnected=None):
         """Run PCCA on the MSM
         
         Parameters
@@ -1198,7 +1255,7 @@ class MSM:
             number of states to assign
             
         disconnected : int
-            which metastable state to assign disconnected sets to
+            which metastable state to assign disconnected sets to. If None, will be assigned to the nearest metastable cluster
             
         Returns
         -------
@@ -1214,24 +1271,67 @@ class MSM:
             metastable = [self.msm.connected_sets[0][center] for center in self.msm.metastable_sets[i]]
             remapped.append(_np.array(metastable))
 
-        # assign the disconnected sets to the specified
-        # metastable state
-        state_to_add = remapped[disconnected]
-        for i in range(1, len(self.msm.connected_sets)):
-            for center_idx in self.msm.connected_sets[i]:
-                state_to_add = _np.append(state_to_add, center_idx)
-        state_to_add.sort()
-        remapped[disconnected] = state_to_add
-
         # ensure center indices are integers
         for state in range(n_states):
             remapped[state] = _np.array([int(center) for center in remapped[state]])
 
-        self.pcca[n_states] = remapped
+        # sort metastable sets based on average center distance from origin
+        distances = _np.array([])
+        for state in range(n_states):
+            distances = _np.append(distances, _np.linalg.norm(self.cluster_centers[list(remapped[state])], axis=1).mean())
+        # replace distances of 0 (i.e. empty sets) with highest value + offset
+        # to put them at the back rather than the front
+        distances[distances==0.0] = distances.max() + 10
+        reordered = []
+        for state in distances.argsort():
+            reordered.append(remapped[state])
+
+        # assign the disconnected sets to the specified
+        # metastable state
+        # if not specified, find the closest metastable cluster
+        # to each disconnected cluster center
+        if disconnected is None:
+            cluster_av = _np.array([self.cluster_centers[list(reordered[i])].mean(axis=0) for i in range(n_states)])
+            for i in range(1, len(self.msm.connected_sets)):
+                for center_idx in self.msm.connected_sets[i]:
+                    center_xyz = _np.array([self.cluster_centers[center_idx]])
+                    to_add = _np.linalg.norm(cluster_av-center_xyz, axis=1).argmin()
+                    modified_state = _np.append(reordered[to_add], center_idx)
+                    modified_state.sort()
+                    reordered[to_add] = modified_state.astype(int)
+        else:
+            state_to_add = reordered[disconnected]
+            for i in range(1, len(self.msm.connected_sets)):
+                for center_idx in self.msm.connected_sets[i]:
+                    state_to_add = _np.append(state_to_add, center_idx)
+            state_to_add.sort()
+            reordered[disconnected] = state_to_add.astype(int)    
+
+        self.pcca[n_states] = reordered
+
         # using list(centers) allows to give empty metastable sets
-        pcca_centers = [self.cluster_centers[list(centers)] for centers in remapped]
+        pcca_centers = [self.cluster_centers[list(centers)] for centers in reordered]
         
         return pcca_centers
+    
+    def add_state_labels(self, n_states, labels):
+        """Add meaningful labels for the PCCA assigned metastable states, e.g. "active" and "inactive"
+
+        Parameters
+        ----------
+        n_states : int
+            number of metastable states (for mapping to the corresponding PCCA assignments)
+
+        labels : [str]
+            list of state names. Length has to match the number of states
+        """
+        # check that number of states matches length
+        if len(labels) != n_states:
+            raise ValueError(f'Length of "labels" has to match "n_states"')
+        
+        self.state_labels[n_states] = _np.array(labels)
+
+        return None
 
     def assign_to_metastable(self, n_states, disconnected=0, msm=None, verbose=True, overwrite=False, metastable_sets=None,
                              weights=None):
@@ -1285,7 +1385,7 @@ class MSM:
                 for key, info in self.metastable_assignments[title].items():
                     print(f'MS {key} has {info[2]} counts and {info[0]}% probability (± {info[1]}%)')
             return None
-
+ 
         # find the probabilities
         self.metastable_assignments[title] = {}
         for i in range(len(metastable_sets)):
@@ -1552,7 +1652,7 @@ class MSM:
 
         return ratios
 
-    def sample_weighted_trajectories(self, n_frames, outputs, topology, distributions=None):
+    def sample_weighted_trajectories(self, n_frames, outputs=None, topology=None, distributions=None):
         """Sample trajectory data based on MSM distributions
 
         Parameters
@@ -1561,10 +1661,10 @@ class MSM:
             number of frames to sample
 
         outputs : str, [str]
-            output location. Number of outputs given must match number of distributions
+            output location. Number of outputs given must match number of distributions. If None, only samples will be returned
 
         topology : str
-            topology file path
+            topology file path. Can be None if "outputs" is None
 
         distributions : numpy.array
             distributions to base the sampling on. Must be same length as active set (i.e. removed disconnected states).
@@ -1581,11 +1681,16 @@ class MSM:
         if type(outputs) == str:
             outputs = [outputs]
 
-        if len(outputs) != len(distributions):
+        if outputs is not None and len(outputs) != len(distributions):
             raise IndexError('Must provide the same number of outputs and distributions')
 
         samples = self.msm.sample_by_distributions(distributions, n_frames)
+
+        # return here if no output
+        if outputs is None:
+            return samples
         
+        # save if output provided
         for all_frames, output in zip(samples, outputs):
             file = '/tmp/cpptraj_sample_tmp.in'
             with open(file, 'w') as fl:
@@ -1769,8 +1874,10 @@ class MSM:
             if verbose:
                 print('%3i/%i'%(i,max_iter), end='\r')
             # build a bootstrapped msm
-            #try: # if msm stationary probabilities too low, an error is thrown - discard those
-            stationary_distribution, trajectories = self.__build_bootstrapped_msm(cluster_centers)
+            try: 
+                stationary_distribution, trajectories = self.__build_bootstrapped_msm(cluster_centers)
+            except: # if msm stationary probabilities too low, an error is thrown - discard those
+                continue
             # add results
             probability = _np.array([[round(stationary_distribution[list(state_clusters)].sum()*100, 2) for state_clusters in msm.pcca[n_states]]])
             if i == 1: # if first iteration
