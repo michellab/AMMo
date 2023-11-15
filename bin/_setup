@@ -44,10 +44,8 @@ def __check_system(system, state):
 
     # create system if does not exist
     if not os.path.exists(system_path):
-        print(f'System {system} not found. Creating...', end='')
-        subprocess.run(['allosystems', '--create', system])
+        subprocess.run(['ammo', 'systems', '--create', system])
     if not os.path.exists(state_path):
-        print(f'State {state} not found. Adding...', end='')
         subprocess.run(['allosystems', '--add_state', state])
     # go to setup directory
     os.chdir(f'{state_path}/system-setup')
