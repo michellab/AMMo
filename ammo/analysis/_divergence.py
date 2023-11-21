@@ -23,9 +23,10 @@ def __fix_zero_bins(data):
             zero_bins.append(i)
         else:
             non_zero_values.append(value)
-    zero_value = (min(non_zero_values)/1000)/len(zero_bins)
-    for idx in zero_bins:
-        data[idx] = zero_value
+    if len(zero_bins) > 0:
+        zero_value = (min(non_zero_values)/1000)/len(zero_bins)
+        for idx in zero_bins:
+            data[idx] = zero_value
     
     return data
 

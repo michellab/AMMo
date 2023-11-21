@@ -4,6 +4,7 @@ from random import choice
 from pandas import read_csv
 from subprocess import run, DEVNULL
 from pytraj import save, Trajectory
+from ammo.utils._utils import __check_cpptraj as _check_cpptraj, __get_trajectory as _get_trajectory, __random_name as _random_name
 
 
 def hbonds(trajectory, mask="*", distance=3.5, angle=135, topology=None, filter=None, frequency=True, quiet=True):
@@ -41,14 +42,14 @@ def hbonds(trajectory, mask="*", distance=3.5, angle=135, topology=None, filter=
         a data frame with the hbond information
     """
     # check that AMBERHOME is set
-    __check_cpptraj()
+    _check_cpptraj()
 
     # get trajectory file
-    trajectory, topology, remove = __get_trajectory(trajectory, topology)
+    trajectory, topology, remove = _get_trajectory(trajectory, topology)
 
     # write input file
-    input_file = '/tmp/' + ''.join([choice(ascii_lowercase) for _ in range(10)]) + '.in'
-    output_file = '/tmp/' + ''.join([choice(ascii_lowercase) for _ in range(10)]) + '.txt'
+    input_file = '/tmp/' + _random_name() + '.in'
+    output_file = '/tmp/' + _random_name() + '.txt'
     with open(input_file, 'w') as file:
         file.writelines([f'parm {topology}\n',
                          f'trajin {trajectory}\n',
@@ -77,24 +78,3 @@ def hbonds(trajectory, mask="*", distance=3.5, angle=135, topology=None, filter=
 
     return df
 
-
-def __check_cpptraj():
-    if 'AMBERHOME' not in os.environ:
-        raise LookupError('AMBERHOME not defined. Cannot run cpptraj')
-    else:
-        return None
-
-
-def __get_trajectory(trajectory, topology):
-    if isinstance(trajectory, str) and topology is None:
-        raise ValueError('If providing a trajectory file path, a topology file is also required')
-    elif isinstance(trajectory, str):
-        return os.path.abspath(trajectory), os.path.abspath(topology), False
-    elif isinstance(trajectory, Trajectory):
-        trajectory_file = '/tmp/' + ''.join([choice(ascii_lowercase) for _ in range(10)]) + '.nc'
-        topology_file = '/tmp/' + ''.join([choice(ascii_lowercase) for _ in range(10)]) + '.prm7'
-        save(trajectory_file, trajectory)
-        save(topology_file, trajectory.top)
-        return trajectory_file, topology_file, True
-    else:
-        raise TypeError(f'Unsupported trajectory type: {type(trajectory)}. Trajectory has to be str of a file path or a pytraj.Trajectory')

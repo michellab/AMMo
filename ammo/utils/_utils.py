@@ -6,7 +6,11 @@ from random import choice
 from string import ascii_lowercase, digits
 import subprocess
 import numpy as np
-from pytraj import load, Trajectory
+from pytraj import load, Trajectory, save
+
+
+def __random_name(n_chars=10):
+    return "".join(choice(ascii_lowercase + digits) for _ in range(n_chars))
 
 
 def renumber_pdb(input, reference, output=None, matching='warn', offset=0):
@@ -113,7 +117,7 @@ def get_dry_trajectory(topology, trajectory, output):
     None
     """
     to_strip = ':WAT,:SOL,:HOH,:NA,:CL,:Na+,:Cl-,:CLA,:POT,:SOD'
-    cpptraj_file = f'cpptraj_{"".join(choice(ascii_lowercase + digits) for _ in range(10))}.in'
+    cpptraj_file = f'cpptraj_{__random_name()}.in'
 
     with open(cpptraj_file, 'w') as file:
         file.writelines([f'parm {topology}\n',
@@ -128,10 +132,7 @@ def get_dry_trajectory(topology, trajectory, output):
     return None
 
 def __parse_seeds(seeds):
-    if seeds == 'all':
-        seeds = [int(folder.split('_')[1]) for folder in os.listdir() if folder.startswith('snapshot_') and '.pdb' not in folder]
-        seeds.sort()
-    elif isinstance(seeds, (list, tuple)):
+    if isinstance(seeds, (list, tuple)):
         if not all(isinstance(idx, int) for idx in seeds):
             raise TypeError('Seed indices must all be of type int')
         else:
@@ -185,3 +186,25 @@ def __parse_time(input, output_units, output_digits=3, output_type='string'):
         return output_value
     else:
         raise ValueError(f'"output_type" can be either "string" or "number". Was: {output_type}')
+    
+
+def __check_cpptraj():
+    if 'AMBERHOME' not in os.environ:
+        raise LookupError('AMBERHOME not defined. Cannot run cpptraj')
+    else:
+        return None
+
+
+def __get_trajectory(trajectory, topology):
+    if isinstance(trajectory, str) and topology is None:
+        raise ValueError('If providing a trajectory file path, a topology file is also required')
+    elif isinstance(trajectory, str):
+        return os.path.abspath(trajectory), os.path.abspath(topology), False
+    elif isinstance(trajectory, Trajectory):
+        trajectory_file = '/tmp/' + __random_name() + '.nc'
+        topology_file = '/tmp/' + __random_name() + '.prm7'
+        save(trajectory_file, trajectory)
+        save(topology_file, trajectory.top)
+        return trajectory_file, topology_file, True
+    else:
+        raise TypeError(f'Unsupported trajectory type: {type(trajectory)}. Trajectory has to be str of a file path or a pytraj.Trajectory')
