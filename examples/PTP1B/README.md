@@ -51,7 +51,7 @@ Steered MD is run using the `steering` command, and the main options are provide
 AMMo uses PLUMED[[4]](#4) to apply a harmonic restraint to the system and so bias it towards a certain value of a collective variable (CV) (or multiple CVs). While BioSimSpace has support for steering with distance, torsion and RMSD based CVs[[5]](#5), in order to support larger CV flexibility AMMo uses a pseudo PLUMED input file. An example is shown below:
 
 ```bash
-rmsd: RMSD REFERENCE=:179-185&(!@/H) TYPE=OPTIMAL
+rmsd: RMSD REFERENCE=:179-185&(!@/H) TYPE=OPTIMAL FILE=closed_ref.pdb
 tyr: TORSION ATOMS=:153@N:153@CA:153@CB:153@CG
 pro1: DISTANCE ATOMS=:180@CE2:186@CD
 pro2: DISTANCE ATOMS=:180@CD1:185@CA
@@ -67,9 +67,9 @@ MOVINGRESTRAINT ...
 PRINT STRIDE=2500 ARG=* FILE=COLVAR
 ```
 
-In a usual PLUMED file, the `ATOMS=` arguments would point to atom indices, while here they are replaced with AMBER atom masks. This makes the pseudo-PLUMED files easier to write, and makes them more transferable. When sMD is being set up, the masks are replaced with the corresponding atom indices. In case of RMSD, the mask is used to prepare the reference file. Additionally, the `initial` keyword is allowed when defining the steering steps. During set up it is replaced with the starting value of the CV. Simple arithmetic operations, such as `initial/2` or `initial+5.2` are also allowed.
+In a usual PLUMED file, the `ATOMS=` arguments would point to atom indices, while here they are replaced with AMBER atom masks. This makes the pseudo-PLUMED files easier to write, and makes them more transferable. When sMD is being set up, the masks are replaced with the corresponding atom indices. In case of RMSD, the mask is used to prepare the reference file, specified by the `FILE=` argument, which will be removed in the final PLUMED input file. Additionally, the `initial` keyword is allowed when defining the steering steps. During set up it is replaced with the starting value of the CV. Simple arithmetic operations, such as `initial/2` or `initial+5.2` are also allowed.
 
-The pseudo-PLUMED files used here are available in `.defaults`, and the references for RMSD are in `inputs`. The `steering` part of `.defaults/config` points to these file for AMMo to use.
+The pseudo-PLUMED files used here are available in `.defaults`, and the references for RMSD are in `inputs`. When setting up the reference files, first the path will be searched as give, and then `inputs` directory will be searched. The `steering` part of `.defaults/config` points to these files for AMMo to use.
 
 Once the sMD trajectories were obtained, the analysis was run in `analysis/sMD_analysis.ipynb`.
 

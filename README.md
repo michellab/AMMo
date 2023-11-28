@@ -7,7 +7,7 @@ AMMo (Allostery in Markov Models) is a collection of a python library, command l
 The highest level is the set of command line tools that create and run an [AMMo project](examples/project.md). The lowest level is the [ammo python library](examples/notebook.ipynb), with some default functions to run and analyse MD simulations (if even more customization is needed, [BioSimSpace](www.biosimspace.org) is recommended to set up own simulations). The [command line scrips](examples/scripts.md) simply run the functions available in the python library from the command line, allowing for easier execution and job scheduling.
 
 ### Examples
-In-depth explanations on how to use the [python library](examples/notebook.ipynb), the command line [scripts](examples/scripts.md), and the AMMo [project](examples/project.md) are available in the [examples folder](examples). It also includes a case study on applying AMMo to Protein Tyrosine Phosphatase 1B ([PTP1B](examples/example_ptp1b)).
+In-depth explanations on how to use the [python library](examples/notebook.ipynb), the command line [scripts](examples/scripts.md), and the AMMo [project](examples/project.md) are available in the [examples folder](examples). It also includes a case study on applying AMMo to Protein Tyrosine Phosphatase 1B ([PTP1B](examples/PTP1B)).
 
 ### Installation
 
