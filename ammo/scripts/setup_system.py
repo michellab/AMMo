@@ -15,7 +15,7 @@ def __clean_args(args):
     if args.parameters == 'None':
         args.parameters = None
     elif args.parameters is not None:
-        args.parameters = literal_eval(args.parameters[1:-1])
+        args.parameters = args.parameters.split(',')
 
     # topology None
     if args.topology == 'None':

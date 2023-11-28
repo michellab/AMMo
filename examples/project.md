@@ -2,7 +2,7 @@
 
 The highest level use of `allostery` is to create and run an allostery project. It uses the same functions and scripts outlined in other examples, but makes use of a consistent file structure and a settings file.
 
-Before starting with an allostery project, make sure that the `ALLOSTERYHOME` environment variable is set by either setting it manually to this main directory, or by running `source allostery.sh` if you ran `python setup.py` when the code was downloaded.
+Before starting with an allostery project, make sure that the `AMMOHOME` environment variable is set by either setting it manually to this main directory, or by running `source allostery.sh` if you ran `python setup.py` when the code was downloaded.
 
 ## Contents
 
@@ -13,13 +13,33 @@ Before starting with an allostery project, make sure that the `ALLOSTERYHOME` en
 5. [Seeded MD](#Seeded-MD)
 6. [Trajectory featurization](#Trajectory-featurization)
 
+
+All `ammo` commands can be listed as follows:
+
+```bash
+$ ammo -h
+
+AMMo - Allostery in Markov Models
+A tool for running MD simulations and building MSMs to evaluate whether a ligand is an allosteric modulator
+
+usage: ammo [command] [command options]
+
+    project : manage allostery projects
+    systems : manage systems in the currently active allostery project
+    setup : Set up a protein system
+    equilibrium : Run equilibrium MD
+    steering : Run a steered MD simulation
+    seeded : Copy snapshots from a steered MD trajectory to a remote server and submit a job to run seeded MD simulations
+    featurize : Featurize seeded MD trajectories
+```
+
 ## Creating an allostery project
 [top](#An-allostery-project-example)
 
 Allostery projects are managed by the `project` tool from the command line.
 
 ```bash
-$ project -h
+$ ammo project -h
 usage: project [-h]
                (--create CREATE | --activate ACTIVATE | --current | --reconfigure)
 
@@ -31,11 +51,11 @@ optional arguments:
   --activate ACTIVATE  set active project
   --current            show current project
   --reconfigure        change active project configuration
-  ```
+```
 
 We start by creating a project:
 ```bash
-$ project --create my_project
+$ ammo project --create my_project
 ------------------------------
 Creating project: my_project
 Created project /home/adele/Documents/my_project
@@ -87,8 +107,8 @@ systems
 
 A `system` can be created by either manually creating directories or using the `allosystems` command:
 ```bash
-$ allosystems -h
-usage: allosystems [-h]
+$ ammo systems -h
+usage: systems [-h]
                    (--create CREATE | --add_state ADD_STATE | --remove_state REMOVE_STATE)
 
 manage systems in the currently active allostery project
@@ -108,21 +128,19 @@ Folders for each state specified in the project settings will be created with th
 
 Let's create a system:
 ```bash
-$ project --activate my_project
+$ ammo project --activate my_project
 Project activated: my_project
-$ allosystems --create my_system
+$ ammo systems --create my_system
 System my_system created
 ```
 
 ## System setup
 [top](#An-allostery-project-example)
 
-A common starting point in MD simulations is a PDB file. To begin working with a system, run the `setup_system` command:
+A common starting point in MD simulations is a PDB file. To begin working with a system, run the `setup` command:
 ```bash
-$ setup_system -h
-usage: setup_system [-h] --input INPUT --system SYSTEM --state STATE
-                    [--engine ENGINE] [--charges CHARGES]
-                    [--topology TOPOLOGY] [--slurm]
+$ ammo setup -h
+usage: setup [-h] --input INPUT --system SYSTEM --state STATE [--engine ENGINE] [--charges CHARGES] [--topology TOPOLOGY] [--slurm]
 
 Set up a protein system
 
@@ -140,7 +158,7 @@ optional arguments:
   --slurm              Whether to run setup as a slurm job
 ```
 
-In the simplest case, only the input PDB needs to be provided, together with the system and state it corresponds to. `setup_system` runs the `setup_system.py` script, but uses the protocol set in the project defaults. An example of that YAML portion would look something like this:
+In the simplest case, only the input PDB needs to be provided, together with the system and state it corresponds to. `setup` runs the `setup_system.py` script, but uses the protocol set in the project defaults. An example of that YAML portion would look something like this:
 ```bash
 setup :
     GROMACS: 7500,100,250
@@ -151,7 +169,7 @@ When the GROMACS MD engine is used for system setup, the input will be minimised
 
 The system setup can be submitted as a slurm job (support for other schedulers coming!). From the project directory:
 ```bash
-$ setup_system --input inputs/input_protein.pdb --system my_system --state state1
+$ ammo setup --input inputs/input_protein.pdb --system my_system --state state1
 Submitted batch job 16490
 ```
 
@@ -163,37 +181,37 @@ The main output files (found in `systems/my_system/state1/system-setup`) are `sy
 Once the system is prepared, the next step is to run steered MD simulations. This allows for better sampling of intermediate conformations which are unstable and therefore short-lived. As part of an allostery project, this can be done with the `steering` command:
 
 ```bash
-$ steering -h
-usage: steering [-h] --system SYSTEM --state STATE [--seeded SEEDED] [--engine ENGINE] [--slurm] [--backup]
+$ ammo steering -h
+usage: steering [-h] --system SYSTEM --state STATE [--seeded SEEDED] [--engine ENGINE] [--slurm] [--steps STEPS] [--restraint RESTRAINT] [--backup]
 
 Run a steered MD simulation
 
 optional arguments:
-  -h, --help       show this help message and exit
-  --system SYSTEM  project system
-  --state STATE    system state
-  --seeded SEEDED  seeded MD folder where the steering folder is. Default : seeded-md
-  --engine ENGINE  MD engine to run sMD with
-  --slurm          Whether to run sMD as a slurm job
-  --backup         Backup wet trajectory
+  -h, --help            show this help message and exit
+  --system SYSTEM       project system
+  --state STATE         system state
+  --seeded SEEDED       seeded MD folder where the steering folder is. Default : seeded-md
+  --engine ENGINE       MD engine to run sMD with
+  --slurm               Whether to run sMD as a slurm job
+  --steps STEPS         How many sMD steps to run, if steering in more than one. "all" will run all steps from 1
+  --restraint RESTRAINT
+                        A pseudo flat bottom restraint file that will be used during the steering (currently only available for AMBER). Instead of atom indices, AMBER masks are used
+  --backup              Backup wet trajectory
 ```
 
 In the simples case, all that needs to be provided is the `--system` and `--state` that the sMD is to be run for. This functionality makes use of the consistent topology and coordinate file location, and the settings file. An example of the settings to run an sMD simulation would look something like this:
 ```bash
 steering :
     state1:
-        masks: [":153&(@N,CA,CB,CG)",":197@CG :281@CG",":179-185&!(@/H)"]
-        types: ["torsion","distance","rmsd"]
-        timings: [100]
-        values: [-1.047, 0.7, 0]
-        forces: [2500,2500,2500]
-        reference: reference.pdb
+        input: state1.dat
 ```
-The masks are AMBER selection masks, corresponding to the atoms involved in each CV used for steering. For example, the distance between the C$\alpha$ atoms of residues 100 and 200 would be ":100@CA :200@CA". More information can be found here. types corresponds to CV types supported by BioSimSpace. In this case, the CVs will be the $\chi$1 angle of Tyr152, the distance between C$\gamma$ atoms of residues 196 and 280, and the heavy atom RMSD of residues 178-184. Note that in the masks below, the residue numbers are offset by 1. The system includes an ACE cap at the start, and the mask selection indexes starting from 1. The steering will be carried out in 100 ns. In addition to the specified values, times, and forces, additional steps will be added to apply the force over 4 ps, keeping the CV values as initial. The target values and forces used are based on knowledge of the system.
+The masks are AMBER selection masks, corresponding to the atoms involved in each CV used for steering. For example, the distance between the C$\alpha$ atoms of residues 100 and 200 would be ":100@CA :200@CA". More information can be found [here](https://amberhub.chpc.utah.edu/atom-mask-selection-syntax/). In case of RMSD collective variables, an additional reference `FILE` parameter is added, which will be removed during PLUMED input preparation. An example pseudo PLUMED input file is given in `example_data/plumed_input.dat` (as well as in the specific use case examples), and more information can be found on the [PLUMED website](https://www.plumed.org/doc-v2.8/user-doc/html/_m_o_v_i_n_g_r_e_s_t_r_a_i_n_t.html).
+
+The `"initial"` values for the CVs at steps 0 and 1 will be computed using PLUMED and filled in during final file setup. This, together with the use of AMBER atom masks, allows for easier steering preparation while still using the whole range of CVs in PLUMED.
 
 Steering is submitted as a slurm job:
 ```bash
-$ steering --system my_system --state state1 --slurm --backup
+$ ammo steering --system my_system --state state1 --slurm --backup
 Submitted batch job 16491
 ```
 
@@ -206,21 +224,15 @@ Any required directories will be created. This requires ssh keys to be set up be
 
 #### Multiple step steering
 
-In order to specify multiple steering steps, `timings`, `values` and `forces` need to be provided. For example, if we wanted to steer the dihedral angle during the first 50 ns of the simulation and the distance during the second, while steering the RMSD throughout, the settings would look like this:
+In order to specify multiple steering steps with varying CVs, multiple input files need to be provided. For a 2 step steering, the settings would look like this:
 ```bash
 steering :
     state1:
-        masks: [":153&(@N,CA,CB,CG)",":197@CG :281@CG",":179-185&!(@/H)"]
-        types: ["torsion","distance","rmsd"]
-        timings: [50,100]
-        values: [[-1.047,-1.047],["initial",0.7],["initial/2",0]]
-        forces: [[2500,2500],[2500,2500],[2500,2500]]
-        reference: reference.pdb
+        input_1: plumed_1.dat
+        input_2: plumed_2.dat
 ```
 
-Note that simple mathematical operations are allowed for the initial value, and this way the RMSD steering is not affected.
-
-In this case the dihedral angle CV was steered to its target value and kept constant by applying force, while the distance CV was kept at its initial value by applying force during the first half of the simulation. An alternative protocol where they are not steered at all beyond changing the CV value could be employed by simply changing the appropriate force constants to 0.
+The steering results in this case will be saved as `steering_1` and `steering_2` for each step. The `--steps` argument in `steering` allows to specify which steps to run.
 
 ## Analysing steered MD data
 [top](#An-allostery-project-example)
@@ -267,7 +279,7 @@ It uses the `seeded_md.py` script. The `seeded_md` command will also add the cop
 
 The command has the following parameters:
 ```bash
-$ seeded_md -h
+$ ammo seeded_md -h
 usage: seeded_md [-h] --system SYSTEM --state STATE [--folder FOLDER] [--seeds SEEDS] [--no_backup]
 
 Copy snapshots from a steered MD trajectory to a remote server and submit a job to run seeded MD simulations
@@ -294,7 +306,7 @@ Submitted batch job 16492
 Once seeded MD simulations are finished, they can be used to build a Markov State Model. However, that requires dimensionality reduction, which starts by reducing trajectory data from all atom coordinates to select features. The `featurize` command does this for every seeded MD trajectory in a state in a system:
 
 ```bash
-$ featurize -h
+$ ammo featurize -h
 usage: featurize [-h] --system SYSTEM --state STATE [--folder FOLDER]
                  [--seeds SEEDS] [--slurm]
 
@@ -326,3 +338,7 @@ distance_feature:
 the features are saved as `.txt` files in the snapshot directory, named as the feature is in settings, so for the above it is `rmsd_feature.txt` and `distance_feature.txt`.
 
 An alternative approach is to add featurization to the seeded MD job file, using the python script provided.
+
+## MSM building
+
+An example of Markov State Modelling is available in a [notebook](msm.ipynb), as the `MSMCollection` functionality is only available as part of the `ammo` python library.

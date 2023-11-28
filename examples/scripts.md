@@ -49,8 +49,7 @@ produces system topology files (dry and solvated), and coordinate files for the 
 Once the system is prepared, the next step is to run steered MD simulations. This allows for better sampling of intermediate conformations which are unstable and therefore short-lived. They can be run using the `steered_md.py` script:
 ```bash
 $ python steered_md.py -h
-usage: steered_md.py [-h] --topology TOPOLOGY --coordinates COORDINATES --masks MASKS --types TYPES --timings TIMINGS --values VALUES --forces FORCES [--reference REFERENCE]
-                     [--engine ENGINE]
+usage: steered_md.py [-h] --topology TOPOLOGY --coordinates COORDINATES --input INPUT [--engine ENGINE] [--workdir WORKDIR] [--suffix SUFFIX] [--restraint RESTRAINT]
 
 Run a steered MD simulation
 
@@ -59,54 +58,49 @@ optional arguments:
   --topology TOPOLOGY   system topology
   --coordinates COORDINATES
                         equilibrated coordinates
-  --masks MASKS         a list of AMBER masks for each CV
-  --types TYPES         CV types
-  --timings TIMINGS     steering schedule in ns
-  --values VALUES       CV values in default PLUMED units. "initial" will be replaced by a computed initial value
-  --forces FORCES       forces to be applied to each CV in kJ/mol
-  --reference REFERENCE
-                        path to reference PDB file(s) if using RMSD as a CV. All of the atoms in the reference have to also appear in the system
+  --input INPUT         path to pseudo PLUMED file
   --engine ENGINE       MD engine to run sMD with. Default: AMBER
+  --workdir WORKDIR     Working directory. If None, sMD will be run in a temporary folder and copied over. Default: "."
+  --suffix SUFFIX       A suffix to add to the output of the simulation, e.g. "steering_1.nc" or "steering_1.dat". For cases when the steering is done in more than one step. If None, nothing will be added
+  --restraint RESTRAINT
+                        A pseudo flat bottom restraint file that will be used during the steering (currently only available for AMBER). Instead of atom indices, AMBER masks are used
+
 ```
 
-The `--topology` and `--coordinate` parameters are self-explanatory. The `--masks` are AMBER selection masks, corresponding to the atoms involved in each CV used for steering. For example, the distance between the C 𝛼  atoms of residues 100 and 200 would be ":100@CA :200@CA". More information can be found [here](https://amberhub.chpc.utah.edu/atom-mask-selection-syntax/). `--types` corresponds to CV types supported by BioSimSpace.
+The `--topology` and `--coordinate` parameters are self-explanatory. The `input` requires as pseudo PLUMED file, containing all the required information for steering, except the specific `ATOM` indices are replaced with [AMBER selection masks](https://amberhub.chpc.utah.edu/atom-mask-selection-syntax/), and in case of RMSD collective variables, an additional reference `FILE` parameter is added, which will be removed during PLUMED input preparation. An example pseudo PLUMED input file is given in `example_data/plumed_input.dat` (as well as in the specific use case examples), and more information can be found on the [PLUMED website](https://www.plumed.org/doc-v2.8/user-doc/html/_m_o_v_i_n_g_r_e_s_t_r_a_i_n_t.html).
 
 #### Single steering step
 
-Below is an example of multi-CV steering. The CVs will be the  𝜒 1 angle of Tyr152, the distance between C 𝛾  atoms of residues 196 and 280, and the heavy atom RMSD of residues 178-184. Note that in the masks below, the residue numbers are offset by 1. The system includes an ACE cap at the start, and the mask selection indexes starting from 1. The steering will be carried out in 100 ns. In addition to the specified values, times, and forces, additional steps will be added to apply the force over 4 ps, keeping the CV values as initial. The target values and forces used are based on knowledge of the system.
+Below is an example of multi-CV steering. The CVs will be the heavy atom RMSD of residues 178-184, the 𝜒1 angle of Tyr152, the stacking of residues 185 and 179, and the distance between C𝛾 atoms of residues 196 and 280. Note that in the masks below, the residue numbers are offset by 1. The system includes an ACE cap at the start, and the mask selection indices starting from 1. The steering will be carried out in 100 ns. The target values and forces used are based on knowledge of the system. 
+
+```bash
+$ cat example_data/plumed_input.dat
+
+rmsd: RMSD REFERENCE=:179-185&(!@/H) TYPE=OPTIMAL FILE=example_data/reference.pdb
+tyr: TORSION ATOMS=:153@N:153@CA:153@CB:153@CG
+pro1: DISTANCE ATOMS=:180@CE2:186@CD
+pro2: DISTANCE ATOMS=:180@CD1:185@CA
+stacking: CUSTOM ARG=pro1,pro2 FUNC=abs(x-y) PERIODIC=NO
+phe: DISTANCE ATOMS=:197@CG:281@CG
+MOVINGRESTRAINT ...
+  ARG=rmsd,tyr,stacking,phe
+  STEP0=0    AT0=initial,initial,initial,initial    KAPPA0=0.0,0.0,0.0,0.0
+  STEP1=2000    AT1=initial,initial,initial,initial    KAPPA1=3500.0,3500.0,3500.0,3500.0
+  STEP2=75000000    AT2=0.0,1.047,0.0,0.45    KAPPA2=3500.0,3500.0,3500.0,3500.0
+  STEP3=76000000    AT3=0.0,1.047,0.0,0.45    KAPPA3=0.0,0.0,0.0,0.0
+... MOVINGRESTRAINT
+PRINT STRIDE=2500 ARG=* FILE=steering.dat
+```
+
+The `"initial"` values for the CVs at steps 0 and 1 will be computed using PLUMED and filled in during final file setup. This, together with the use of AMBER atom masks, allows for easier steering preparation while still using the whole range of CVs in PLUMED.
 
 ```bash
 $ python steered_md.py --topology system.prm7 \
                        --coordinates system_equilibrated.rst7 \
-                       --masks "[':153&(@N,CA,CB,CG)', ':197@CG :281@CG', ':179-185&!(@/H)']" \
-                       --types "['torsion', 'distance', 'rmsd']" \
-                       --timings "[100]" \
-                       --values "[-1.047, 0.7, 0]" \
-                       --forces "[2500,2500,2500]" \
-                       --reference reference.pdb
+                       --input example_data/plumed_input.dat
 ```
 
 After the steering process is finished, the output files are copied over from the working directory, and additionally a dry copy of the trajectory (no waters or ions) is saved (in case of further analysis required).
-
-#### Multiple step steering
-
-In order to specify multiple steering steps, `--timings`, `--values` and `--forces` need to be provided. For example, if we wanted to steer the dihedral angle during the first 50 ns of the simulation and the distance during the second, while steering the RMSD throughout, the input would look like this:
-```bash
-$ python steered_md.py --topology system.prm7 \
-                       --coordinates system_equilibrated.rst7 \
-                       --masks "[':153&(@N,CA,CB,CG)', ':197@CG :281@CG', ':179-185&!(@/H)']" \
-                       --types "['torsion', 'distance', 'rmsd']" \
-                       --timings "[50,100]" \
-                       --values "[[-1.047, -1.047,], ['initial', 0.7], ['initial/2', 0]]" \
-                       --forces "[[2500, 2500], [2500, 2500], [2500, 2500]]" \
-                       --reference reference.pdb
-```
-
-Note that simple mathematical operations are allowed for the initial value, and this way the RMSD steering is not affected.
-
-In this case the dihedral angle CV was steered to its target value and kept constant by applying force, while the distance CV was kept at its initial value by applying force during the first half of the simulation. An alternative protocol where they are not steered at all beyond changing the CV value could be employed by simply changing the appropriate force constants to 0.
-
-Because a steered MD simulation can be quite complex if there are a lot of CVs and steps involved, running the script as above can involve a lot of typing, remembering values and masks. Therefore the functionality of creating an allostery project and running sMD using pre-configured settings can be useful in the long run, while the above direct running of the script is recommended mainly for protocol testing and troubleshooting.
 
 ## Analysing steered MD data
 [top](#Allostery-example)
@@ -207,6 +201,6 @@ $ python featurize.py --topology 'system.prm7' --trajectory 'production.nc' --fe
 
 A good idea would be to include this featurization as part of the seeded MD job above, if the MSM features are known beforehand.
 
-## In progress
-This tool is currently a work in progress. Functionality still to come is:
-* MSM building
+## MSM building
+
+An example of Markov State Modelling is available in a [notebook](msm.ipynb), as the `MSMCollection` functionality is only available as part of the `ammo` python library.
