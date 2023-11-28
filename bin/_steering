@@ -24,26 +24,85 @@ def __check_system(system, state, seeded):
     return None
 
 
-def __get_steering_commands(args):
+def __parse_steps(args):
+    steering = _project['steering'][args.state]
+
+    # if only one step with no indices
+    keys = [key for key in steering.keys() if 'input' in key]
+    if len(keys) == 1:
+        if '_' not in keys[0]:
+            return [f'{_ammo["location"]}/{_ammo["project"]}/.defaults/{steering["input"]}'], None
+
+    # if more than one
+    if args.steps == 'all':
+        idxs = [int(key.split('_')[1]) for key in steering.keys() if 'input' in key]
+        idxs.sort()  
+    # if range
+    elif '-' in args.steps:
+        start = int(args.steps.split('-')[0])
+        end = int(args.steps.split('-')[1])
+        idxs = [idx for idx in range(start, end+1)]
+    # if list or one value
+    else:
+        idxs = [int(idx) for idx in args.steps.split(',')]
+    
+    inputs = [f'{_ammo["location"]}/{_ammo["project"]}/.defaults/{steering[f"input_{idx}"]}' for idx in idxs]
+    return inputs, idxs
+
+
+def __fix_plumed(inputs):
+    """Fix the plumed input file so that the RMSD reference has an absolute path"""
+    project = f'{_ammo["location"]}/{_ammo["project"]}'
+    
+    # loop over all input files
+    for plumed in inputs:
+        with open(plumed, 'r') as file:
+            contents = file.readlines()
+        
+        for i, line in enumerate(contents):
+            if 'RMSD' in line:
+                parts = line.replace('\n', '').split(' ')
+                for j, part in enumerate(parts):
+                    if 'FILE' in part:
+                        file = part.split('=')[1]
+                        if not os.path.exists(file):
+                            file = f'{project}/inputs/{file}'
+                        parts[j] = f'FILE={file}'
+                contents[i] = ' '.join(parts) + '\n'
+
+        with open(plumed, 'w') as file:
+            file.writelines(contents)
+    return None
+
+
+def __get_steering_commands(args, inputs, idxs):
     """Get subprocess commands for running sMD. Will write slurm input if to be run as a job"""
     steering = _project['steering'][args.state]
     project = f'{_ammo["location"]}/{_ammo["project"]}'
-    reference = [f'{project}/inputs/{ref}' for ref in steering['reference'].split(',')]
 
+    script_command = []
+    for i, input in enumerate(inputs):
     # put together sMD command from defaults
-    md_command = [_project['python'],
+        if idxs is None or idxs[i] == 1:
+            coordinates = '../../system-setup/system_equilibrated.rst7'
+        else:
+            coordinates = f'steering_{idxs[i]-1}.rst7'
+        md_command = [_project['python'],
                       f'{os.environ["AMMO_HOME"]}/ammo/scripts/steered_md.py',
                       '--topology', '../../system-setup/system.prm7',
-                      '--coordinates', '../../system-setup/system_equilibrated.rst7',
-                      '--input', f'../../../../../.defaults/{steering["input"]}',
-                      '--reference', ','.join(reference),
+                      '--coordinates', coordinates,
+                      '--input', input,
                       '--engine', args.engine]
-
-    script_command = [md_command]
+        if idxs is not None:
+            md_command += ['--suffix', str(idxs[i])]
+        if args.restraint is not None:
+            md_command += ['--restraint', os.path.abspath(args.restraint)]
+        script_command.append(md_command) 
+    
     # add additional processing if needed
     if args.backup:
         script_command += [['ssh', _project["backup"], 'mkdir', '-p', f'{_project["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering'],
-                           ['rsync', '-a', '--exclude', 'steering_dry.nc', '--exclude', 'submit.out', '*', f'{_project["backup"]}:{_project["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering/.']]
+                           ['rsync', '-a', '--exclude', 'steering*_dry.nc', '--exclude', 'submit.out', '*', f'{_project["backup"]}:{_project["backup_path"]}/{args.system}/{args.state}/{args.seeded}/steering/.']]
 
     if args.slurm:
         with open('submit.sh', 'w') as file:
@@ -66,12 +125,16 @@ def __main__():
     parser.add_argument('--seeded', type=str, default='seeded-md', help='seeded MD folder where the steering folder is. Default : seeded-md')
     parser.add_argument('--engine', type=str, default='AMBER', help='MD engine to run sMD with')
     parser.add_argument('--slurm', action='store_true', help='Whether to run sMD as a slurm job')
+    parser.add_argument('--steps', type=str, default='all', help='How many sMD steps to run, if steering in more than one. "all" will run all steps from 1')
+    parser.add_argument('--restraint', type=str, help='A pseudo flat bottom restraint file that will be used during the steering (currently only available for AMBER). Instead of atom indices, AMBER masks are used')
     parser.add_argument('--backup', action='store_true', help='Backup wet trajectory')
     args = parser.parse_args()
 
     __check_system(args.system, args.state, args.seeded)
+    inputs, idxs = __parse_steps(args)
+    __fix_plumed(inputs)
 
-    commands = __get_steering_commands(args)
+    commands = __get_steering_commands(args, inputs, idxs)
     for command in commands:
         subprocess.run(command)
 

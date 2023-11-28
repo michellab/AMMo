@@ -1,12 +1,12 @@
 """General useful functions"""
 
 import os
-from warnings import warn
 from random import choice
 from string import ascii_lowercase, digits
 import subprocess
 import numpy as np
 from pytraj import load, Trajectory, save
+from BioSimSpace.Process import Amber
 
 
 def __random_name(n_chars=10):
@@ -208,3 +208,46 @@ def __get_trajectory(trajectory, topology):
         return trajectory_file, topology_file, True
     else:
         raise TypeError(f'Unsupported trajectory type: {type(trajectory)}. Trajectory has to be str of a file path or a pytraj.Trajectory')
+
+
+def __add_restraint(process, restraint, system):
+    # check that AMBER process
+    if not isinstance(process, Amber):
+        raise TypeError(f'Restraints supported for AMBER simulations only')
+
+    # replace masks in restraint file with atom indices
+    # read in file if str to path
+    if isinstance(restraint, str):
+        with open(restraint, 'r') as file:
+            restraint = file.readlines()
+    
+    # loop over each line
+    for i, line in enumerate(restraint):
+        if 'iat' in line:
+            parts = line.replace('\n', '').split() # remove newline character and split
+            for j, part in enumerate(parts):
+                if part != 'iat=' and part != 'iat' and part != '=': # check if not reasonable pointers to atoms. This means the restraint file has to be tidy, with atoms on a separate line
+                    atom = system.topology.select(part)+1 # add 1 to index from 1
+                    if len(atom) == 0:
+                        raise ValueError(f'Restraint atom {part} not found')
+                    elif len(atom) > 1:
+                        raise ValueError(f'More than 1 restraint atom {part} found')
+                    else:
+                        parts[j] = f'{atom[0]},'
+            restraint[i] = '  ' + ' '.join(parts) + '\n' # rejoin and add a newline character
+
+    # write the restraint file to the process directory
+    with open(f'{process.workDir()}/RST', 'w') as file:
+        file.writelines(restraint)
+
+    # change the process config file
+    config = process.getConfig()[:-1] # remove the "/" character
+    config += ["  nmropt=1,",
+               " /",
+               " &wt type='REST', istep1=0,istep2=3000,value1=0.1,value2=1.0,  /",
+               " &wt type='REST', istep1=3000,istep2=0,value1=1.0,value2=1.0  /",
+               "&wt type='END'  /",
+               "DISANG=RST"]
+    process.setConfig(config)
+
+    return None
