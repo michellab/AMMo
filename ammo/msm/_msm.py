@@ -583,7 +583,7 @@ class MSMCollection:
                 ax_curr.set_xlim((limits[0], limits[1]))
                 ax_curr.set_ylim((limits[2], limits[3]))
                 ax_curr.set_title(titles[row, col])
-                ax_curr.scatter(self.clusters.clustercenters[:,x], self.clusters.clustercenters[:,y], s=8, c=color)
+                ax_curr.scatter(self._MSMs[title].cluster_centers[:,x], self._MSMs[title].cluster_centers[:,y], s=8, c=color)
                 if features == 'infer':
                     features = [self._MSMs[titles[row,col]].features[x], self._MSMs[titles[row,col]].features[y]]
                 elif features == None:
@@ -1748,10 +1748,16 @@ class MSM:
         #get resampled data
         traj_num = len(self.data)
         traj_idxs = _np.array([int(idx*traj_num) for idx in _np.random.rand(traj_num)])
-        new_data = [self.data[idx] for idx in traj_idxs]
 
+	# get new trajectories
+	# if different clusters provided, assign new dtrajs
+	if cluster_centers is not None:
+        	new_data = [self.data[idx] for idx in traj_idxs]
+	        dtrajs = _assign_to_centers(new_data, cluster_centers)
+	# otherwise resample dtrajs directly
+	else:
+		dtrajs = [self.dtrajs[idx] for idx in traj_idxs]
         #build msm
-        dtrajs = _assign_to_centers(new_data, cluster_centers)
         bootstrap_msm = _bayesian_msm(dtrajs, 2000)
 
         #get stationary distribution
@@ -1853,9 +1859,6 @@ class MSM:
         # use own pcca if none specified
         if msm is None:
             msm = self
-        # use own clusters if none specified
-        if cluster_centers is None:
-            cluster_centers = self.cluster_centers
 
         # check if bootstrapping is already done
         pcca = f'{msm.title}, {n_states} states'
