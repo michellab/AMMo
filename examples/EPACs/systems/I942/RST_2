@@ -1,0 +1,84 @@
+#Distance restraint between :I942@O5' and :232@NH1
+ &rst
+  ixpk= 0,
+  nxpk= 0,
+  iat= :I94@O5' :232@NH1
+  r1= 2.5,
+  r2= 3,
+  r3= 4,
+  r4= 4.5,
+  rk2= 0.0,
+  rk3= 150.0,
+  nstep1=0, nstep2=0,
+  ialtd=0,
+ &end
+#Distance restraint between :I942@O and :233@N
+ &rst
+  ixpk= 0,
+  nxpk= 0,
+  iat= :I942@O :233@N
+  r1= 2.5,
+  r2= 3,
+  r3= 4,
+  r4= 4.5,
+  rk2= 0.0,
+  rk3= 150.0,
+  nstep1=0, nstep2=0,
+  ialtd=0,
+ &end
+#Distance restraint between :I942@O and :234@N
+ &rst
+  ixpk= 0,
+  nxpk= 0,
+  iat= :I94@O :234@N
+  r1= 2.5,
+  r2= 3,
+  r3= 4,
+  r4= 4.5,
+  rk2= 0.0,
+  rk3= 150.0,
+  nstep1=0, nstep2=0,
+  ialtd=0,
+ &end
+#Distance restraint between :I942@H12 and :222@H
+ &rst
+  ixpk= 0,
+  nxpk= 0,
+  iat= :I94@H12 :222@H
+  r1= 2,
+  r2= 2.5,
+  r3= 3.5,
+  r4= 4.5,
+  rk2= 0.0,
+  rk3= 150.0,
+  nstep1=0, nstep2=0,
+  ialtd=0,
+ &end
+#Distantce reststraint between :I942@C16 and :306@NZ
+ &rst
+  ixpk= 0,
+  nxpk= 0,
+  iat= :I94@C16 :306@NZ
+  r1= 2,
+  r2= 3.5,
+  r3= 8,
+  r4= 9,
+  rk2= 5,
+  rk3= 1.5,
+  nstep1=0, nstep2=0,
+  ialtd=1,
+ &end
+#Distantce reststraint between :I942@C3 and :306@NZ
+ &rst
+  ixpk= 0,
+  nxpk= 0,
+  iat= :I94@C3 :306@NZ
+  r1= 6,
+  r2= 7,
+  r3= 9.5,
+  r4= 10.5,
+  rk2= 5,
+  rk3= 1.4,
+  nstep1=0, nstep2=0,
+  ialtd=1,
+ &end

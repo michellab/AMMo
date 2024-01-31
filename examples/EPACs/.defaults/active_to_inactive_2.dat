@@ -1,0 +1,14 @@
+
+hinge: RMSD REFERENCE=:129-142&(@CA,C,N,O) TYPE=OPTIMAL FILE=inactive_ref_cNBD_l273w.pdb
+pbc: RMSD REFERENCE=:102-106&(@CA,C,N,O) TYPE=OPTIMAL FILE=inactive_ref_cNBD_l273w.pdb
+cnbd: RMSD REFERENCE=:1-292&(@CA,C,N,O) TYPE=OPTIMAL FILE=inactive_ref_l273w.pdb
+
+MOVINGRESTRAINT ...
+  ARG=hinge,pbc,cnbd
+  VERSE=B,B,B
+  STEP0=0               AT0=initial,initial,initial	KAPPA0=0.00,0.00,0.00
+  STEP1=2000            AT1=initial,initial,initial	KAPPA1=3500.00,3500.00,3500.00
+  STEP2=30000000        AT2=0.0,0.0,0.0			KAPPA2=3500.00,3500.00,3500.00
+  STEP3=31000000        AT3=0.0,0.0,0.0			KAPPA3=0.00,0.00,0.00
+... MOVINGRESTRAINT
+PRINT STRIDE=2500 ARG=* FILE=steering_2.dat
