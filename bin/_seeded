@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/home/chenfeng/software/miniconda3/envs/ammo/bin/python3
 
 import os
 from argparse import ArgumentParser
