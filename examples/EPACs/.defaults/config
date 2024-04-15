@@ -1,0 +1,53 @@
+########################################
+###project configuration and defaults###
+########################################
+#This file contains parameters for this project in 
+#YAML format. More information for each parameter
+#is given below.
+
+python : /home/adele/anaconda3/envs/bss/bin/python #python executable that will be used for all MD scripts
+
+states :                                  #project states, e.g. active/inactive
+    - active
+    - inactive
+
+setup :
+  GROMACS: 7500,500,2000
+solvation: "shell,15"
+
+parameters :                              #any additional LeAP commands for parameterisation, comma separated
+
+steering:
+  active:
+    input_1: active_to_inactive_1.dat
+    input_2: active_to_inactive_2.dat
+  inactive:
+    input_1: inactive_to_active_1.dat
+    input_2: inactive_to_active_2.dat
+snapshot_number : 100                     #default number of snapshots to save from a steered MD 
+                                          #trajectory. Adjust as needed based on protocol
+
+snapshot_duration : 50                   #default duration of seeded MD trajectories in ns.
+                                          #Adjust as needed based on protocol
+
+cluster : s1512291@eddie.ecdf.ed.ac.uk
+cluster_path: /exports/eddie/scratch/s1512291/EPAC1
+
+features :                      
+  domain_angle:
+    feature: angle
+    mask: ":121-125&(@CA,C,N,O) :250-263&(@CA,C,N,O) :701-704&(@CA,C,N,O)"
+  hinge:
+    feature: rmsd
+    mask: ":250-263&(@CA,C,N,O)"
+    reference: inactive.pdb
+    shared: ":122-263&!(@/H)"
+  pbc:
+    feature: rmsd
+    mask: ":223-227&(@CA,C,N,O)"
+    reference: inactive.pdb
+    shared: ":122-263&!(@/H)"
+
+backup : adele@michelstore.chem.ed.ac.uk
+backup_path : /volume1/EPAC1
+local: adele@neogodzilla.chem.ed.ac.uk
