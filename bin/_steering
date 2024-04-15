@@ -1,4 +1,4 @@
-#!/home/chenfeng/software/miniconda3/envs/ammo/bin/python3
+#!/usr/bin/python3
 
 import os
 import subprocess
