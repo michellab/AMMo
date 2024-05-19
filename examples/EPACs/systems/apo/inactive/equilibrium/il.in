@@ -1,0 +1,9 @@
+parm ../system-setup/system_dry.prm7
+trajin production-2_dry.nc
+distance 703-121 :703@CG :121@NE2 out il.txt
+distance 121-706 :121@O :706@NE1 out il.txt
+distance 709-149 :709@CZ :149@CG out il.txt
+distance 153-706 :153@NE2 :706@O out il.txt
+distance 125-706 :125@CG :706@NE1 out il.txt
+go
+quit
