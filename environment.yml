@@ -412,7 +412,7 @@ dependencies:
       - amberlite==22.0
       - amberutils==21.0
       - mmpbsa-py==16.0
-      - packmol-memgen==1.2.3rc0
+      - packmol-memgen
       - pdb4amber==22.0
       - pytraj==2.0.6
       - sander==22.0
