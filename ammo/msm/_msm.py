@@ -525,7 +525,7 @@ class MSMCollection:
 
         return None
 
-    def plot_stationary_distribution(self, shape, titles=None, x=0, y=1, features='infer', cmap=None, color='orange'):
+    def plot_stationary_distribution(self, shape, titles=None, x=0, y=1, features='infer', cmap=None, color='orange', plot_centres=True):
         """Plot stationary distributions of each microstate as a contour plot
         
         Parameters
@@ -550,6 +550,9 @@ class MSMCollection:
 
         color : str
             cluster color
+
+ 	plot_centres: bool
+  	    decide whether to plot cluster centres
         """
         # fix inputs
         titles = self.__fix_titles(titles)
@@ -583,7 +586,8 @@ class MSMCollection:
                 ax_curr.set_xlim((limits[0], limits[1]))
                 ax_curr.set_ylim((limits[2], limits[3]))
                 ax_curr.set_title(titles[row, col])
-                ax_curr.scatter(self._MSMs[title].cluster_centers[:,x], self._MSMs[title].cluster_centers[:,y], s=8, c=color)
+		if plot_centres:
+                    ax_curr.scatter(self._MSMs[title].cluster_centers[:,x], self._MSMs[title].cluster_centers[:,y], s=8, c=color)
                 if features == 'infer':
                     features = [self._MSMs[titles[row,col]].features[x], self._MSMs[titles[row,col]].features[y]]
                 elif features == None:
