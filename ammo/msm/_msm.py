@@ -586,7 +586,7 @@ class MSMCollection:
                 ax_curr.set_xlim((limits[0], limits[1]))
                 ax_curr.set_ylim((limits[2], limits[3]))
                 ax_curr.set_title(titles[row, col])
-		if plot_centres:
+                if plot_centres:
                     ax_curr.scatter(self._MSMs[title].cluster_centers[:,x], self._MSMs[title].cluster_centers[:,y], s=8, c=color)
                 if features == 'infer':
                     features = [self._MSMs[titles[row,col]].features[x], self._MSMs[titles[row,col]].features[y]]
