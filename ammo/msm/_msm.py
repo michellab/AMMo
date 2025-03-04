@@ -377,7 +377,7 @@ class MSMCollection:
                 shape = (1, n)
             
             titles = _np.array(titles).reshape(shape)
-            fig, ax = _subplots(nrows=shape[0], ncols=shape[1], figsize=(6 * shape[0], 4.5 * shape[1]))
+            fig, ax = _subplots(nrows=shape[0], ncols=shape[1], figsize=(6 * shape[1], 4.5 * shape[0]))
             
             if n == 1:
                 ax = [ax]
