@@ -207,7 +207,7 @@ class MSMCollection:
         all_data = _np.array(_np.vstack([_np.vstack(self._MSMs[key].data) for key in titles]))
         return all_data
 
-    def cluster(self, titles=None, n_clusters=100, max_iter=50, centers=None):
+    def cluster(self, titles=None, n_clusters=100, max_iter=50, centers=None, n_jobs=1):
         """Kmeans clustering of all specified trajectory data. Creates self.clusters.
         
         Parameters
@@ -224,6 +224,9 @@ class MSMCollection:
         centers : numpy.array(n_clusters, n_features)
             predefined centers to use
         
+        n_jobs : int or None, default 1
+            Number of threads to use during assignment of the data for function from pyemma. If None, all available CPUs will be used, but seems 1 would be the best.
+        
         Returns
         -------
         None
@@ -231,7 +234,8 @@ class MSMCollection:
         titles = self.__fix_titles(titles)
         cluster_data = self.get_all_data(titles)
 
-        self.clusters = _kmeans(cluster_data, k=n_clusters, max_iter=max_iter, clustercenters=centers, keep_data=True)
+
+        self.clusters = _kmeans(cluster_data, k=n_clusters, max_iter=max_iter, clustercenters=centers, keep_data=True, n_jobs=n_jobs)
 
         return None
 
@@ -260,9 +264,59 @@ class MSMCollection:
 
         return None
 
-    def compute_its(self, titles=None, plot=True,
+    def cluster_single(self, titles=None, n_clusters=100, max_iter=50, centers=None):
+        """Kmeans clustering of trajectory data for each dataset. Creates self._MSMs[key].cluster_centers.
+        
+        Parameters
+        ----------
+        titles : str, [str]
+            titles of MSMs whose data will be used for clustering
+        
+        n_clusters : int
+            number of microstates
+        
+        max_iter : int
+            maximum iterations for kmeans clustering
+        
+        centers : numpy.array(n_clusters, n_features)
+            predefined centers to use
+        
+        Returns
+        -------
+        None
+        """
+        titles = self.__fix_titles(titles)
+
+        for key in titles:
+            self._MSMs[key].cluster(n_clusters, max_iter, centers)
+
+        return None
+
+    def assign_to_clusters_single(self, titles=None):
+        """Assign MSM trajectory data of each dataset to its own clusters
+        
+        Parameters
+        ----------
+        titles : str, [str]
+            titles of MSMs whose data will be assigned to clusters
+        
+        clusters : numpy.array(n_clusters, n_features)
+            custom cluster centers to assign to. Otherwise will be assigned to clusters.clustercenters
+        
+        Returns
+        -------
+        None
+        """
+        if titles is None:
+            titles = [key for key in self._MSMs.keys()]
+        for key in titles:
+            self._MSMs[key].assign_to_clusters()
+
+        return None
+    
+    def compute_its(self, titles=None, plot=True, shape=None, 
                     lags_to_try=(1, 5, 10, 25, 50, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000), nits=10,
-                    errors='bayes', time_units=None):
+                    errors='bayes', time_units=None, n_jobs=1):
         """Compute Implied Timescales for each MSM
         
         Also plot each with the same yaxis scale if required.
@@ -274,6 +328,9 @@ class MSMCollection:
         
         plot : bool
             whether to plot the ITS
+        
+        shape : tuple
+            plot layout in the form (columns, rows).
         
         lags_to_try : [int]
             lag times in trajectory data step units to try for the ITS
@@ -289,7 +346,10 @@ class MSMCollection:
 
         time_units : str
             units for plotting, e.g. 'ns' or 'us'. If None, the default "steps" will be used
-
+        
+        n_jobs : int or None, default 1
+            Number of threads to use to estimate the models for each lag time. of the data for function from pyemma. If None, all available CPUs will be used, but seems 1 would be the best.
+        
         
         Returns
         -------
@@ -302,20 +362,30 @@ class MSMCollection:
         print('Computing ITS...')
         if titles is None:
             titles = [key for key in self._MSMs.keys()]
+        elif isinstance(titles, str):
+            titles = [titles]
 
         for key in titles:
             print(key)
-            self._MSMs[key].compute_its(lags_to_try, nits, errors, plot=False)
+            self._MSMs[key].compute_its(lags_to_try, nits, errors, plot=False, n_jobs=n_jobs)
 
         print('...done.')
 
         if plot:
             n = len(titles)
-            fig, ax = _subplots(n, figsize=(6, 4.5 * n))
+            if not shape:
+                shape = (1, n)
+            
+            titles = _np.array(titles).reshape(shape)
+            fig, ax = _subplots(nrows=shape[0], ncols=shape[1], figsize=(6 * shape[0], 4.5 * shape[1]))
+            
             if n == 1:
                 ax = [ax]
+            else:
+                ax = ax.flatten()
+
             limits = []
-            for i, key in enumerate(titles):
+            for i, key in enumerate(titles.flatten()):
                 _plots.plot_implied_timescales(self._MSMs[key].its, ax[i])
                 limits.append(ax[i].get_ylim())
                 ax[i].set_title(key)
@@ -327,7 +397,7 @@ class MSMCollection:
             # fix axes units if required
             if time_units is not None:
                 for i in range(n):
-                    factor = _parse_time(self._MSMs[titles[i]].timestep, time_units, output_type='number')
+                    factor = _parse_time(self._MSMs[titles.flatten()[i]].timestep, time_units, output_type='number')
                     ax[i].set_xticklabels([int(val) for val in ax[i].get_xticks()*factor])
                     ax[i].set_xlabel(f'lag time / {time_units}')
                     ax[i].set_yticklabels([val for val in ax[i].get_yticks()*factor])
@@ -551,8 +621,8 @@ class MSMCollection:
         color : str
             cluster color
 
- 	plot_centres: bool
-  	    decide whether to plot cluster centres
+ 	    plot_centres: bool
+  	        decide whether to plot cluster centres
         """
         # fix inputs
         titles = self.__fix_titles(titles)
@@ -587,7 +657,7 @@ class MSMCollection:
                 ax_curr.set_ylim((limits[2], limits[3]))
                 ax_curr.set_title(titles[row, col])
                 if plot_centres:
-                    ax_curr.scatter(self._MSMs[title].cluster_centers[:,x], self._MSMs[title].cluster_centers[:,y], s=8, c=color)
+                    ax_curr.scatter(self._MSMs[titles[row,col]].cluster_centers[:,x], self._MSMs[titles[row,col]].cluster_centers[:,y], s=8, c=color)
                 if features == 'infer':
                     features = [self._MSMs[titles[row,col]].features[x], self._MSMs[titles[row,col]].features[y]]
                 elif features == None:
@@ -600,10 +670,9 @@ class MSMCollection:
         cbar = fig.colorbar(
             _scalarmappable(norm=_colornorm(clims[0], clims[1]), cmap=cmap), cax=cbar_ax,
             label='stationary probability')
-        fig.tight_layout()
+        fig.tight_layout()   ###something wrong here, need to check
 
         return fig, ax, cbar
-
 
     def plot_clusters(self, cluster_sets, shape, titles=None, x=0, y=1, features='infer', cmap=None, same_clusters=True, colors=['magenta', 'orange', 'teal', 'red']):
         """Plot the data for each MSM as a density plot, with cluster centers on top
@@ -651,15 +720,22 @@ class MSMCollection:
         titles = self.__fix_titles(titles)
         fig, ax, cbar = self.plot_data(shape, titles, x, y, features, cmap)
 
-        # sort the cluster sets
-        if same_clusters: #if only one cluster set given
-            cluster_sets = [cluster_sets for i in range(len(titles))]
-        
-        for row in range(shape[0]):
-            for col in range(shape[1]):
-                cluster = row*shape[1] + col
-                for i, centers in enumerate(cluster_sets[cluster]):
-                    ax[row, col].scatter(centers[:, x], centers[:, y], c=colors[i], s=10)
+        if cluster_sets is None:   #if clustering done separately
+            titles = _np.array(titles).reshape(shape)
+            for row in range(shape[0]):
+                for col in range(shape[1]):
+                    ax[row, col].scatter(self._MSMs[titles[row, col]].cluster_centers[:, x], self._MSMs[titles[row, col]].cluster_centers[:, y], c=colors[0], s=10)
+
+        else:
+            # sort the cluster sets
+            if same_clusters: #if only one cluster set given
+                cluster_sets = [cluster_sets for i in range(len(titles))]
+            
+            for row in range(shape[0]):
+                for col in range(shape[1]):
+                    cluster = row*shape[1] + col
+                    for i, centers in enumerate(cluster_sets[cluster]):
+                        ax[row, col].scatter(centers[:, x], centers[:, y], c=colors[i], s=10)
 
         return fig, ax, cbar
 
@@ -878,12 +954,69 @@ class MSMCollection:
             print(f'Bootstrapped probabilities, based on {pcca} MSM, {n_states} states:')
             for key in titles:
                 print(key)
-                probabilities[key] = self._MSMs[key].bootstrapping(n_states, self._MSMs[pcca], lag_time, cluster_centers, min_iter, max_iter, tol, last, verbose)
+                probabilities[key] = self._MSMs[key].bootstrapping(n_states, self._MSMs[pcca], lag_time, cluster_centers, min_iter, max_iter, tol, last, verbose, overwrite)
                 print('-'*30)
         
         return probabilities
     
-    def plot_bootstrapping_violin(self, assignment, xaxis='titles', titles=None, states=None, shape=None, colors=None):
+    def bootstrapping_single(self, n_states, titles=None, lag_time=None, min_iter=100, max_iter=100, tol=1, last=10, verbose=False, overwrite=False):
+        """
+        Compute bootstrapped probabilities until they have converged to a Gaussian distribution or until maximum number
+        of iterations have been reached. Using their own cluster centers and pcca assignment.
+        
+        Parameters
+        ----------
+        n_states : int
+            number of metastable states
+
+        msm : allostery.msm.MSM
+            MSMs whose metastable state assignment to use. If None, all will be used
+        
+        titles : str, [str]
+            MSMs to compute probabilities for. If None, all with be used
+
+        lag_time : int, str
+            MSM lag time in trajectory steps (if int) or in format "value unit", e.g. "10 ps" (if str). If None, lag time of existing pyemma MSM will be used.
+        
+        cluster_centers : [float], numpy.array
+            cluster centers to assign data to. If None, msm own cluster centers will be used
+        
+        min_iter : int
+            minimum number of iterations
+        
+        max_iter : int
+            maximum number of iterations
+        
+        tol : int, float
+            tolerance for deviation from the mean
+        
+        last : int
+            number of last resampling iterations that need to be within tolerance of the mean
+        
+        verbose : bool
+            if verbose, progress will be reported
+
+        overwrite : bool
+            whether to overwrite existing probabilities
+        
+        Returns
+        -------
+        probabilities : {title: [float]}
+            all of the computed active state probabilities as a dictionary
+        """
+        titles = self.__fix_titles(titles)
+               
+        probabilities = {}
+                
+        print(f'Bootstrapped probabilities based on their own MSM, {n_states} states:')
+        for key in titles:
+            print(key)
+            probabilities[key] = self._MSMs[key].bootstrapping(n_states, None, lag_time, None, min_iter, max_iter, tol, last, verbose, overwrite)
+            print('-'*30)
+        
+        return probabilities
+    
+    def plot_bootstrapping_violin(self, assignment, xaxis='titles', titles=None, states=None, shape=None, colors=None, median_line=None):
         """Plot bootstrapped probabilities as a violin plot
         
         Parameters
@@ -905,6 +1038,9 @@ class MSMCollection:
 
         colors : [str]
             colors for each of the violin plots
+        
+        median_line : bool
+            whether to plot a dashed line for the median of each violin plot
 
         Returns
         -------
@@ -976,10 +1112,17 @@ class MSMCollection:
                 violins['cmaxes'].set_color('black')
                 violins['cbars'].set_color('black')
                 violins['cmins'].set_color('black')
+                if median_line:
+                    for n in range(len(xticklabels)):
+                        ax[i].hlines(_np.median(data[i][n]), n+0.9, n+1.1, color='black')
+                    ax[i].hlines(_np.median(data[i][0]), ax[i].get_xlim()[0], ax[i].get_xlim()[1], color='black', linewidth=1.25, linestyles='dashed')
+
+
                 # set ticks and labels
                 ax[i].set_xticks(_np.arange(1, len(xticklabels)+1))
                 ax[i].set_xticklabels(xticklabels, size=14)
                 ax[i].set_ylabel(ylabels[i], size=14)
+
 
         fig.tight_layout()
 
@@ -1134,7 +1277,7 @@ class MSM:
 
         return fig, ax, misc
 
-    def cluster(self, n_clusters=100, max_iter=50, centers=None):
+    def cluster(self, n_clusters=100, max_iter=50, centers=None, n_jobs=1):
         """Kmeans clustering of all specified trajectory data. Creates self.clusters.
         
         Parameters
@@ -1147,12 +1290,15 @@ class MSM:
         
         centers : numpy.array(n_clusters, n_features)
             predefined centers to use
+
+        n_jobs : int or None, default 1
+            Number of threads to use during assignment of the data for function from pyemma. If None, all available CPUs will be used, but seems 1 would be the best.
         
         Returns
         -------
         None
         """
-        self.cluster_centers = _kmeans(_np.vstack(self.data), k=n_clusters, max_iter=max_iter, clustercenters=centers, keep_data=True).clustercenters
+        self.cluster_centers = _kmeans(_np.vstack(self.data), k=n_clusters, max_iter=max_iter, clustercenters=centers, keep_data=True, n_jobs=n_jobs).clustercenters
 
         return None
 
@@ -1173,7 +1319,7 @@ class MSM:
         self.dtrajs = _assign_to_centers(data=self.data, centers=self.cluster_centers)
 
     def compute_its(self, lags_to_try=(1, 5, 10, 25, 50, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000), nits=10,
-                    errors='bayes', plot=True, time_units=None):
+                    errors='bayes', plot=True, time_units=None,n_jobs=1):
         """Compute implied timescales
 
         Parameters
@@ -1193,6 +1339,9 @@ class MSM:
         time_units : str
             units for plotting, e.g. 'ns' or 'us'. If None, the default "steps" will be used
 
+        n_jobs : int or None, default 1
+            Number of threads to use to estimate the models for each lag time. of the data for function from pyemma. If None, all available CPUs will be used, but seems 1 would be the best.
+        
         Return
         ------
         fig : matplotlib.figure.Figure
@@ -1201,7 +1350,7 @@ class MSM:
         ax : np.array of AxesSubplot
             ITS plot
         """
-        self.its = _timescales(self.dtrajs, lags=lags_to_try, nits=nits, errors=errors)
+        self.its = _timescales(self.dtrajs, lags=lags_to_try, nits=nits, errors=errors, n_jobs=n_jobs)
 
         if plot:
             fig, ax = _subplots(1, figsize=(7,5))
@@ -1234,7 +1383,7 @@ class MSM:
             traj_step = _parse_time(self.timestep, 'ps', output_type='number')
             msm_step = _parse_time(lag_time, 'ps', output_type='number')
             lag_time = msm_step//traj_step
-        self.msm = _bayesian_msm(self.dtrajs, lag_time)
+        self.msm = _bayesian_msm(self.dtrajs, lag_time)  ###need to find a way to set n_jobs=1
 
         # add zero probability for disconnected sets
         self.stationary_distribution = self.msm.stationary_distribution
@@ -1406,7 +1555,7 @@ class MSM:
             if verbose:
                 print(f'MS {i + 1} has {counts} counts and {probability}% probability (± {error}%)')
 
-    def plot_clusters(self, cluster_sets, x=0, y=1, features='infer', cmap=None, colors=['magenta', 'orange', 'teal', 'red']):
+    def plot_clusters(self, cluster_sets=None, x=0, y=1, features='infer', cmap=None, colors=['magenta', 'orange', 'teal', 'red']):
         """Plot cluster centers on top of data density plot
         
         Parameters
@@ -1440,7 +1589,12 @@ class MSM:
         misc : dict
             mappable and cbar
         """
+        if cluster_sets is None:   #if not specified, use own cluster centers
+            cluster_sets = [self.cluster_centers]
+        else:
+            cluster_sets = cluster_sets    #in the future add [], do not ask user to add
         fig, ax, misc = self.plot_data(x, y, features, cmap)
+
         for i, centers in enumerate(cluster_sets):
             ax.scatter(centers[:, x], centers[:, y], c=colors[i], s=8)
 
@@ -1763,7 +1917,7 @@ class MSM:
             dtrajs = [self.dtrajs[idx] for idx in traj_idxs]
             cluster_centers = self.cluster_centers
         #build msm
-        bootstrap_msm = _bayesian_msm(dtrajs, lag)
+        bootstrap_msm = _bayesian_msm(dtrajs, lag)  # can't find a way to set n_jobs=1, otherwise it would be faster
 
         #get stationary distribution
         stationary_distribution = bootstrap_msm.stationary_distribution
