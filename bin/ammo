@@ -22,7 +22,7 @@ def __print_usage():
 
 def __main__():
     command = _argv[1]
-    if command == '-h' or command == '--help':
+    if not command or command == '-h' or command == '--help':
         __print_usage()
     elif f'_{command}' in _listdir(f'{_environ["AMMO_HOME"]}/bin'):
         args = [f'_{command}'] + _argv[2:]
