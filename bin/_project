@@ -120,12 +120,14 @@ def project(create, activate, current, reconfigure):
 
 
 def __main__():
-    parser = ArgumentParser(description='manage allostery projects')
+    parser = ArgumentParser(description='Manage allostery projects')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--create', type=str, help='create a new project')
-    group.add_argument('--activate', type=str, help='set active project')
-    group.add_argument('--current', action='store_true', help='show current project')
-    group.add_argument('--reconfigure', action='store_true', help='change active project configuration')
+
+    group.add_argument('-c', '--create', type=str, metavar='PROJECT_NAME', help='create a new project')
+    group.add_argument('-a', '--activate', type=str, metavar='PROJECT_NAME', help='set active project')
+    group.add_argument('-C', '--current', action='store_true', help='show current project')
+    group.add_argument('-r', '--reconfigure', action='store_true', help='change active project configuration')
+
     args = parser.parse_args()
 
     project(args.create, args.activate, args.current, args.reconfigure)
