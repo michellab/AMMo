@@ -11,6 +11,7 @@ from _settings import _ammo
 def __configure_project(name):
     """Configure project by editing the .defaults/config file"""
     config_file = f'{_ammo["location"]}/{name}/.defaults/config'
+    input('You will use vi to edit the configuration file. Press enter to continue.')
     subprocess.run(['vi', config_file])
     return None
 
@@ -48,7 +49,7 @@ def __create_project(name):
 
     print(f'Created project in {_ammo["location"]}/{name}')
     print('.'*30)
-    print('Configuring project...', end='')
+    print('Configuring project...', end='\n')
     __configure_project(name)
     print('done.')
     print('-'*30)
