@@ -42,11 +42,14 @@ def __check_for_python3(interpreter):
             interpreter = interpreter_now
     
     # change in scripts if needed
-    if interpreter != '/usr/bin/python3':
-        print(f'Changing interpreter to {interpreter_now} in scripts...')
+    with open(f'{home}/bin/_project', 'r') as fl:
+        contents = fl.readlines()
+    if interpreter not in contents[0]:
+        print(f'Changing interpreter to {interpreter} in scripts...')
         for file in listdir(f'{home}/bin'):
-            if not file.endswith('.py'):
+            if not file.endswith('.py') and file != '__pycache__':
                 __change_interpreter(f'{home}/bin/{file}', interpreter)
+
     
     return None
 
