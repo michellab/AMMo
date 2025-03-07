@@ -12,11 +12,21 @@ def __check_system(system, state, seeded):
     seeded_path = f'{state_path}/{seeded}/steering'
 
     if not os.path.exists(system_path):
-        raise OSError(f'System {system} does not exist')
+        raise SystemExit(f'Error:System {system} does not exist.\nIf you are trying to run a new system, please create it first.')
     elif not os.path.exists(state_path):
-        raise OSError(f'State {state} does not exist')
+        raise SystemExit(f'Error:State {state} does not exist.\nIf you are trying to run a new state, please create it first.')
     elif not os.path.exists(seeded_path):
-        raise OSError(f'Folder {seeded} not found for state {state} in {system}')
+        if os.path.exists(f'{state_path}/{seeded}'):
+            print(f'Warning:Folder Steering not found in {seeded} for state {state} in {system}')
+            bulid_folder= input('Do you want to build the folder? (y/n): ')
+            while bulid_folder.lower() not in ['y', 'n']:
+                bulid_folder = input('Please enter y or n: ')
+            if bulid_folder == 'y':
+                os.makedirs(seeded_path)
+            else:
+                raise SystemExit(f'Please make sure you have steering folder in {seeded} for state {state} in {system}')
+        else:
+            raise SystemExit(f'Folder {seeded} not found for state {state} in {system}')
 
     # go to directory
     os.chdir(seeded_path)
