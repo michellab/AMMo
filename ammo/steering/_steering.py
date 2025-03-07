@@ -60,9 +60,19 @@ def __create_process(system, duration, engine, workdir):
     # create the process
     workdir = os.path.abspath(workdir)
     if engine == 'AMBER':
-        process = BSS.Process.Amber(system, protocol, exe=f'{os.environ["AMBERHOME"]}/bin/pmemd.cuda', work_dir=workdir) # specify using pmemd.cuda
+        exe = subprocess.run(['which', 'pmemd.cuda'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            exe = subprocess.run(['which', 'pmemd'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            raise SystemExit('Could not find AMBER executable. Please make sure that AMBER is installed and the executable is in your base PATH.')
+        process = BSS.Process.Amber(system, protocol, exe=exe, work_dir=workdir) 
     else:
-        process = BSS.Process.createProcess(system, protocol, engine, work_dir=workdir)
+        exe = subprocess.run(['which', 'gmx_mpi'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            exe = subprocess.run(['which', 'gmx'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            raise SystemExit('Could not find GROMACS executable. Please make sure that GROMACS is installed and the executable is in base PATH.')
+        process = BSS.Process.createProcess(system, protocol, engine, exe=exe, work_dir=workdir)
     
     # go to the process workdir
     os.chdir(workdir)
