@@ -82,7 +82,7 @@ def __main__():
     parser.add_argument('--system', type=str, required=True, help='Allostery project system, e.g. "apo"')
     parser.add_argument('--state', type=str, required=True, help='Allostery project system state, e.g. "active"')
     parser.add_argument('--engine', type=str, default='None', help='Simulation engine used for setup. Can be "AMBER" '
-                                                                      ', "GROMACS" or path to . Default : "Engine specified in '
+                                                                      ', "GROMACS". Default : "Engine specified in '
                                                                       'config"')
     parser.add_argument('--charges', type=str, help='Ligand charges in the order they appear in the input PDB, '
                                                     'comma separated')
