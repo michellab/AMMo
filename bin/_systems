@@ -123,8 +123,8 @@ def allosystems(create, add_state, remove_state):
 def __main__():
     parser = ArgumentParser(description='manage systems in the currently active allostery project')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--create', type=str, help='Add a new system')
-    group.add_argument('--add_state', type=str, help='Add a new state to systems. Will also change the project '
+    group.add_argument('-c', '--create', type=str, metavar='[System]', help='Add a new system')
+    group.add_argument('-a', '--add_state', type=str, metavar='[State]', help='Add a new state to systems. Will also change the project '
                                                      'configuration')
     group.add_argument('--remove_state', type=str, help='Remove a state from systems. Will also change the project'
                                                         'configuration')
