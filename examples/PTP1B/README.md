@@ -71,6 +71,12 @@ In a usual PLUMED file, the `ATOMS=` arguments would point to atom indices, whil
 
 The pseudo-PLUMED files used here are available in `.defaults`, and the references for RMSD are in `inputs`. When setting up the reference files, first the path will be searched as give, and then `inputs` directory will be searched. The `steering` part of `.defaults/config` points to these files for AMMo to use.
 
+The steering run is submitted as:
+
+```bash
+ammo steering --system peptide-1 --state open --seeded seeded-md --slurm
+```
+
 Once the sMD trajectories were obtained, the analysis was run in `analysis/sMD_analysis.ipynb`.
 
 ## Seeded MD
