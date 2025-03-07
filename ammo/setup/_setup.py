@@ -56,6 +56,7 @@ def __load_system(input_file, parameters=None, ligand_charges=None):
     system = BSS.Parameters.ff14SB(molecules[0], pre_mol_commands=parameters, ensure_compatible=False).getMolecule().toSystem()
     ligand_count = 0
     for i in range(1,len(molecules)):
+        print(f'Parameterising {types[i]}...', end='\n')
         if types[i] == 'peptide':
             parameterised = BSS.Parameters.ff14SB(molecules[i], pre_mol_commands=parameters, ensure_compatible=False).getMolecule()
         elif types[i] == 'ligand':
@@ -73,6 +74,7 @@ def __load_system(input_file, parameters=None, ligand_charges=None):
         else:
             raise TypeError(f'Unsupported molecule type {type} for molecule with index {i}')
         system.addMolecules(parameterised)
+    print(f'Parameterised done. System has {len(system.getMolecules())} molecules.', end='\n')
 
     BSS.IO.saveMolecules('system_dry', system, 'prm7')
 
@@ -139,7 +141,7 @@ def __solvate(system, solvation='shell,10'):
     return solvated_system
 
 
-def __minimise(system, steps, engine):
+def __minimise(system, steps, engine, exe):
     """Minimise PTP1B system.
 
     Parameters
@@ -160,7 +162,7 @@ def __minimise(system, steps, engine):
     """
 
     protocol = BSS.Protocol.Minimisation(steps=steps)
-    process = BSS.Process.createProcess(system, protocol, engine)
+    process = BSS.Process.createProcess(system, protocol, engine, exe=exe)
 
     process.start()
     process.wait()
@@ -174,7 +176,7 @@ def __minimise(system, steps, engine):
     return minimised
 
 
-def __heat(system, runtime, engine):
+def __heat(system, runtime, engine, exe):
     """Heat system from 0 K to 300 K over a specified time.
 
     Parameters
@@ -195,7 +197,7 @@ def __heat(system, runtime, engine):
     """
     K = BSS.Units.Temperature.kelvin
     protocol = BSS.Protocol.Equilibration(runtime=runtime, temperature_start=0*K, temperature_end=300*K)
-    process = BSS.Process.createProcess(system, protocol, engine)
+    process = BSS.Process.createProcess(system, protocol, engine, exe=exe)
 
     process.start()
     process.wait()
@@ -209,7 +211,7 @@ def __heat(system, runtime, engine):
     return heated
 
 
-def __equilibrate(system, runtime, engine):
+def __equilibrate(system, runtime, engine, exe):
     """Equilibrate system over a specified time.
 
     Parameters
@@ -227,9 +229,11 @@ def __equilibrate(system, runtime, engine):
     -------
     None
     """
+    if 'cuda' in exe:
+        exe.replace('.cuda', '')   # prevent Calculation halted.
     protocol = BSS.Protocol.Equilibration(runtime=runtime, temperature=300*BSS.Units.Temperature.kelvin,
                                           pressure=1*BSS.Units.Pressure.atm)
-    process = BSS.Process.createProcess(system, protocol, engine)
+    process = BSS.Process.createProcess(system, protocol, engine, exe=exe)
 
     process.start()
     process.wait()
@@ -281,20 +285,39 @@ def setup_system(input_file, protocol, engine='GROMACS', ligand_charges=None, pa
     if isinstance(ligand_charges, int):
         ligand_charges = [ligand_charges]
     if topology is None:
-        system = __load_system(input_file, parameters, ligand_charges)
         print('Parameterising system...', end = '')
+        system = __load_system(input_file, parameters, ligand_charges)
+        print('done.\n------------------------------')
     else:
-        system = __load_parameterised_system(input_file, topology)
         print('Loading parameterised system...', end = '')
-    
+        system = __load_parameterised_system(input_file, topology)
+        print('done.\n------------------------------')
+        
+    print('Solvating system...', end='')
     solvated_system = __solvate(system, solvation)
-    print('done.\n------------------------------\nMinimising system...', end='')
+    print('done.\n------------------------------', end='')
 
-    minimised = __minimise(solvated_system, protocol[0], engine)
+    print('Locating MD engine executable...', end='')
+    import subprocess
+    if engine == 'AMBER':
+        exe = subprocess.run(['which', 'pmemd.cuda'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            exe = subprocess.run(['which', 'pmemd'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            print('Could not find AMBER executable in your base PATH. Will use the env amber(sander)')
+    else:
+        exe = subprocess.run(['which', 'gmx_mpi'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            exe = subprocess.run(['which', 'gmx'], capture_output=True, text=True).stdout.strip()
+        if not exe:
+            print('Could not find GROMACS executable in your base PATH. Will use the env gromacs(gmx)')
+    print('done.\n------------------------------\nMinimising system...',end='')
+
+    minimised = __minimise(solvated_system, protocol[0], engine, exe)
     print('done.\n------------------------------\nHeating system...', end='')
-    heated = __heat(minimised, protocol[1]*BSS.Units.Time.picosecond, engine)
+    heated = __heat(minimised, protocol[1]*BSS.Units.Time.picosecond, engine, exe)
     print('done.\n------------------------------\nEquilibrating system...', end='')
-    equilibrated = __equilibrate(heated, protocol[2]*BSS.Units.Time.picosecond, engine)
+    equilibrated = __equilibrate(heated, protocol[2]*BSS.Units.Time.picosecond, engine, exe)
     print('done.\n------------------------------')
     print('System setup completed successfully.\n------------------------------')
 

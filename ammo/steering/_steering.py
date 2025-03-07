@@ -64,15 +64,14 @@ def __create_process(system, duration, engine, workdir):
         if not exe:
             exe = subprocess.run(['which', 'pmemd'], capture_output=True, text=True).stdout.strip()
         if not exe:
-            raise SystemExit('Could not find AMBER executable. Please make sure that AMBER is installed and the executable is in your base PATH.')
-        process = BSS.Process.Amber(system, protocol, exe=exe, work_dir=workdir) 
+            print('Could not find AMBER executable in your base PATH. Will use the env amber(sander)')
     else:
         exe = subprocess.run(['which', 'gmx_mpi'], capture_output=True, text=True).stdout.strip()
         if not exe:
             exe = subprocess.run(['which', 'gmx'], capture_output=True, text=True).stdout.strip()
         if not exe:
-            raise SystemExit('Could not find GROMACS executable. Please make sure that GROMACS is installed and the executable is in base PATH.')
-        process = BSS.Process.createProcess(system, protocol, engine, exe=exe, work_dir=workdir)
+            print('Could not find GROMACS executable in your base PATH. Will use the env gromacs(gmx)')
+    process = BSS.Process.createProcess(system, protocol, engine, exe=exe, work_dir=workdir)
     
     # go to the process workdir
     os.chdir(workdir)
