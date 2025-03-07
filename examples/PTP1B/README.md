@@ -32,7 +32,7 @@ $ ammo systems --create peptide-1
 
 The starting point to use AMMo is a clean, prepared PDB file (files used here are found in `inputs`, where it is recommended to keep them for every project). We will use the `peptide-1` system, `open` state (i.e. PTP1B with the peptide substrate and ligand **1**) as an example here. The system folder has already been created above. To set it up, use the command:
 ```bash
-$ ammo setup --input inputs/open-peptide-1.pdb --system peptide-1 --state open --slurm
+$ ammo setup --input open-peptide-1.pdb --system peptide-1 --state open --slurm
 ```
 
 The above writes a `submit.sh` file and submits it. In case of errors, the `submit.sh` and `submit.out` files are good starting points for troubleshooting. The setup produces `system.prm7` and `system_equilibrated.rst7` files, which are the system topology and equilibrated coordinates respectively. If the system was setup outside of using AMMo, the topology and coordinates can simply be placed in the appropriate `system-setup` folder and named appropriately. The `system_dry.prm7` file is the system topology excluding water and ions, for later processing.
