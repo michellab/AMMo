@@ -15,7 +15,7 @@ features:
     reference: closed.pdb
     shared: ":1-282&(!@/H)&(!:198)"
 solvation: "shell,10"
-parameters: ["addPath /path/AMMo/examples/example_ptp1b/inputs/parameters", "source leaprc.phosaa10"]
+parameters: addPath /path/AMMo/examples/example_ptp1b/inputs/parameters,source leaprc.phosaa10
 python: /home/user/anaconda3/envs/my-env/bin/python
 setup:
   GROMACS: 7500,100,250
