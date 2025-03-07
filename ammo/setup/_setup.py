@@ -52,13 +52,23 @@ def __load_system(input_file, parameters=None, ligand_charges=None):
     types = __get_molecule_types(molecules)
 
     #parameterise and combine into system
-    system = BSS.Parameters.ff14SB(molecules[0], leap_commands=parameters).getMolecule().toSystem()
+    print('Parameterised protein.', end='\n')
+    system = BSS.Parameters.ff14SB(molecules[0], pre_mol_commands=parameters, ensure_compatible=False).getMolecule().toSystem()
     ligand_count = 0
     for i in range(1,len(molecules)):
         if types[i] == 'peptide':
-            parameterised = BSS.Parameters.ff14SB(molecules[i], leap_commands=parameters).getMolecule()
+            parameterised = BSS.Parameters.ff14SB(molecules[i], pre_mol_commands=parameters, ensure_compatible=False).getMolecule()
         elif types[i] == 'ligand':
-            parameterised = BSS.Parameters.gaff2(molecules[i], net_charge=ligand_charges[ligand_count]).getMolecule()
+            if ligand_charges is None:
+                print(f'No charges provided for ligand {molecules[i].getResidues()[0].name()}. Assuming net charge of 0.')
+                net_charge = 0
+            else:
+                try:
+                    if ligand_charges[ligand_count]:
+                        net_charge = ligand_charges[ligand_count]
+                except IndexError:
+                    SystemExit(f'Not enough charges provided for ligands in system. Expected {len(molecules)-1} but got {len(ligand_charges)}')
+            parameterised = BSS.Parameters.gaff2(molecules[i], net_charge=net_charge).getMolecule()
             ligand_count+=1
         else:
             raise TypeError(f'Unsupported molecule type {type} for molecule with index {i}')
