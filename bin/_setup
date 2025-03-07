@@ -8,11 +8,12 @@ from _settings import _project, _ammo
 
 def __clean_args(args):
     """Parse args to be used in function and get defaults"""
-    try:
-        args.protocol = _project['setup'][args.engine]
-    except Exception:
-        raise KeyError(f'Engine {args.engine} has no defaults specified. Either set defaults for {args.engine} or '
-                       f'run the scrip manually with python {os.environ["AMMO_HOME"]}/allostery/scripts/system_setup.py')
+    engine_config = list(_project['setup'].keys())[0]
+    if args.engine == 'None':
+        args.engine = engine_config
+    elif args.engine != engine_config:
+        print(f'Warning: Engine {args.engine} does not match the config setting. Using the protocol set in config with {args.engine}')
+    args.protocol = _project["setup"][engine_config]
 
     if not os.path.exists(args.input):
         input_file = f'{_ammo["location"]}/{_ammo["project"]}/inputs/{args.input}'
@@ -80,8 +81,9 @@ def __main__():
     parser.add_argument('--input', type=str, required=True, help='System PDB file')
     parser.add_argument('--system', type=str, required=True, help='Allostery project system, e.g. "apo"')
     parser.add_argument('--state', type=str, required=True, help='Allostery project system state, e.g. "active"')
-    parser.add_argument('--engine', type=str, default='GROMACS', help='Simulation engine used for setup. Can be "AMBER" '
-                                                                      'or "GROMACS". Default : "GROMACS"')
+    parser.add_argument('--engine', type=str, default='None', help='Simulation engine used for setup. Can be "AMBER" '
+                                                                      ', "GROMACS" or path to . Default : "Engine specified in '
+                                                                      'config"')
     parser.add_argument('--charges', type=str, help='Ligand charges in the order they appear in the input PDB, '
                                                     'comma separated')
     parser.add_argument('--topology', type=str, help='Dry topology of system. If provided will be used instead of '
